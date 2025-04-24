@@ -1,0 +1,10 @@
+# Build results
+**/bin/
+**/obj/
+
+
+# IIS Express
+.vs/
+*.vspscc
+*.vssscc
+
