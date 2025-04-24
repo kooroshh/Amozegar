@@ -1,4 +1,7 @@
 using Amozegar.Data;
+using Amozegar.Data.SeedData;
+using Amozegar.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,9 +14,24 @@ builder.Services.AddDbContext<AmozegarContext>(option =>
 {
     option.UseSqlServer("Data Source=.; Initial Catalog=Amozegar_DB; Integrated Security=true; TrustServerCertificate=True");
 });
+
+builder.Services.AddIdentity<User, IdentityRole>()
+    .AddEntityFrameworkStores<AmozegarContext>()
+    .AddDefaultTokenProviders();
+
 #endregion
 
 var app = builder.Build();
+
+#region Set Seed Datas
+
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    await SeedData.InitializeAsync(services);
+//}
+
+#endregion
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
