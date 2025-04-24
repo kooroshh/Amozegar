@@ -78,6 +78,13 @@ section {
         background-color: var(--primary-color);
     }
 
+.section-title-center {
+    width: 70px;
+    margin: 15px auto 30px;
+    height: 3px;
+    background-color: var(--primary-color);
+}
+
 /* Navbar Styles */
 .navbar {
     background-color: white;

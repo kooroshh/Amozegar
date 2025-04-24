@@ -1,5 +1,6 @@
-﻿@{
-    ViewData["Title"] = "خطای داخلی سرور";
+﻿
+@{
+    ViewData["Title"] = "صفحه پیدا نشد";
 }
 
 <div class="min-vh-100 d-flex align-items-center">
@@ -7,10 +8,10 @@
         <div class="row justify-content-center">
             <div class="col-md-8 text-center">
                 <div class="error-content">
-                    <i class="fas fa-server text-warning mb-4" style="font-size: 5rem;"></i>
-                    <h1 class="display-1 fw-bold text-warning mb-4">500</h1>
-                    <h2 class="mb-4">خطای سرور!</h2>
-                    <p class="lead mb-5">متأسفانه در حال حاضر سرور قادر به پاسخگویی نیست. لطفاً چند دقیقه دیگر دوباره تلاش کنید.</p>
+                    <i class="fas fa-exclamation-circle text-danger mb-4" style="font-size: 5rem;"></i>
+                    <h1 class="display-1 fw-bold text-danger mb-4">404</h1>
+                    <h2 class="mb-4">صفحه مورد نظر یافت نشد!</h2>
+                    <p class="lead mb-5">متأسفانه صفحه‌ای که به دنبال آن هستید در دسترس نیست.</p>
                     <div class="d-flex justify-content-center gap-3">
                         <a asp-action="Index" asp-controller="Home"
                             class="btn btn-primary px-4 py-2">
@@ -28,3 +29,4 @@
         </div>
     </div>
 </div>
+

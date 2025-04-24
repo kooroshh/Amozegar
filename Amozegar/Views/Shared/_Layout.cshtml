@@ -15,7 +15,7 @@
 	<header class="sticky-top">
 		<nav class="navbar navbar-expand-lg">
 			<div class="container">
-				<a class="navbar-brand d-flex align-items-center gap-1" href="#">
+				<a class="navbar-brand d-flex align-items-center gap-1" asp-action="Index" asp-controller="Home">
 					<img src="~/images/home/logo.png" alt="آموزگار" class="d-inline-block align-text-top">
 					آموزگار
 				</a>
@@ -25,16 +25,16 @@
 				<div class="collapse navbar-collapse" id="navbarNav">
 					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 						<li class="nav-item">
-							<a class="nav-link" aria-current="page" href="#">خانه</a>
+							<a class="nav-link" aria-current="page" asp-action="Index" asp-controller="Home">خانه</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#">درباره ما</a>
+							<a class="nav-link" asp-action="AboutUs" asp-controller="Home">درباره ما</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#">ارتباط با ما</a>
+							<a class="nav-link" asp-action="ContactUs" asp-controller="Home">ارتباط با ما</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link btn btn-primary text-white px-4" href="#">ورود / ثبت نام</a>
+							<a class="nav-link btn btn-primary text-white px-4" asp-action="Login" asp-controller="Account">ورود / ثبت نام</a>
 						</li>
 					</ul>
 				</div>

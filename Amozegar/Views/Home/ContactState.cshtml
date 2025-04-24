@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewData["Title"] = "دریافت موفقیت آمیز";
+}
+
+<div class="container my-3">
+    @if (ViewBag.State == "Success")
+    {
+        <div class="alert alert-success">
+            پیام با موفقیت ثبت شد
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            ارسال پیام با خطا مواجه شد
+        </div>
+    }
+    <a asp-action="Index" asp-controller="Home" class="btn btn-sm btn-primary">برگشت به خانه</a>
+
+</div>
+
+
