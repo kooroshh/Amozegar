@@ -1,0 +1,14 @@
+﻿
+@{
+    ViewData["Title"] = "خروج";
+}
+<div class="container my-3">
+    <div class="alert alert-danger">
+        آیا از خروج از حساب کاربری خود مطمعن هستید؟
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">خروج</button>
+        </form>
+    </div>
+</div>
+
