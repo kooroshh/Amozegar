@@ -84,21 +84,21 @@ namespace Amozegar.Controllers
 
             if (register.UserPicture != null && register.UserPicture.Length > 0)
             {
-                string fileExtension = Path.GetExtension(register.UserPicture.FileName);
-                string fileName = user.Id + fileExtension;
-                string uploadsFolder = Path.Combine(
+                string fileName = user.Id + Path.GetExtension(register.UserPicture.FileName);
+                string filePath = Path.Combine(
                     Directory.GetCurrentDirectory(),
                     "wwwroot",
                     "images",
-                    "users"
+                    "users",
+                    fileName
                 );
-                string filePath = Path.Combine(uploadsFolder, fileName);
-
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await register.UserPicture.CopyToAsync(stream);
                 }
+                user.PicturePath = fileName;
+                await this._userManager.UpdateAsync(user);
             }
 
             return RedirectToAction("Login");
@@ -106,7 +106,7 @@ namespace Amozegar.Controllers
 
 
         [Route("Account/Login")]
-        public async Task<IActionResult> Login()
+        public IActionResult Login()
         {
             return View();
         }
@@ -154,7 +154,6 @@ namespace Amozegar.Controllers
             await this._signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }
-
 
     }
 }

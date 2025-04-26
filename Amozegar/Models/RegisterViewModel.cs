@@ -37,7 +37,7 @@ namespace Amozegar.Models
 
         [Display(Name = "تصویر")]
         [AllowedExtensions(".jpg", ".jpeg", ".png", ".gif")]
-        [MaxFileSize(4 * 1024 * 1024)]
+        [MaxFileSize(4)]
         public IFormFile? UserPicture { get; set; }
     }
 }

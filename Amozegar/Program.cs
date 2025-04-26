@@ -17,8 +17,7 @@ builder.Services.AddDbContext<AmozegarContext>(option =>
 });
 
 builder.Services.AddIdentity<User, IdentityRole>()
-    .AddEntityFrameworkStores<AmozegarContext>()
-    .AddDefaultTokenProviders();
+    .AddEntityFrameworkStores<AmozegarContext>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {

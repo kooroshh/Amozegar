@@ -15,7 +15,7 @@ namespace Amozegar.Models.CustomAnnotations
             var file = value as IFormFile;
             if (file != null && file.Length > 0)
             {
-                if (file.Length > _maxFileSizeInBytes)
+                if (file.Length > (_maxFileSizeInBytes * 1024 * 1024))
                 {
                     return new ValidationResult($"حجم فایل نباید بیشتر از {_maxFileSizeInBytes / (1024 * 1024)} مگابایت باشد.");
                 }
