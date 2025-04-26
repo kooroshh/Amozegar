@@ -1,6 +1,7 @@
 using System.IO;
 using Amozegar.Data;
 using Amozegar.Data.SeedData;
+using Amozegar.Factory;
 using Amozegar.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-#region Add Db Context
+#region Add Db Context And Identity
 builder.Services.AddDbContext<AmozegarContext>(option =>
 {
     option.UseSqlServer("Data Source=.; Initial Catalog=Amozegar_DB; Integrated Security=true; TrustServerCertificate=True");
@@ -28,6 +29,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireLowercase = false;
     options.Password.RequiredUniqueChars = 0;
 });
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<User>, UserClaims>();
 
 #endregion
 
@@ -67,6 +69,12 @@ app.Use(async (context, next) => {
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+
+app.MapControllerRoute(
+  name: "areas",
+  pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}")
+    .WithStaticAssets();
 
 app.MapControllerRoute(
     name: "default",

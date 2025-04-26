@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+
+<html dir="rtl">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - آموزگار</title>
+	<script type="importmap"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/Amozegar.styles.css" asp-append-version="true" />
+</head>
+<body>
+
+	@await Component.InvokeAsync("MobileNavigationComponent")
+
+    <div class="panel-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a asp-action="Index" asp-controller="Home" asp-area="" class="sidebar-logo d-flex justify-content-center align-items-center gap-1">
+                    <img src="~/images/home/logo.png" alt="آموزگار">
+                    آموزگار
+                </a>
+            </div>
+
+            <div class="sidebar-menu">
+                <nav>
+                    <a class="menu-item" asp-action="Index" asp-controller="Home" asp-area="">
+                        <i class="fas fa-home"></i>
+                        <span>خانه</span>
+                    </a>
+                    <a asp-action="Index" asp-controller="Home" asp-area="Panel" class="menu-item @(ViewBag.Route == "Dashboard" ? "active" : "")">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>داشبورد</span>
+                    </a>
+                    <a asp-action="EditInformations" asp-controller="Home" asp-area="Panel" class="menu-item @(ViewBag.Route == "Edit" ? "active" : "")">
+                        <i class="fas fa-user-edit"></i>
+                        <span>ویرایش مشخصات</span>
+                    </a>
+                    <a href="change-password.html" class="menu-item">
+                        <i class="fas fa-key"></i>
+                        <span>ویرایش پسورد</span>
+                    </a>
+                    <a href="user-panel.html" class="menu-item">
+                        <i class="fas fa-user-cog"></i>
+                        <span>پنل یوزر</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="sidebar-footer">
+                <a class="menu-item text-danger" asp-action="Logout" asp-controller="Account" asp-area="">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>خروج از حساب کاربری</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container-fluid py-4">
+
+                <div class="container-fluid">
+                    <!-- User Info Header -->
+                    <div class="user-info-header">
+                        <div class="user-info-content">
+                            <div class="user-avatar">
+                                <img src="~/images/users/@(User.FindFirstValue("Image"))" alt="تصویر کاربر">
+                            </div>
+                            <div class="user-details">
+                                <h2 class="user-name">@(User.FindFirstValue("FullName"))</h2>
+                                <p class="user-username text-truncate">@(User.Identity?.Name)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/panel.js" asp-append-version="true"></script>
+	@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
