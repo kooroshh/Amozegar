@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@inject UserManager<User> _userManger
+@{
+    var user = await _userManger.FindByNameAsync(User.Identity.Name);
+}
+<!DOCTYPE html>
 
 <html dir="rtl">
 <head>
@@ -39,14 +43,35 @@
                         <i class="fas fa-user-edit"></i>
                         <span>ویرایش مشخصات</span>
                     </a>
-                    <a href="change-password.html" class="menu-item">
+                    <a asp-action="ChangePassword" asp-controller="Home" asp-area="Panel" class="menu-item @(ViewBag.Route == "ChangePassword" ? "active" : "")">
                         <i class="fas fa-key"></i>
                         <span>ویرایش پسورد</span>
                     </a>
-                    <a href="user-panel.html" class="menu-item">
-                        <i class="fas fa-user-cog"></i>
-                        <span>پنل یوزر</span>
-                    </a>
+
+                    @if(await _userManger.IsInRoleAsync(user, "Student"))
+                    {
+                        <a asp-action="Index" asp-controller="Home" asp-area="Student" class="menu-item">
+                            <i class="fas fa-user-cog"></i>
+                            <span>پنل دانش آموز</span>
+                        </a>
+                    }
+
+                    @if (await _userManger.IsInRoleAsync(user, "Teacher"))
+                    {
+                        <a asp-action="Index" asp-controller="Home" asp-area="Teacher" class="menu-item">
+                            <i class="fas fa-user-cog"></i>
+                            <span>پنل معلم</span>
+                        </a>
+                    }
+
+                    @if (await _userManger.IsInRoleAsync(user, "Admin"))
+                    {
+                        <a asp-action="Index" asp-controller="Home" asp-area="Admin" class="menu-item">
+                            <i class="fas fa-user-cog"></i>
+                            <span>پنل ادمین</span>
+                        </a>
+                    }
+
                 </nav>
             </div>
 

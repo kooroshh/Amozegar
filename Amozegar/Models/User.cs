@@ -10,5 +10,7 @@ namespace Amozegar.Models
         [Required]
         [MaxLength(255)]
         public string FullName { get; set; }
+
+        public ICollection<StudentToClass> StudentToClasses { get; set; }
     }
 }

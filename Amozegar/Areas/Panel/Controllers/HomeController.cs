@@ -34,6 +34,7 @@ namespace Amozegar.Areas.Panel.Controllers
         }
 
         [HttpPost("Panel/Edit")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditInformations(EditInformationsViewModel edit)
         {
             if (!ModelState.IsValid)
@@ -79,6 +80,32 @@ namespace Amozegar.Areas.Panel.Controllers
             await this._userManager.AddClaimAsync(user, new Claim("Image", user.PicturePath));
             await this._signInManager.RefreshSignInAsync(user);
             return RedirectToAction("Index", "Home", new { area = "Panel" });
+        }
+
+        [Route("Panel/Change-Password")]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost("Panel/Change-Password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel change)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(change);
+            }
+
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            var result = await _userManager.ChangePasswordAsync(user, change.Password, change.NewPassword);
+
+            if (result.Succeeded)
+            {
+                await _signInManager.SignOutAsync();
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
     }
