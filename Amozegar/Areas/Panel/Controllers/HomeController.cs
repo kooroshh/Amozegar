@@ -103,9 +103,15 @@ namespace Amozegar.Areas.Panel.Controllers
             if (result.Succeeded)
             {
                 await _signInManager.SignOutAsync();
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                ModelState.AddModelError("Password", "تعویض پسورد موفقیت آمیز نبود. لطفا اطاعات را برسی کرده و دوباره تلاش کنید");
+                return View(change);
             }
 
-            return RedirectToAction("Index", "Home");
+            
         }
 
     }
