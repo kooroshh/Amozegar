@@ -28,7 +28,7 @@ namespace Amozegar.Models
 
         public DateTime? Date { get; set; }
 
-        public ICollection<StudentToClass> StudentToClasses { get; set; }
+        public ICollection<ClassStudents> StudentToClasses { get; set; }
         [ForeignKey("TeacherId")]
         public User Teacher { get; set; }
     }

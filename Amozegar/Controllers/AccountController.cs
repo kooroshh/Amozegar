@@ -16,12 +16,12 @@ namespace Amozegar.Controllers
     {
 
         private UserManager<User> _userManager;
-        private RoleManager<IdentityRole> _roleManager;
+        private RoleManager<UserRole> _roleManager;
         private SignInManager<User> _signInManager;
 
         public AccountController(
             UserManager<User> userManager,
-            RoleManager<IdentityRole> roleManager,
+            RoleManager<UserRole> roleManager,
             SignInManager<User> signInManager)
         {
             this._roleManager = roleManager;
@@ -29,20 +29,24 @@ namespace Amozegar.Controllers
             this._userManager = userManager;
         }
 
-        private void setRoles(RegisterViewModel register)
+        private async Task setRoles(RegisterViewModel register)
         {
-            register.Roles = new List<SelectListItem>()
+            var roles = await _roleManager.Roles
+                .Where(r => r.Name != "Admin")
+                .Select(role => new SelectListItem()
                 {
-                    new SelectListItem() { Text = "دانش آموز", Value = "Student" },
-                    new SelectListItem() { Text = "معلم", Value = "Teacher" }
-                };
+                    Text = role.PersianName,
+                    Value = role.Name
+                })
+                .ToListAsync();
+            register.Roles = roles;
         }
 
         [Route("Account/Register")]
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
             var register = new RegisterViewModel();
-            this.setRoles(register);
+            await this.setRoles(register);
             return View(register);
         }
 
@@ -53,20 +57,20 @@ namespace Amozegar.Controllers
         {
             if (!ModelState.IsValid)
             {
-                this.setRoles(register);
+                await this.setRoles(register);
                 return View(register);
             }   
             var existingUser = await this._userManager.FindByEmailAsync(register.Email.ToLowerInvariant());
             if (existingUser != null)
             {
                 ModelState.AddModelError("Email", "ایمیل قبلاً ثبت شده است.");
-                this.setRoles(register);
+                await this.setRoles(register);
                 return View(register);
             }
             if (!(await _roleManager.RoleExistsAsync(register.SelectedRole) && register.SelectedRole != "Admin"))
             {
                 ModelState.AddModelError("Roles", "سطح دسترسی نادرست است");
-                this.setRoles(register);
+                await this.setRoles(register);
                 return View(register);
             }
 
@@ -86,7 +90,7 @@ namespace Amozegar.Controllers
             if (register.UserPicture != null && register.UserPicture.Length > 0)
             {
                 string fileName = user.Id + Path.GetExtension(register.UserPicture.FileName);
-                await register.UserPicture.SaveImage("users", fileName);
+                await register.UserPicture.SaveImage(fileName, "users");
                 user.PicturePath = fileName;
                 await this._userManager.UpdateAsync(user);
             }

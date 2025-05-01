@@ -5,14 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Amozegar.Data
 {
-    public class AmozegarContext : IdentityDbContext<User>
+    public class AmozegarContext : IdentityDbContext<User, UserRole, string>
     {
         public AmozegarContext(DbContextOptions<AmozegarContext> option) : base(option) { }
 
         public DbSet<Report> Reports { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<UserRole> UsersRoles { get; set; }
         public DbSet<ClassRoam> Classes { get; set; }
-        public DbSet<StudentToClass> StudentToClasses { get; set; }
+        public DbSet<ClassStudents> ClassesStudents { get; set; }
+        public DbSet<ClassStudentState> ClassesStudentsStates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,16 +40,14 @@ namespace Amozegar.Data
                 .Property(c => c.ClassImage)
                 .HasDefaultValue("classes.png");
 
-            modelBuilder.Entity<StudentToClass>()
-                .HasKey(stc => new { stc.StudentId, stc.ClassId });
 
-            modelBuilder.Entity<StudentToClass>()
+            modelBuilder.Entity<ClassStudents>()
                 .HasOne(stc => stc.User)
                 .WithMany(u => u.StudentToClasses)
                 .HasForeignKey(stc => stc.StudentId)
                 .OnDelete(DeleteBehavior.Restrict); 
 
-            modelBuilder.Entity<StudentToClass>()
+            modelBuilder.Entity<ClassStudents>()
                 .HasOne(stc => stc.Class)
                 .WithMany(c => c.StudentToClasses)
                 .HasForeignKey(stc => stc.ClassId)

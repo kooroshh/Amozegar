@@ -4,6 +4,7 @@ using Amozegar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Amozegar.Migrations
 {
     [DbContext(typeof(AmozegarContext))]
-    partial class AmozegarContextModelSnapshot : ModelSnapshot
+    [Migration("20250501121734_addPersianNameToRoles")]
+    partial class addPersianNameToRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,58 +70,6 @@ namespace Amozegar.Migrations
                     b.ToTable("Classes");
                 });
 
-            modelBuilder.Entity("Amozegar.Models.ClassStudentState", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
-
-                    b.Property<string>("PersianState")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("State")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("id");
-
-                    b.ToTable("ClassesStudentsStates");
-                });
-
-            modelBuilder.Entity("Amozegar.Models.ClassStudents", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
-
-                    b.Property<int>("ClassId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ClassStudentStateId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StudentId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("ClassId");
-
-                    b.HasIndex("ClassStudentStateId");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("ClassesStudents");
-                });
-
             modelBuilder.Entity("Amozegar.Models.Report", b =>
                 {
                     b.Property<int>("ReportId")
@@ -159,6 +110,21 @@ namespace Amozegar.Migrations
                     b.HasKey("ReportId");
 
                     b.ToTable("Reports");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.StudentToClass", b =>
+                {
+                    b.Property<string>("StudentId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int");
+
+                    b.HasKey("StudentId", "ClassId");
+
+                    b.HasIndex("ClassId");
+
+                    b.ToTable("StudentToClasses");
                 });
 
             modelBuilder.Entity("Amozegar.Models.User", b =>
@@ -241,7 +207,7 @@ namespace Amozegar.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Amozegar.Models.UserRole", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -257,10 +223,6 @@ namespace Amozegar.Migrations
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PersianName")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -389,18 +351,12 @@ namespace Amozegar.Migrations
                     b.Navigation("Teacher");
                 });
 
-            modelBuilder.Entity("Amozegar.Models.ClassStudents", b =>
+            modelBuilder.Entity("Amozegar.Models.StudentToClass", b =>
                 {
                     b.HasOne("Amozegar.Models.ClassRoam", "Class")
                         .WithMany("StudentToClasses")
                         .HasForeignKey("ClassId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Amozegar.Models.ClassStudentState", "State")
-                        .WithMany("ClassStudents")
-                        .HasForeignKey("ClassStudentStateId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Amozegar.Models.User", "User")
@@ -411,14 +367,12 @@ namespace Amozegar.Migrations
 
                     b.Navigation("Class");
 
-                    b.Navigation("State");
-
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Amozegar.Models.UserRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -445,7 +399,7 @@ namespace Amozegar.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Amozegar.Models.UserRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -470,11 +424,6 @@ namespace Amozegar.Migrations
             modelBuilder.Entity("Amozegar.Models.ClassRoam", b =>
                 {
                     b.Navigation("StudentToClasses");
-                });
-
-            modelBuilder.Entity("Amozegar.Models.ClassStudentState", b =>
-                {
-                    b.Navigation("ClassStudents");
                 });
 
             modelBuilder.Entity("Amozegar.Models.User", b =>

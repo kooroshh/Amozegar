@@ -74,7 +74,7 @@ namespace Amozegar.Areas.Teacher.Controllers
             if (addClass.ClassImage != null && addClass.ClassImage.Length > 0)
             {
                 string fileName = newClass.ClassId + Path.GetExtension(addClass.ClassImage.FileName);
-                await addClass.ClassImage.SaveImage("classes", fileName);
+                await addClass.ClassImage.SaveImage(fileName, "classes");
                 newClass.ClassImage = fileName;
                 this._context.Classes.Update(newClass);
                 this._context.SaveChanges();
@@ -178,7 +178,7 @@ namespace Amozegar.Areas.Teacher.Controllers
             if (editClass.ClassImage != null && editClass.ClassImage.Length > 0)
             {
                 string fileName = exisitClass.ClassId + Path.GetExtension(editClass.ClassImage.FileName);
-                await editClass.ClassImage.SaveImage("classes", fileName);
+                await editClass.ClassImage.SaveImage(fileName, "classes");
                 exisitClass.ClassImage = fileName;
                 this._context.Classes.Update(exisitClass);
                 this._context.SaveChanges();
