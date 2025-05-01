@@ -26,9 +26,17 @@ namespace Amozegar.Data
                 .Property(u => u.Date)
                 .HasDefaultValueSql("GETDATE()");
 
+            modelBuilder.Entity<ClassRoam>()
+                .Property(c => c.Date)
+                .HasDefaultValueSql("GETDATE()");
+
             modelBuilder.Entity<User>()
                 .Property(u => u.PicturePath)
                 .HasDefaultValue("user.webp");
+
+            modelBuilder.Entity<ClassRoam>()
+                .Property(c => c.ClassImage)
+                .HasDefaultValue("classes.png");
 
             modelBuilder.Entity<StudentToClass>()
                 .HasKey(stc => new { stc.StudentId, stc.ClassId });

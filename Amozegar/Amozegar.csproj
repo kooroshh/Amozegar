@@ -9,6 +9,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\fonts\webfonts\" />
     <Folder Include="wwwroot\images\home\" />
+    <Folder Include="wwwroot\images\classes\" />
     <Folder Include="wwwroot\images\users\" />
   </ItemGroup>
 

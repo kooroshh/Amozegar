@@ -1,0 +1,18 @@
+﻿@model DeleteClassViewModel
+@{
+    ViewData["Title"] = "حذف کلاس";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-2">
+    <div class="alert alert-danger">
+        آیا از حذف کلاس @Model.ClassName مطمعن هستید ؟
+        <form method="post" class="my-3">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.ClassId)
+            <button type="submit" class="btn btn-danger">حذف</button>
+        </form>
+    </div>
+</div>
+
+

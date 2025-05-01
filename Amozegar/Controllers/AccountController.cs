@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Amozegar.Data;
 using Amozegar.Models;
+using Amozegar.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -85,18 +86,7 @@ namespace Amozegar.Controllers
             if (register.UserPicture != null && register.UserPicture.Length > 0)
             {
                 string fileName = user.Id + Path.GetExtension(register.UserPicture.FileName);
-                string filePath = Path.Combine(
-                    Directory.GetCurrentDirectory(),
-                    "wwwroot",
-                    "images",
-                    "users",
-                    fileName
-                );
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await register.UserPicture.CopyToAsync(stream);
-                }
+                await register.UserPicture.SaveImage("users", fileName);
                 user.PicturePath = fileName;
                 await this._userManager.UpdateAsync(user);
             }

@@ -10,12 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddAuthorization();
 
 #region Add Db Context And Identity
 builder.Services.AddDbContext<AmozegarContext>(option =>
 {
     option.UseSqlServer("Data Source=.; Initial Catalog=Amozegar_DB; Integrated Security=true; TrustServerCertificate=True");
 });
+builder.Services.AddScoped<PasswordHasher<ClassRoam>>();
 
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<AmozegarContext>();
@@ -66,6 +68,7 @@ app.Use(async (context, next) => {
 
     await next.Invoke();
 });
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

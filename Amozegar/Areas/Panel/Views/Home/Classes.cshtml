@@ -1,0 +1,91 @@
+﻿@model IEnumerable<ClassesViewModel>
+@{
+	ViewData["Title"] = "کلاس ها";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Main Content -->
+
+<div class="container-fluid my-5">
+	<!-- Classes Section -->
+	<div class="card border-0 shadow-sm">
+		<div class="card-body p-4">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h3 class="card-title mb-0">کلاس‌های من</h3>
+				@if(ViewBag.Role == "Teacher")
+				{
+					<a asp-action="AddClass" asp-controller="Classes" asp-area="Teacher" class="btn btn-primary">
+						<i class="fas fa-plus me-2"></i>
+						افزودن کلاس
+					</a>
+				}
+				else
+				{
+					<a asp-action="AddClass" asp-controller="Classes" asp-area="Student" class="btn btn-primary">
+						<i class="fas fa-plus me-2"></i>
+						افزودن کلاس
+					</a>
+				}
+			</div>
+
+			<!-- Classes List -->
+			<div class="classes-list">
+
+				@if(!(Model.Count() > 0))
+				{
+					<div class="alert alert-warning">
+						توجه. هیچ کلاسی موجود نمیباشد
+					</div>
+				}
+				else
+				{
+					foreach(var item in Model)
+					{
+						<div class="class-item">
+							<a asp-action="Index"
+							asp-controller="Home"
+							asp-area="@ViewBag.Role"
+							asp-route-classId="@item.ClassIdentity"
+							)
+								class="class-info">
+								<div class="class-avatar">
+									<img src="~/images/classes/@(item.ClassImage)" alt="@item.ClassName">
+								</div>
+								<div class="class-details">
+									<h4 class="class-name">@item.ClassName</h4>
+									<p class="teacher-name">ایدی : @item.ClassIdentity</p>
+									<p class="teacher-name">استاد : @item.TeacherName</p>
+								</div>
+							</a	()>
+							<div class="class-actions">
+								<a class="btn btn-danger btn-sm"
+								asp-action="DeleteClass"
+								asp-controller="Classes"
+								asp-area="Teacher"
+								asp-route-classId="@item.ClassId">
+									<i class="fas fa-trash me-1"></i>
+									حذف کلاس
+								</a>
+								<a class="btn btn-warning btn-sm"
+								   asp-action="EditClass"
+								   asp-controller="Classes"
+								   asp-area="Teacher"
+								   asp-route-classId="@item.ClassId">
+									<i class="fas fa-pencil-alt me-1"></i>
+									ویرایش کلاس
+								</a>
+							</div>
+						</div>
+					}
+				}
+
+
+
+
+
+			</div>
+		</div>
+	</div>
+</div>
+
+

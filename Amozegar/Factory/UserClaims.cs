@@ -17,6 +17,12 @@ namespace Amozegar.Factory
             identity.AddClaim(new Claim("FullName", user.FullName));
             identity.AddClaim(new Claim("Image", user.PicturePath));
 
+            var userRoles = await UserManager.GetRolesAsync(user);
+            foreach (var role in userRoles)
+            {
+                identity.AddClaim(new Claim(ClaimTypes.Role, role));
+            }
+
             return identity;
         }
     }

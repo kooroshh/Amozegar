@@ -1,9 +1,13 @@
 ﻿using System.Security.Claims;
 using Amozegar.Areas.Panel.Models;
+using Amozegar.Data;
 using Amozegar.Models;
+using Amozegar.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Amozegar.Areas.Panel.Controllers
 {
@@ -14,11 +18,13 @@ namespace Amozegar.Areas.Panel.Controllers
 
         private UserManager<User> _userManager;
         private SignInManager<User> _signInManager;
+        private AmozegarContext _context;
 
-        public HomeController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public HomeController(UserManager<User> userManager, SignInManager<User> signInManager, AmozegarContext context)
         {
             this._userManager = userManager;
             this._signInManager = signInManager;
+            this._context = context;
         }
 
         [Route("Panel")]
@@ -49,18 +55,8 @@ namespace Amozegar.Areas.Panel.Controllers
             if(edit.UserPicture != null && edit.UserPicture.Length > 0)
             {
                 string fileName = user.Id + Path.GetExtension(edit.UserPicture.FileName);
-                string file = Path.Combine(
-                    Directory.GetCurrentDirectory(),
-                    "wwwroot",
-                    "images",
-                    "users",
-                    fileName
-                );
+                await edit.UserPicture.SaveImage("users", fileName);
                 user.PicturePath = fileName;
-                using (var stream = new FileStream(file, FileMode.Create))
-                {
-                    edit.UserPicture.CopyTo(stream);
-                }
             }
             await this._userManager.UpdateAsync(user);
 
@@ -89,6 +85,7 @@ namespace Amozegar.Areas.Panel.Controllers
         }
 
         [HttpPost("Panel/Change-Password")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel change)
         {
             if (!ModelState.IsValid)
@@ -110,7 +107,36 @@ namespace Amozegar.Areas.Panel.Controllers
                 ModelState.AddModelError("Password", "تعویض پسورد موفقیت آمیز نبود. لطفا اطاعات را برسی کرده و دوباره تلاش کنید");
                 return View(change);
             }
+        }
 
+        [Route("Panel/Classes/{roleName}")]
+        public async Task<IActionResult> Classes(string roleName)
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (!(await _userManager.IsInRoleAsync(user, roleName)) || roleName == "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Panel" });
+            }
+            ViewBag.Role = roleName;
+            IEnumerable<ClassesViewModel> classes = new List<ClassesViewModel>();
+            if (roleName == "Teacher")
+            {
+                classes = await this._context.Classes
+                    .Where(classes => classes.TeacherId == user.Id)
+                    .Select(c => new ClassesViewModel
+                    {
+                        ClassId = c.ClassId,
+                        ClassImage = c.ClassImage,
+                        ClassName = c.ClassName,
+                        TeacherName = user.FullName,
+                        ClassIdentity = c.ClassIdentity
+                    }).ToListAsync();
+            }
+            else if (roleName == "Student")
+            {
+            }
+
+                return View(classes);
             
         }
 
