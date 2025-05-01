@@ -1,9 +1,8 @@
-# Build results
+
 **/bin/
 **/obj/
 **/node_modules/
 
-# IIS Express
 .vs/
 *.vspscc
 *.vssscc
