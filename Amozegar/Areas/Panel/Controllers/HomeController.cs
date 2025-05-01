@@ -55,7 +55,7 @@ namespace Amozegar.Areas.Panel.Controllers
             if(edit.UserPicture != null && edit.UserPicture.Length > 0)
             {
                 string fileName = user.Id + Path.GetExtension(edit.UserPicture.FileName);
-                await edit.UserPicture.SaveImage("users", fileName);
+                await edit.UserPicture.SaveImage(fileName, "users");
                 user.PicturePath = fileName;
             }
             await this._userManager.UpdateAsync(user);

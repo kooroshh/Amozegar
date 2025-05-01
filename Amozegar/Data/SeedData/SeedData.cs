@@ -1,5 +1,6 @@
 ﻿using Amozegar.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Amozegar.Data.SeedData
 {
@@ -7,16 +8,21 @@ namespace Amozegar.Data.SeedData
     {
         public static async Task InitializeAsync(IServiceProvider serviceProvider)
         {
-            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<UserRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
-
+            var context = serviceProvider.GetRequiredService<AmozegarContext>();
 
             string[] roleNames = { "Admin", "Teacher", "Student" };
+            string[] roleNamesPersian = { "ادمین", "معلم", "دانش آموز" };
             foreach (var roleName in roleNames)
             {
                 if (!await roleManager.RoleExistsAsync(roleName))
                 {
-                    await roleManager.CreateAsync(new IdentityRole(roleName));
+                    await roleManager.CreateAsync(new UserRole(
+                        roleName,
+                        roleNamesPersian[Array.IndexOf(roleNames, roleName)]
+                        )
+                        );
                 }
             }
             // Add Admin
@@ -79,6 +85,24 @@ namespace Amozegar.Data.SeedData
                     await userManager.AddToRoleAsync(studentUser, "Student");
                 }
             }
+
+            #region Add ClassStudents States
+
+            string[] states = { "Accepted", "Rejected", "Pending" };
+            string[] statesPersian = { "قبول شده", "قبول نشده", "در انتظار تأیید" };
+            foreach (var state in states)
+            {
+                if (!await context.ClassesStudentsStates.AnyAsync(css => css.State == state))
+                {
+                    await context.AddAsync(new ClassStudentState()
+                    {
+                        State = state,
+                        PersianState = statesPersian[Array.IndexOf(states, state)]
+                    });
+                }
+            }
+            context.SaveChanges();
+            #endregion
 
         }
     }

@@ -19,7 +19,7 @@ builder.Services.AddDbContext<AmozegarContext>(option =>
 });
 builder.Services.AddScoped<PasswordHasher<ClassRoam>>();
 
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<User, UserRole>()
     .AddEntityFrameworkStores<AmozegarContext>();
 
 builder.Services.Configure<IdentityOptions>(options =>

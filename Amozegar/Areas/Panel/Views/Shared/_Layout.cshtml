@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@inject RoleManager<UserRole> _roleManager
+@{
+    var roles = await _roleManager.Roles.ToListAsync();
+}
+
+<!DOCTYPE html>
 
 <html dir="rtl">
 <head>
@@ -44,29 +51,40 @@
                         <span>ویرایش پسورد</span>
                     </a>
 
-                    @if(User.IsInRole("Student"))
+                    @foreach (var role in roles)
                     {
-                        <a asp-action="Classes" asp-controller="Home" asp-area="Panel" asp-route-roleName="Student" class="menu-item">
-                            <i class="fas fa-user-cog"></i>
-                            <span>پنل دانش آموز</span>
-                        </a>
+                        @if (User.IsInRole(role.Name))
+                        {
+                            <a asp-action="Classes" asp-controller="Home" asp-area="Panel" asp-route-roleName="@role.Name" class="menu-item">
+                                <i class="fas fa-user-cog"></i>
+                                <span>پنل @role.PersianName</span>
+                            </a>
+                        }
                     }
 
-                    @if (User.IsInRole("Teacher"))
-                    {
-                        <a asp-action="Classes" asp-controller="Home" asp-area="Panel" asp-route-roleName="Teacher" class="menu-item">
-                            <i class="fas fa-user-cog"></i>
-                            <span>پنل معلم</span>
-                        </a>
-                    }
+                    @* @if(User.IsInRole("Student")) *@
+                    @* { *@
+                    @*     <a asp-action="Classes" asp-controller="Home" asp-area="Panel" asp-route-roleName="Student" class="menu-item"> *@
+                    @*         <i class="fas fa-user-cog"></i> *@
+                    @*         <span>پنل دانش آموز</span> *@
+                    @*     </a> *@
+                    @* } *@
 
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <a asp-action="Classes" asp-controller="Home" asp-area="Admin" class="menu-item">
-                            <i class="fas fa-user-cog"></i>
-                            <span>پنل ادمین</span>
-                        </a>
-                    }
+                    @* @if (User.IsInRole("Teacher")) *@
+                    @* { *@
+                    @*     <a asp-action="Classes" asp-controller="Home" asp-area="Panel" asp-route-roleName="Teacher" class="menu-item"> *@
+                    @*         <i class="fas fa-user-cog"></i> *@
+                    @*         <span>پنل معلم</span> *@
+                    @*     </a> *@
+                    @* } *@
+
+                    @* @if (User.IsInRole("Admin")) *@
+                    @* { *@
+                    @*     <a asp-action="Classes" asp-controller="Home" asp-area="Admin" class="menu-item"> *@
+                    @*         <i class="fas fa-user-cog"></i> *@
+                    @*         <span>پنل ادمین</span> *@
+                    @*     </a> *@
+                    @* } *@
 
                 </nav>
             </div>
