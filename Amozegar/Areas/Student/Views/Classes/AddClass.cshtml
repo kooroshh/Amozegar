@@ -14,11 +14,11 @@
                             <a asp-action="Index" asp-controller="Home">
                                 <img src="~/images/home/logo.png" alt="آموزگار" class="mb-4">
                             </a>
-                            <h2 class="fw-bold">ساخت کلاس در آموزگار</h2>
-                            <p class="text-muted">به جمع باکلاسان ما بپیوندید</p>
+                            <h2 class="fw-bold">ورود به کلاس</h2>
+                            <p class="text-muted">وارد شوید و به جمع همکلاسیان خود بپیوندید</p>
                         </div>
 
-                        <form method="post" novalidate enctype="multipart/form-data">
+                        <form method="post" novalidate>
                             @Html.AntiForgeryToken()
 
                             <div class="mb-4">
@@ -33,17 +33,6 @@
                             </div>
 
                             <div class="mb-4">
-                                <label asp-for="@Model.ClassName" class="form-label"></label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white">
-                                        <i class="fa-solid fa-book text-primary"></i>
-                                    </span>
-                                    <input asp-for="@Model.ClassName" class="form-control">
-                                </div>
-                                <span class="small text-danger" asp-validation-for="@Model.ClassName"></span>
-                            </div>
-
-                            <div class="mb-4">
                                 <label asp-for="@Model.ClassPassword" class="form-label"></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white">
@@ -54,34 +43,10 @@
                                 <span class="small text-danger" asp-validation-for="@Model.ClassPassword"></span>
                             </div>
 
-                            <div class="mb-4">
-                                <label asp-for="@Model.ConfirmPassword" class="form-label"></label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white">
-                                        <i class="fa-solid fa-lock text-primary"></i>
-                                    </span>
-                                    <input asp-for="@Model.ConfirmPassword" class="form-control">
-                                </div>
-                                <span class="small text-danger" asp-validation-for="@Model.ConfirmPassword"></span>
-                            </div>
-
-
-                            <div class="mb-4">
-                                <label asp-for="@Model.ClassImage" class="form-label"></label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white">
-                                        <i class="fa-solid fa-image text-primary"></i>
-                                    </span>
-                                    <input asp-for="@Model.ClassImage" class="form-control">
-                                </div>
-                                <span class="small text-danger" asp-validation-for="@Model.ClassImage"></span>
-                            </div>
-
-
 
                             <button type="submit" class="btn btn-primary w-100 py-3 mb-4">
                                 <i class="fa-solid fa-book"></i>
-                                ایجاد کلاس
+                                ورود به کلاس
                             </button>
                         </form>
                     </div>
@@ -97,3 +62,4 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+

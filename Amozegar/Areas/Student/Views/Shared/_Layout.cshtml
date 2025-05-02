@@ -1,10 +1,15 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using Microsoft.EntityFrameworkCore
-@inject RoleManager<UserRole> _roleManager
+﻿@using Amozegar.Data
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@inject AmozegarContext _context
+@inject UserManager<User> _userManager
 @{
-    var roles = await _roleManager.Roles.ToListAsync();
-}
+    var classIdentity = Context.GetRouteValue("classId")?.ToString();
+    var currentClass = _context.Classes
+    .Single(c => c.ClassIdentity == classIdentity);
+    var teacher = await _userManager.FindByIdAsync(currentClass.TeacherId);
 
+}
 <!DOCTYPE html>
 
 <html dir="rtl">
@@ -36,39 +41,36 @@
                 <nav>
                     <a class="menu-item" asp-action="Index" asp-controller="Home" asp-area="">
                         <i class="fas fa-home"></i>
-                        <span>خانه</span>
+                        <span>برگشت به خانه</span>
                     </a>
-                    <a asp-action="Index" asp-controller="Home" asp-area="Panel" class="menu-item @(ViewBag.Route == "Dashboard" ? "active" : "")">
+                    <a asp-action="Index" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "Dashboard" ? "active" : "")">
                         <i class="fas fa-tachometer-alt"></i>
                         <span>داشبورد</span>
                     </a>
-                    <a asp-action="EditInformations" asp-controller="Home" asp-area="Panel" class="menu-item @(ViewBag.Route == "Edit" ? "active" : "")">
+                    <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "Edit" ? "active" : "")">
                         <i class="fas fa-user-edit"></i>
-                        <span>ویرایش مشخصات</span>
+                        <span>تکالیف</span>
                     </a>
-                    <a asp-action="ChangePassword" asp-controller="Home" asp-area="Panel" class="menu-item @(ViewBag.Route == "ChangePassword" ? "active" : "")">
+                    <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "ChangePassword" ? "active" : "")">
                         <i class="fas fa-key"></i>
-                        <span>ویرایش پسورد</span>
+                        <span>امتحانات</span>
                     </a>
-
-                    @foreach (var role in roles)
-                    {
-                        @if (User.IsInRole(role.Name))
-                        {
-                            <a asp-action="Classes" asp-controller="Home" asp-area="Panel" asp-route-roleName="@role.Name" class="menu-item">
-                                <i class="fas fa-user-cog"></i>
-                                <span>پنل @role.PersianName</span>
-                            </a>
-                        }
-                    }
+                    <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "ChangePassword" ? "active" : "")">
+                        <i class="fas fa-key"></i>
+                        <span>همکلاسیان</span>
+                    </a>
+                    <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "ChangePassword" ? "active" : "")">
+                        <i class="fas fa-key"></i>
+                        <span>اعلانات</span>
+                    </a>
 
                 </nav>
             </div>
 
             <div class="sidebar-footer">
-                <a class="menu-item text-danger" asp-action="Logout" asp-controller="Account" asp-area="">
+                <a class="menu-item text-danger" asp-action="Classes" asp-controller="Home" asp-area="Panel" asp-route-roleName="Student">
                     <i class="fas fa-sign-out-alt"></i>
-                    <span>خروج از حساب کاربری</span>
+                    <span>خروج از کلاس</span>
                 </a>
             </div>
         </aside>
@@ -86,7 +88,23 @@
                             </div>
                             <div class="user-details">
                                 <h2 class="user-name">@(User.FindFirstValue("FullName"))</h2>
-                                <p class="user-username text-truncate">@(User.Identity?.Name)</p>
+                                <p class="user-username text-truncate text-md-start text-center">@(User.Identity?.Name)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container-fluid">
+                    <!-- User Info Header -->
+                    <div class="user-info-header">
+                        <div class="user-info-content">
+                            <div class="user-avatar">
+                                <img src="~/images/classes/@currentClass.ClassImage" alt="تصویر کاربر">
+                            </div>
+                            <div class="user-details">
+                                <h2 class="user-name">@currentClass.ClassName</h2>
+                                <p class="user-username text-truncate">ایدی کلاس : @currentClass.ClassIdentity</p>
+                                <p class="user-username text-truncate">نام مدرس : @teacher.FullName</p>
                             </div>
                         </div>
                     </div>

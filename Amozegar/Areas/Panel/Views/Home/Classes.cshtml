@@ -41,13 +41,12 @@
 				{
 					foreach(var item in Model)
 					{
-						<div class="class-item">
-							<a asp-action="Index"
-							asp-controller="Home"
-							asp-area="@ViewBag.Role"
-							asp-route-classId="@item.ClassIdentity"
-							)
-								class="class-info">
+						<div class="class-item @(item.ClassState != "Accepted" && ViewBag.Role != "Teacher" ? "bg-light" : "")">
+							<a asp-action="@(item.ClassState != "Accepted" && ViewBag.Role != "Teacher" ? "Classes" : "Index")"
+							   asp-controller="@(item.ClassState != "Accepted" && ViewBag.Role != "Teacher" ? "Home" : "Home")"
+							   asp-area="@(item.ClassState != "Accepted" && ViewBag.Role != "Teacher" ? "Panel" : $"{ViewBag.Role}")"
+							   asp-route-classId="@(item.ClassState != "Accepted" && ViewBag.Role != "Teacher" ? "" : $"{item.ClassIdentity}")"
+							   class="class-info">
 								<div class="class-avatar">
 									<img src="~/images/classes/@(item.ClassImage)" alt="@item.ClassName">
 								</div>
@@ -55,25 +54,43 @@
 									<h4 class="class-name">@item.ClassName</h4>
 									<p class="teacher-name">ایدی : @item.ClassIdentity</p>
 									<p class="teacher-name">استاد : @item.TeacherName</p>
+									@if(item.ClassState != null)
+									{
+										<p class="teacher-name">وضعیت شما : @item.ClassStatePersian</p>
+									}
 								</div>
-							</a	()>
+							</a>
 							<div class="class-actions">
-								<a class="btn btn-danger btn-sm"
-								asp-action="DeleteClass"
-								asp-controller="Classes"
-								asp-area="Teacher"
-								asp-route-classId="@item.ClassId">
-									<i class="fas fa-trash me-1"></i>
-									حذف کلاس
-								</a>
-								<a class="btn btn-warning btn-sm"
-								   asp-action="EditClass"
-								   asp-controller="Classes"
-								   asp-area="Teacher"
-								   asp-route-classId="@item.ClassId">
-									<i class="fas fa-pencil-alt me-1"></i>
-									ویرایش کلاس
-								</a>
+								@if(ViewBag.Role == "Teacher")
+								{
+									<a class="btn btn-danger btn-sm"
+										asp-action="DeleteClass"
+										asp-controller="Classes"
+										asp-area="Teacher"
+										asp-route-classId="@item.ClassId">
+										<i class="fas fa-trash me-1"></i>
+										حذف کلاس
+									</a>
+									<a class="btn btn-warning btn-sm"
+									   asp-action="EditClass"
+									   asp-controller="Classes"
+									   asp-area="Teacher"
+									   asp-route-classId="@item.ClassId">
+										<i class="fas fa-pencil-alt me-1"></i>
+										ویرایش کلاس
+									</a>
+								}
+								else if (item.ClassState == "Accepted")
+								{
+									<a class="btn btn-danger btn-sm"
+										asp-action="DeleteClass"
+										asp-controller="Classes"
+										asp-area="Student"
+										asp-route-classId="@item.ClassId">
+										<i class="fa-solid fa-right-from-bracket"></i>
+										ترک کلاس
+									</a>
+								}
 							</div>
 						</div>
 					}

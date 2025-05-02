@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 
 namespace Amozegar.Areas.Panel.Controllers
 {
@@ -119,10 +120,13 @@ namespace Amozegar.Areas.Panel.Controllers
             }
             ViewBag.Role = roleName;
             IEnumerable<ClassesViewModel> classes = new List<ClassesViewModel>();
+
+
             if (roleName == "Teacher")
             {
                 classes = await this._context.Classes
-                    .Where(classes => classes.TeacherId == user.Id)
+                .Include(c => c.ClassState)
+                    .Where(classes => classes.TeacherId == user.Id && classes.ClassState.State == "Active")
                     .Select(c => new ClassesViewModel
                     {
                         ClassId = c.ClassId,
@@ -134,6 +138,25 @@ namespace Amozegar.Areas.Panel.Controllers
             }
             else if (roleName == "Student")
             {
+                classes = await this._context.Classes
+                    .Include(c => c.ClassState)
+                    .Where(c => c.ClassState.State == "Active")
+                    .Include(c => c.StudentToClasses)
+                    .ThenInclude(cl => cl.State)
+                    .Where(cls => cls.StudentToClasses.
+                        Single(stc => stc.StudentId == user.Id).ClassId == cls.ClassId &&
+                        cls.StudentToClasses.Single(stc => stc.StudentId == user.Id && stc.ClassId == cls.ClassId).State.State != "Dropped"
+                    )
+                    .Select(classes => new ClassesViewModel()
+                    {
+                        ClassId = classes.ClassId,
+                        ClassIdentity = classes.ClassIdentity,
+                        ClassImage = classes.ClassImage,
+                        ClassName = classes.ClassName,
+                        TeacherName = this._userManager.FindByIdAsync(classes.TeacherId).Result.FullName,
+                        ClassState = classes.StudentToClasses.Single(stc => stc.StudentId == user.Id && stc.ClassId == classes.ClassId).State.State,
+                        ClassStatePersian = classes.StudentToClasses.Single(stc => stc.StudentId == user.Id && stc.ClassId == classes.ClassId).State.PersianState
+                    }).ToListAsync();
             }
 
                 return View(classes);

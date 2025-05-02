@@ -88,22 +88,41 @@ namespace Amozegar.Data.SeedData
 
             #region Add ClassStudents States
 
-            string[] states = { "Accepted", "Rejected", "Pending" };
-            string[] statesPersian = { "قبول شده", "قبول نشده", "در انتظار تأیید" };
-            foreach (var state in states)
-            {
-                if (!await context.ClassesStudentsStates.AnyAsync(css => css.State == state))
+                string[] StudentsStates = { "Accepted", "Rejected", "Pending", "Dropped", "Banned" };
+                string[] StudentsStatesPersian = { "قبول شده", "قبول نشده", "در انتظار تأیید", "ترک کرده", "بن شده" };
+                foreach (var state in StudentsStates)
                 {
-                    await context.AddAsync(new ClassStudentState()
+                    if (!await context.ClassesStudentsStates.AnyAsync(css => css.State == state))
                     {
-                        State = state,
-                        PersianState = statesPersian[Array.IndexOf(states, state)]
-                    });
+                        await context.AddAsync(new ClassStudentState()
+                        {
+                            State = state,
+                            PersianState = StudentsStatesPersian[Array.IndexOf(StudentsStates, state)]
+                        });
+                    }
                 }
-            }
-            context.SaveChanges();
+                context.SaveChanges();
+
             #endregion
 
+            #region
+
+                string[] classStates = { "Active", "Banned", "Deleted" };
+                string[] classStatesPersian = { "فعال", "بن شده", "حذف شده" };
+                foreach (var state in classStates)
+                {
+                    if (!await context.ClassesStates.AnyAsync(cs => cs.State == state))
+                    {
+                        await context.AddAsync(new ClassStates()
+                        {
+                            State = state,
+                            PersianState = classStatesPersian[Array.IndexOf(classStates, state)]
+                        });
+                    }
+                }
+                context.SaveChanges();
+
+            #endregion
         }
     }
 }

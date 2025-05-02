@@ -7,5 +7,7 @@
         public string TeacherName { get; set; }
         public string ClassImage { get; set; }
         public string ClassIdentity { get; set; }
+        public string? ClassState { get; set; }
+        public string? ClassStatePersian { get; set; }
     }
 }

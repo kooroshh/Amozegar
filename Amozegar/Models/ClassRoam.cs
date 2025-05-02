@@ -24,12 +24,18 @@ namespace Amozegar.Models
         [MaxLength(255)]
         public string ClassPassword { get; set; }
         [MaxLength(255)]
-        public string ?ClassImage { get; set; }
+        public string? ClassImage { get; set; }
 
         public DateTime? Date { get; set; }
 
+        public int? CLassStateId { get; set; }
+
         public ICollection<ClassStudents> StudentToClasses { get; set; }
+
         [ForeignKey("TeacherId")]
         public User Teacher { get; set; }
+
+        [ForeignKey("CLassStateId")]
+        public ClassStates ClassState { get; set; }
     }
 }

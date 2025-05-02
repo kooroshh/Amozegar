@@ -15,6 +15,7 @@ namespace Amozegar.Data
         public DbSet<ClassRoam> Classes { get; set; }
         public DbSet<ClassStudents> ClassesStudents { get; set; }
         public DbSet<ClassStudentState> ClassesStudentsStates { get; set; }
+        public DbSet<ClassStates> ClassesStates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

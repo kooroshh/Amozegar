@@ -49,7 +49,7 @@ namespace Amozegar.Controllers
                     Subject = report.Subject,
                     Date = DateTime.Now
                 });
-                this._context.SaveChanges();
+                await this._context.SaveChangesAsync();
                 ViewBag.State = "Success";
             }
             catch

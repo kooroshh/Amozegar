@@ -1,0 +1,177 @@
+﻿using Amozegar.Areas.Student.Models;
+using Amozegar.Data;
+using Amozegar.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace Amozegar.Areas.Student.Controllers
+{
+    [Area("Student")]
+    [Authorize(Roles = "Student")]
+    [Route("Panel/Student/Classes")]
+    public class ClassesController : Controller
+    {
+
+        private AmozegarContext _context;
+        private UserManager<User> _userManager;
+        private PasswordHasher<ClassRoam> _passwordHasher;
+
+        public ClassesController(AmozegarContext context,
+            PasswordHasher<ClassRoam> passwordHasher,
+            UserManager<User> userManager
+            )
+        {
+            this._context = context;
+            this._passwordHasher = passwordHasher;
+            this._userManager = userManager;
+        }
+
+        private async Task<ClassRoam?> checkUserIsInClass(int classId)
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var exisitClass = await this._context.Classes
+                .Include(c => c.ClassState)
+                .Include(c => c.StudentToClasses)
+                .ThenInclude(cl => cl.State)
+                .SingleOrDefaultAsync(
+                cls => cls.ClassId == classId &&
+                cls.ClassState.State == "Active" &&
+                cls.StudentToClasses.Any(
+                    stc => stc.StudentId == user.Id && stc.ClassId == classId && stc.State.State == "Accepted"
+                ));
+            return exisitClass;
+        }
+
+
+        [Route("Add-Class")]
+        public IActionResult AddClass()
+        {
+            return View();
+        }
+
+        [HttpPost("Add-Class")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddClass(AddClassViewModel addClass)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(addClass);
+            }
+
+            var existClass = await this._context.Classes
+                .Include(c => c.ClassState)
+                .SingleOrDefaultAsync(c => c.ClassIdentity == addClass.ClassIdentity && c.ClassState.State == "Active");
+
+            if (existClass == null)
+            {
+                ModelState.AddModelError("ClassIdentity", "چنین کلاسی وجود ندارد. لطفا اطلاعات را دوباره برسی نمایید");
+                return View(addClass);
+            }
+            var result = this._passwordHasher.VerifyHashedPassword(existClass, existClass.ClassPassword,  addClass.ClassPassword);
+            if (result == PasswordVerificationResult.Failed)
+            {
+                ModelState.AddModelError("ClassPassword", "اطلاعات همخوانی ندارند");
+                return View(addClass);
+            }
+
+
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var isNew = await this._context.ClassesStudents
+                .Include(cs => cs.State)
+                .SingleOrDefaultAsync(cs => cs.ClassId == existClass.ClassId && cs.StudentId == user.Id);
+
+            var pendingState = await _context.ClassesStudentsStates
+                .SingleAsync(css => css.State == "Pending");
+
+            if (isNew == null)
+            {
+
+
+                var ClassStudent = new ClassStudents()
+                {
+                    ClassId = existClass.ClassId,
+                    StudentId = user.Id,
+                    User = user,
+                    Class = existClass,
+                    State = pendingState,
+                    ClassStudentStateId = pendingState.id
+                };
+
+                await this._context.AddAsync(ClassStudent);
+            }
+            else // User is in class with deferents state
+            {
+                var userState = isNew.State;
+                if (
+                    userState.State == "Accepted" ||
+                    userState.State == "Banned" ||
+                    userState.State == "Pending"
+                    )
+                {
+                    ModelState.AddModelError("ClassIdentity", "امکان ورود به این کلاس برای شما وجود ندارد");
+                    return View(addClass);
+                }
+
+                isNew.ClassStudentStateId = pendingState.id;
+                isNew.State = pendingState;
+
+                this._context.Update(isNew);
+            }
+
+
+            await this._context.SaveChangesAsync();
+
+            return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Student" });
+        }
+
+        [Route("Delete-Class/{classId}")]
+        public async Task<IActionResult> DeleteClass(int classId)
+        {
+
+            var exisitClass = await this.checkUserIsInClass(classId);
+
+            if (exisitClass == null)
+            {
+                return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Student" });
+            }
+            var classModel = new DeleteClassViewModel()
+            {
+                ClassName = exisitClass.ClassName,
+                ClassId = exisitClass.ClassId
+            };
+            return View(classModel);
+        }
+
+        [HttpPost("Delete-Class/{classId}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteClass(DeleteClassViewModel deleteClass)
+        {
+            var exisitClass = await this.checkUserIsInClass(deleteClass.ClassId);
+            if (exisitClass == null)
+            {
+                return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Student" });
+            }
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+
+            var deleteStudent = exisitClass.StudentToClasses
+                .Single(stc => stc.StudentId == user.Id && stc.ClassId == exisitClass.ClassId);
+
+
+            var deleteState = await _context.ClassesStudentsStates.SingleAsync(css => css.State == "Dropped");
+
+            deleteStudent.ClassStudentStateId = deleteState.id;
+
+            deleteStudent.State = deleteState;
+
+            this._context.ClassesStudents.Update(deleteStudent);
+
+            await this._context.SaveChangesAsync();
+
+            return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Student" });
+        }
+
+    }
+}

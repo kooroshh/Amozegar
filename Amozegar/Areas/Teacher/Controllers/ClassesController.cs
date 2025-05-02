@@ -30,6 +30,16 @@ namespace Amozegar.Areas.Teacher.Controllers
             this._passwordHasher = passwordHasher;
         }
 
+        private async Task<ClassRoam?> isClassExistForTeacher(int classId)
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var exisitClass = await this._context.Classes
+                .Include(c => c.ClassState)
+                .SingleOrDefaultAsync(c => c.TeacherId == user.Id && c.ClassId == classId && c.ClassState.State == "Active");
+            return exisitClass;
+        }
+
+
         [Route("Add-Class")]
         public IActionResult AddClass()
         {
@@ -46,7 +56,8 @@ namespace Amozegar.Areas.Teacher.Controllers
                 return View(addClass);
             }
 
-            var IsClassExisit = await this._context.Classes.AnyAsync(c => c.ClassIdentity == addClass.ClassIdentity);
+            var IsClassExisit = await this._context.Classes
+                .AnyAsync(c => c.ClassIdentity == addClass.ClassIdentity);
 
             if (IsClassExisit)
             {
@@ -55,6 +66,8 @@ namespace Amozegar.Areas.Teacher.Controllers
             }
 
             var teacher = await _userManager.FindByNameAsync(User.Identity.Name);
+            var activeState = await this._context.ClassesStates
+                .SingleAsync(cs => cs.State == "Active");
 
             var newClass = new ClassRoam()
             {
@@ -62,6 +75,8 @@ namespace Amozegar.Areas.Teacher.Controllers
                 TeacherId = teacher.Id,
                 Teacher = teacher,
                 ClassIdentity = addClass.ClassIdentity,
+                ClassState = activeState,
+                CLassStateId = activeState.id
             };
 
             var hashedPassword = _passwordHasher.HashPassword(newClass, addClass.ClassPassword);
@@ -69,7 +84,7 @@ namespace Amozegar.Areas.Teacher.Controllers
             newClass.ClassPassword = hashedPassword;
 
             await this._context.AddAsync(newClass);
-            this._context.SaveChanges();
+            await this._context.SaveChangesAsync();
 
             if (addClass.ClassImage != null && addClass.ClassImage.Length > 0)
             {
@@ -77,7 +92,7 @@ namespace Amozegar.Areas.Teacher.Controllers
                 await addClass.ClassImage.SaveImage(fileName, "classes");
                 newClass.ClassImage = fileName;
                 this._context.Classes.Update(newClass);
-                this._context.SaveChanges();
+                await this._context.SaveChangesAsync();
             }
 
             return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher" });
@@ -87,17 +102,17 @@ namespace Amozegar.Areas.Teacher.Controllers
         [Route("Delete-Class/{classId}")]
         public async Task<IActionResult> DeleteClass(int classId)
         {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var exisitClass = await this._context.Classes
-                .SingleOrDefaultAsync(c => c.TeacherId == user.Id && c.ClassId == classId);
-            if(exisitClass == null)
+            var existClass = await this.isClassExistForTeacher(classId);
+
+            if (existClass == null)
             {
                 return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher" });
             }
+
             var classModel = new DeleteClassViewModel()
             {
-                ClassName = exisitClass.ClassName,
-                ClassId = exisitClass.ClassId
+                ClassName = existClass.ClassName,
+                ClassId = existClass.ClassId
             };
             return View(classModel);
         }
@@ -107,35 +122,39 @@ namespace Amozegar.Areas.Teacher.Controllers
         public async Task<IActionResult> DeleteClass(DeleteClassViewModel deleteClass)
         {
 
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var exisitClass = await this._context.Classes
-                .SingleOrDefaultAsync(c => c.TeacherId == user.Id && c.ClassId == deleteClass.ClassId);
-            if (exisitClass == null)
+            var existClass = await this.isClassExistForTeacher(deleteClass.ClassId);
+
+            if (existClass == null)
             {
                 return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher" });
             }
 
-            return Content($"Deleted {deleteClass.ClassId}");
+            var deleteState = await this._context.ClassesStates.SingleAsync(cs => cs.State == "Deleted");
+
+            existClass.CLassStateId = deleteState.id;
+            existClass.ClassState = deleteState;
+            await this._context.SaveChangesAsync();
+
+
+            return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher" });
         }
 
 
         [Route("Edit-Class/{classId}")]
         public async Task<IActionResult> EditClass(int classId)
         {
-            var user = await this._userManager.FindByNameAsync(User.Identity.Name);
+            var existClass = await this.isClassExistForTeacher(classId);
 
-            var exisitClass = await this._context.Classes
-                .SingleOrDefaultAsync(c => c.TeacherId == user.Id && c.ClassId == classId);
-            if (exisitClass == null)
+            if (existClass == null)
             {
                 return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher" });
             }
 
             var editClass = new EditClassViewModel()
             {
-                ClassIdentity = exisitClass.ClassIdentity,
-                ClassName = exisitClass.ClassName,
-                ImagePath = exisitClass.ClassImage
+                ClassIdentity = existClass.ClassIdentity,
+                ClassName = existClass.ClassName,
+                ImagePath = existClass.ClassImage
             };
             return View(editClass);
         }
@@ -149,15 +168,14 @@ namespace Amozegar.Areas.Teacher.Controllers
                 return View(editClass);
             }
 
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var exisitClass = await this._context.Classes
-                .SingleOrDefaultAsync(c => c.TeacherId == user.Id && c.ClassId == classId);
-            if (exisitClass == null)
+            var existClass = await this.isClassExistForTeacher(classId);
+
+            if (existClass == null)
             {
                 return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher" });
             }
 
-            var IsClassExisit = await this._context.Classes.AnyAsync(c => c.ClassIdentity == editClass.ClassIdentity && c.ClassIdentity != exisitClass.ClassIdentity);
+            var IsClassExisit = await this._context.Classes.AnyAsync(c => c.ClassIdentity == editClass.ClassIdentity && c.ClassIdentity != existClass.ClassIdentity);
 
             if (IsClassExisit)
             {
@@ -166,22 +184,22 @@ namespace Amozegar.Areas.Teacher.Controllers
             }
 
 
-            exisitClass.ClassName = editClass.ClassName;
-            exisitClass.ClassIdentity = editClass.ClassIdentity;
+            existClass.ClassName = editClass.ClassName;
+            existClass.ClassIdentity = editClass.ClassIdentity;
             
             if (editClass.ClassPassword != null)
             {
-                string hashedPassword = this._passwordHasher.HashPassword(exisitClass, editClass.ClassPassword);
-                exisitClass.ClassPassword = hashedPassword;
+                string hashedPassword = this._passwordHasher.HashPassword(existClass, editClass.ClassPassword);
+                existClass.ClassPassword = hashedPassword;
             }
-            this._context.SaveChanges();
+            await this._context.SaveChangesAsync();
             if (editClass.ClassImage != null && editClass.ClassImage.Length > 0)
             {
-                string fileName = exisitClass.ClassId + Path.GetExtension(editClass.ClassImage.FileName);
+                string fileName = existClass.ClassId + Path.GetExtension(editClass.ClassImage.FileName);
                 await editClass.ClassImage.SaveImage(fileName, "classes");
-                exisitClass.ClassImage = fileName;
-                this._context.Classes.Update(exisitClass);
-                this._context.SaveChanges();
+                existClass.ClassImage = fileName;
+                this._context.Classes.Update(existClass);
+                await this._context.SaveChangesAsync();
             }
 
 
