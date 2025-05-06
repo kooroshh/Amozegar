@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Amozegar.Areas.Panel.Models;
 using Amozegar.Data;
+using Amozegar.Data.UnitOfWork;
 using Amozegar.Models;
 using Amozegar.Utilities;
 using Microsoft.AspNetCore.Authorization;
@@ -19,9 +20,12 @@ namespace Amozegar.Areas.Panel.Controllers
 
         private UserManager<User> _userManager;
         private SignInManager<User> _signInManager;
-        private AmozegarContext _context;
+        private IUnitOfWork _context;
 
-        public HomeController(UserManager<User> userManager, SignInManager<User> signInManager, AmozegarContext context)
+        public HomeController(
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
+            IUnitOfWork context)
         {
             this._userManager = userManager;
             this._signInManager = signInManager;
@@ -124,39 +128,13 @@ namespace Amozegar.Areas.Panel.Controllers
 
             if (roleName == "Teacher")
             {
-                classes = await this._context.Classes
-                .Include(c => c.ClassState)
-                    .Where(classes => classes.TeacherId == user.Id && classes.ClassState.State == "Active")
-                    .Select(c => new ClassesViewModel
-                    {
-                        ClassId = c.ClassId,
-                        ClassImage = c.ClassImage,
-                        ClassName = c.ClassName,
-                        TeacherName = user.FullName,
-                        ClassIdentity = c.ClassIdentity
-                    }).ToListAsync();
+                classes = await this._context.ClassesRepository.GetTeachersClasses(user);
             }
             else if (roleName == "Student")
             {
-                classes = await this._context.Classes
-                    .Include(c => c.ClassState)
-                    .Where(c => c.ClassState.State == "Active")
-                    .Include(c => c.StudentToClasses)
-                    .ThenInclude(cl => cl.State)
-                    .Where(cls => cls.StudentToClasses.
-                        Single(stc => stc.StudentId == user.Id).ClassId == cls.ClassId &&
-                        cls.StudentToClasses.Single(stc => stc.StudentId == user.Id && stc.ClassId == cls.ClassId).State.State != "Dropped"
-                    )
-                    .Select(classes => new ClassesViewModel()
-                    {
-                        ClassId = classes.ClassId,
-                        ClassIdentity = classes.ClassIdentity,
-                        ClassImage = classes.ClassImage,
-                        ClassName = classes.ClassName,
-                        TeacherName = this._userManager.FindByIdAsync(classes.TeacherId).Result.FullName,
-                        ClassState = classes.StudentToClasses.Single(stc => stc.StudentId == user.Id && stc.ClassId == classes.ClassId).State.State,
-                        ClassStatePersian = classes.StudentToClasses.Single(stc => stc.StudentId == user.Id && stc.ClassId == classes.ClassId).State.PersianState
-                    }).ToListAsync();
+
+                classes = await this._context.ClassesRepository.GetStudentsClasses(user);
+
             }
 
                 return View(classes);

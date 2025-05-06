@@ -1,14 +1,4 @@
-﻿@using Amozegar.Data
-@inject AmozegarContext _context
-@inject UserManager<User> _userManager
-@{
-    var classIdentity = Context.GetRouteValue("classId")?.ToString();
-    var currentClass = _context.Classes
-    .Single(c => c.ClassIdentity == classIdentity);
-    var teacher = await _userManager.FindByIdAsync(currentClass.TeacherId);
-
-}
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html dir="rtl">
 <head>
@@ -41,13 +31,13 @@
                         <i class="fas fa-home"></i>
                         <span>برگشت به خانه</span>
                     </a>
-                    <a asp-action="Index" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "Dashboard" ? "active" : "")">
+                    <a asp-action="Index" asp-controller="Home" asp-area="Teacher" asp-route-classId="@ViewBag.ClassId" class="menu-item @(ViewBag.Route == "Dashboard" ? "active" : "")">
                         <i class="fas fa-tachometer-alt"></i>
                         <span>داشبورد</span>
                     </a>
-                    <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "Edit" ? "active" : "")">
-                        <i class="fas fa-user-edit"></i>
-                        <span>دانش آموزان</span>
+                    <a asp-action="LoginsToClass" asp-controller="Home" asp-area="Teacher" asp-route-classId="@ViewBag.ClassId" class="menu-item @(ViewBag.Route == "LoginsToClass" ? "active" : "")">
+                        <i class="fa-solid fa-book-tanakh"></i>
+                        <span>درخواست های ورود <partial name="~/Areas/Teacher/Views/PartialsViews/StudentRequestCount.cshtml" model="@ViewBag.classId" /></span>
                     </a>
                     <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "ChangePassword" ? "active" : "")">
                         <i class="fas fa-key"></i>
@@ -77,21 +67,7 @@
         <main class="main-content">
             <div class="container-fluid py-4">
 
-                <div class="container-fluid">
-                    <!-- User Info Header -->
-                    <div class="user-info-header">
-                        <div class="user-info-content">
-                            <div class="user-avatar">
-                                <img src="~/images/classes/@currentClass.ClassImage" alt="تصویر کاربر">
-                            </div>
-                            <div class="user-details">
-                                <h2 class="user-name">@currentClass.ClassName</h2>
-                                <p class="user-username text-truncate">ایدی کلاس : @currentClass.ClassIdentity</p>
-                                <p class="user-username text-truncate">نام مدرس : @teacher.FullName</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <partial name="~/Areas/PartialViews/ClassDetails.cshtml" model="@ViewBag.classId" />
 
                 @RenderBody()
             </div>

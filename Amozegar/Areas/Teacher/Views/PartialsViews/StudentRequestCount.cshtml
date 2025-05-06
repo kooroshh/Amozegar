@@ -1,0 +1,13 @@
+﻿@model string
+@using Amozegar.Data
+@using Amozegar.Data.UnitOfWork
+@using Microsoft.EntityFrameworkCore
+@inject IUnitOfWork _context
+@{
+    var studentRequestCount = await _context.ClassesRepository.GetClassStudentsRequestsCountAsync(Model);
+}
+
+@if(studentRequestCount > 0)
+{
+    <span class="badge text-bg-primary">@studentRequestCount</span>
+}

@@ -1,26 +1,26 @@
 ﻿using Amozegar.Areas.Teacher.Models;
 using Amozegar.Data;
+using Amozegar.Data.UnitOfWork;
 using Amozegar.Models;
 using Amozegar.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 namespace Amozegar.Areas.Teacher.Controllers
 {
+    [Route("Panel/Teacher/Classes")]
     [Area("Teacher")]
     [Authorize(Roles = "Teacher")]
-    [Route("Panel/Teacher/Classes")]
     public class ClassesController : Controller
     {
-        private AmozegarContext _context;
+        private IUnitOfWork _context;
         private UserManager<User> _userManager;
         private PasswordHasher<ClassRoam> _passwordHasher;
 
         public ClassesController(
-            AmozegarContext context,
+            IUnitOfWork context,
             UserManager<User> userManager,
             PasswordHasher<ClassRoam> passwordHasher
         )
@@ -32,11 +32,8 @@ namespace Amozegar.Areas.Teacher.Controllers
 
         private async Task<ClassRoam?> isClassExistForTeacher(int classId)
         {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var exisitClass = await this._context.Classes
-                .Include(c => c.ClassState)
-                .SingleOrDefaultAsync(c => c.TeacherId == user.Id && c.ClassId == classId && c.ClassState.State == "Active");
-            return exisitClass;
+            var existClass = await this._context.ClassesRepository.GetClassByIdAndState(classId, User.Identity.Name, "Active");
+            return existClass;
         }
 
 
@@ -56,7 +53,7 @@ namespace Amozegar.Areas.Teacher.Controllers
                 return View(addClass);
             }
 
-            var IsClassExisit = await this._context.Classes
+            var IsClassExisit = await this._context.ClassesRepository
                 .AnyAsync(c => c.ClassIdentity == addClass.ClassIdentity);
 
             if (IsClassExisit)
@@ -66,8 +63,8 @@ namespace Amozegar.Areas.Teacher.Controllers
             }
 
             var teacher = await _userManager.FindByNameAsync(User.Identity.Name);
-            var activeState = await this._context.ClassesStates
-                .SingleAsync(cs => cs.State == "Active");
+            var activeState = await this._context.ClassStateRepository
+                .GetClassStateByStateAsync("Active");
 
             var newClass = new ClassRoam()
             {
@@ -83,7 +80,7 @@ namespace Amozegar.Areas.Teacher.Controllers
 
             newClass.ClassPassword = hashedPassword;
 
-            await this._context.AddAsync(newClass);
+            await this._context.ClassesRepository.AddAsync(newClass);
             await this._context.SaveChangesAsync();
 
             if (addClass.ClassImage != null && addClass.ClassImage.Length > 0)
@@ -91,7 +88,7 @@ namespace Amozegar.Areas.Teacher.Controllers
                 string fileName = newClass.ClassId + Path.GetExtension(addClass.ClassImage.FileName);
                 await addClass.ClassImage.SaveImage(fileName, "classes");
                 newClass.ClassImage = fileName;
-                this._context.Classes.Update(newClass);
+                this._context.ClassesRepository.Update(newClass);
                 await this._context.SaveChangesAsync();
             }
 
@@ -129,7 +126,7 @@ namespace Amozegar.Areas.Teacher.Controllers
                 return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher" });
             }
 
-            var deleteState = await this._context.ClassesStates.SingleAsync(cs => cs.State == "Deleted");
+            var deleteState = await this._context.ClassStateRepository.GetClassStateByStateAsync("Deleted");
 
             existClass.CLassStateId = deleteState.id;
             existClass.ClassState = deleteState;
@@ -175,7 +172,8 @@ namespace Amozegar.Areas.Teacher.Controllers
                 return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher" });
             }
 
-            var IsClassExisit = await this._context.Classes.AnyAsync(c => c.ClassIdentity == editClass.ClassIdentity && c.ClassIdentity != existClass.ClassIdentity);
+            var IsClassExisit = await this._context.ClassesRepository
+                .AnyAsync(c => c.ClassIdentity == editClass.ClassIdentity && c.ClassIdentity != existClass.ClassIdentity);
 
             if (IsClassExisit)
             {
@@ -198,7 +196,7 @@ namespace Amozegar.Areas.Teacher.Controllers
                 string fileName = existClass.ClassId + Path.GetExtension(editClass.ClassImage.FileName);
                 await editClass.ClassImage.SaveImage(fileName, "classes");
                 existClass.ClassImage = fileName;
-                this._context.Classes.Update(existClass);
+                this._context.ClassesRepository.Update(existClass);
                 await this._context.SaveChangesAsync();
             }
 

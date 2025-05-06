@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Amozegar.Data;
+using Amozegar.Data.UnitOfWork;
 using Amozegar.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,10 +8,10 @@ namespace Amozegar.Controllers
 {
     public class HomeController : Controller
     {
-        private AmozegarContext _context;
-        public HomeController(AmozegarContext context)
+        private IUnitOfWork _unitOfWork;
+        public HomeController(IUnitOfWork context)
         {
-            this._context = context;
+            this._unitOfWork = context;
         }
 
         public IActionResult Index()
@@ -40,7 +41,7 @@ namespace Amozegar.Controllers
 
             try
             {
-                await this._context.Reports.AddAsync(new Report()
+                await this._unitOfWork.ReportRepository.AddAsync(new Report()
                 {
                     Email = report.Email,
                     FullName = report.FullName,
@@ -49,7 +50,7 @@ namespace Amozegar.Controllers
                     Subject = report.Subject,
                     Date = DateTime.Now
                 });
-                await this._context.SaveChangesAsync();
+                await this._unitOfWork.SaveChangesAsync();
                 ViewBag.State = "Success";
             }
             catch

@@ -1,0 +1,73 @@
+﻿@model IEnumerable<AddStudentViewModel>
+@{
+    ViewData["Title"] = "درخواست های ورود به کلاس";
+}
+
+<div class="container-fluid">
+
+    @if(Model.Count() > 0)
+    {
+        <!-- Users List -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h3 class="card-title mb-4">لیست درخواست ها</h3>
+
+                <div class="users-list">
+
+                    @foreach(var item in Model)
+                    {
+                        <div class="user-item">
+                            <div class="user-info">
+                                <div class="user-avatar">
+                                    <img src="~/images/users/@item.StudentImage" alt="تصویر کاربر">
+                                </div>
+                                <div class="user-details">
+                                    <h4 class="user-name">@item.StudentName</h4>
+                                    <p class="user-email">@item.StudentEmail</p>
+                                </div>
+                            </div>
+                            <div class="user-actions">
+                                <a asp-action="Accept"
+                                   asp-controller="Students"
+                                   asp-area="Teacher"
+                                   asp-route-classId="@ViewBag.classId"
+                                   asp-route-studentInClassId="@item.StudentInClassId"
+                                   class="btn btn-success btn-sm">
+                                    <i class="fas fa-check me-1"></i>
+                                    قبول کردن
+                                </a>
+                                <a asp-action="Reject"
+                                   asp-controller="Students"
+                                   asp-area="Teacher"
+                                   asp-route-classId="@ViewBag.classId"
+                                   asp-route-studentInClassId="@item.StudentInClassId"
+                                   class="btn btn-warning btn-sm">
+                                    <i class="fa-solid fa-xmark me-1"></i>
+                                    رد کردن
+                                </a>
+                                <a asp-action="ban"
+                                   asp-controller="Students"
+                                   asp-area="Teacher"
+                                   asp-route-classId="@ViewBag.classId"
+                                   asp-route-studentInClassId="@item.StudentInClassId"
+                                   class="btn btn-danger btn-sm">
+                                    <i class="fa-solid fa-ban me-1"></i>
+                                    بن کردن
+                                </a>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            توجه. هیچ درخواستی موجود نمیباشد
+        </div>
+    }
+
+</div>
+

@@ -1,6 +1,7 @@
 using System.IO;
 using Amozegar.Data;
 using Amozegar.Data.SeedData;
+using Amozegar.Data.UnitOfWork;
 using Amozegar.Factory;
 using Amozegar.Models;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +19,7 @@ builder.Services.AddDbContext<AmozegarContext>(option =>
     option.UseSqlServer("Data Source=.; Initial Catalog=Amozegar_DB; Integrated Security=true; TrustServerCertificate=True");
 });
 builder.Services.AddScoped<PasswordHasher<ClassRoam>>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddIdentity<User, UserRole>()
     .AddEntityFrameworkStores<AmozegarContext>();

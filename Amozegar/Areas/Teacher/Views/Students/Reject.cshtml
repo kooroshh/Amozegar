@@ -1,0 +1,16 @@
+﻿@model StudentsActionsViewModel
+@{
+    ViewData["Title"] = "رد درخواست ورود";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-2">
+    <div class="alert alert-warning">
+        آیا از رد درخواست دانش آموز با نام @Model.StudentName اطمینان دارید؟
+        <form method="post" class="my-3">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(s => s.StudentInClassId)
+            <button type="submit" class="btn btn-warning">رد کردن</button>
+        </form>
+    </div>
+</div>

@@ -1,15 +1,7 @@
-﻿@using Amozegar.Data
+﻿@using System.Security.Claims
 @using Microsoft.AspNetCore.Identity
-@using System.Security.Claims
-@inject AmozegarContext _context
 @inject UserManager<User> _userManager
-@{
-    var classIdentity = Context.GetRouteValue("classId")?.ToString();
-    var currentClass = _context.Classes
-    .Single(c => c.ClassIdentity == classIdentity);
-    var teacher = await _userManager.FindByIdAsync(currentClass.TeacherId);
 
-}
 <!DOCTYPE html>
 
 <html dir="rtl">
@@ -94,21 +86,7 @@
                     </div>
                 </div>
 
-                <div class="container-fluid">
-                    <!-- User Info Header -->
-                    <div class="user-info-header">
-                        <div class="user-info-content">
-                            <div class="user-avatar">
-                                <img src="~/images/classes/@currentClass.ClassImage" alt="تصویر کاربر">
-                            </div>
-                            <div class="user-details">
-                                <h2 class="user-name">@currentClass.ClassName</h2>
-                                <p class="user-username text-truncate">ایدی کلاس : @currentClass.ClassIdentity</p>
-                                <p class="user-username text-truncate">نام مدرس : @teacher.FullName</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <partial name="~/Areas/PartialViews/ClassDetails.cshtml" model="@ViewBag.classId" />
 
                 @RenderBody()
             </div>

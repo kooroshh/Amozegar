@@ -1,4 +1,5 @@
-﻿using Amozegar.Models;
+﻿using Amozegar.Data.UnitOfWork;
+using Amozegar.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +11,7 @@ namespace Amozegar.Data.SeedData
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<UserRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
-            var context = serviceProvider.GetRequiredService<AmozegarContext>();
+            var context = serviceProvider.GetRequiredService<IUnitOfWork>();
 
             string[] roleNames = { "Admin", "Teacher", "Student" };
             string[] roleNamesPersian = { "ادمین", "معلم", "دانش آموز" };
@@ -92,16 +93,16 @@ namespace Amozegar.Data.SeedData
                 string[] StudentsStatesPersian = { "قبول شده", "قبول نشده", "در انتظار تأیید", "ترک کرده", "بن شده" };
                 foreach (var state in StudentsStates)
                 {
-                    if (!await context.ClassesStudentsStates.AnyAsync(css => css.State == state))
+                    if (!await context.ClassStudentsStatesRepository.AnyAsync(css => css.State == state))
                     {
-                        await context.AddAsync(new ClassStudentState()
+                        await context.ClassStudentsStatesRepository.AddAsync(new ClassStudentState()
                         {
                             State = state,
                             PersianState = StudentsStatesPersian[Array.IndexOf(StudentsStates, state)]
                         });
                     }
                 }
-                context.SaveChanges();
+                await context.SaveChangesAsync();
 
             #endregion
 
@@ -111,16 +112,16 @@ namespace Amozegar.Data.SeedData
                 string[] classStatesPersian = { "فعال", "بن شده", "حذف شده" };
                 foreach (var state in classStates)
                 {
-                    if (!await context.ClassesStates.AnyAsync(cs => cs.State == state))
+                    if (!await context.ClassStateRepository.AnyAsync(cs => cs.State == state))
                     {
-                        await context.AddAsync(new ClassStates()
+                        await context.ClassStateRepository.AddAsync(new ClassStates()
                         {
                             State = state,
                             PersianState = classStatesPersian[Array.IndexOf(classStates, state)]
                         });
                     }
                 }
-                context.SaveChanges();
+                await context.SaveChangesAsync();
 
             #endregion
         }

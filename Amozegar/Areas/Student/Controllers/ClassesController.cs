@@ -1,5 +1,6 @@
 ﻿using Amozegar.Areas.Student.Models;
 using Amozegar.Data;
+using Amozegar.Data.UnitOfWork;
 using Amozegar.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,11 +15,12 @@ namespace Amozegar.Areas.Student.Controllers
     public class ClassesController : Controller
     {
 
-        private AmozegarContext _context;
+        private IUnitOfWork _context;
         private UserManager<User> _userManager;
         private PasswordHasher<ClassRoam> _passwordHasher;
 
-        public ClassesController(AmozegarContext context,
+        public ClassesController(
+            IUnitOfWork context,
             PasswordHasher<ClassRoam> passwordHasher,
             UserManager<User> userManager
             )
@@ -28,21 +30,6 @@ namespace Amozegar.Areas.Student.Controllers
             this._userManager = userManager;
         }
 
-        private async Task<ClassRoam?> checkUserIsInClass(int classId)
-        {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var exisitClass = await this._context.Classes
-                .Include(c => c.ClassState)
-                .Include(c => c.StudentToClasses)
-                .ThenInclude(cl => cl.State)
-                .SingleOrDefaultAsync(
-                cls => cls.ClassId == classId &&
-                cls.ClassState.State == "Active" &&
-                cls.StudentToClasses.Any(
-                    stc => stc.StudentId == user.Id && stc.ClassId == classId && stc.State.State == "Accepted"
-                ));
-            return exisitClass;
-        }
 
 
         [Route("Add-Class")]
@@ -59,31 +46,25 @@ namespace Amozegar.Areas.Student.Controllers
             {
                 return View(addClass);
             }
-
-            var existClass = await this._context.Classes
-                .Include(c => c.ClassState)
-                .SingleOrDefaultAsync(c => c.ClassIdentity == addClass.ClassIdentity && c.ClassState.State == "Active");
-
+            var existClass = await this._context.ClassesRepository.GetActiveClassByIdentity(addClass.ClassIdentity);
             if (existClass == null)
             {
                 ModelState.AddModelError("ClassIdentity", "چنین کلاسی وجود ندارد. لطفا اطلاعات را دوباره برسی نمایید");
                 return View(addClass);
             }
-            var result = this._passwordHasher.VerifyHashedPassword(existClass, existClass.ClassPassword,  addClass.ClassPassword);
+            var result = this._passwordHasher.VerifyHashedPassword(existClass, existClass.ClassPassword, addClass.ClassPassword);
             if (result == PasswordVerificationResult.Failed)
             {
                 ModelState.AddModelError("ClassPassword", "اطلاعات همخوانی ندارند");
                 return View(addClass);
             }
 
+            var user = await this._userManager.FindByNameAsync(User.Identity.Name);
+            var isNew = await this._context.ClassStudentsRepository
+                .GetByCheckStudentIsInClass(user, existClass.ClassId);
 
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var isNew = await this._context.ClassesStudents
-                .Include(cs => cs.State)
-                .SingleOrDefaultAsync(cs => cs.ClassId == existClass.ClassId && cs.StudentId == user.Id);
-
-            var pendingState = await _context.ClassesStudentsStates
-                .SingleAsync(css => css.State == "Pending");
+            var pendingState = await _context.ClassStudentsStatesRepository.GetStateByName("Pending");
+ 
 
             if (isNew == null)
             {
@@ -99,7 +80,7 @@ namespace Amozegar.Areas.Student.Controllers
                     ClassStudentStateId = pendingState.id
                 };
 
-                await this._context.AddAsync(ClassStudent);
+                await this._context.ClassStudentsRepository.AddAsync(ClassStudent);
             }
             else // User is in class with deferents state
             {
@@ -117,7 +98,7 @@ namespace Amozegar.Areas.Student.Controllers
                 isNew.ClassStudentStateId = pendingState.id;
                 isNew.State = pendingState;
 
-                this._context.Update(isNew);
+                this._context.ClassStudentsRepository.Update(isNew);
             }
 
 
@@ -130,7 +111,8 @@ namespace Amozegar.Areas.Student.Controllers
         public async Task<IActionResult> DeleteClass(int classId)
         {
 
-            var exisitClass = await this.checkUserIsInClass(classId);
+            var exisitClass = await this._context.ClassesRepository
+                .GetByCheckStudentIsInClass(User.Identity.Name, classId);
 
             if (exisitClass == null)
             {
@@ -148,7 +130,9 @@ namespace Amozegar.Areas.Student.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteClass(DeleteClassViewModel deleteClass)
         {
-            var exisitClass = await this.checkUserIsInClass(deleteClass.ClassId);
+            var exisitClass = await this._context.ClassesRepository
+                .GetByCheckStudentIsInClass(User.Identity.Name, deleteClass.ClassId);
+
             if (exisitClass == null)
             {
                 return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Student" });
@@ -159,14 +143,13 @@ namespace Amozegar.Areas.Student.Controllers
             var deleteStudent = exisitClass.StudentToClasses
                 .Single(stc => stc.StudentId == user.Id && stc.ClassId == exisitClass.ClassId);
 
-
-            var deleteState = await _context.ClassesStudentsStates.SingleAsync(css => css.State == "Dropped");
+            var deleteState = await _context.ClassStudentsStatesRepository.GetStateByName("Dropped");
 
             deleteStudent.ClassStudentStateId = deleteState.id;
 
             deleteStudent.State = deleteState;
 
-            this._context.ClassesStudents.Update(deleteStudent);
+            this._context.ClassStudentsRepository.Update(deleteStudent);
 
             await this._context.SaveChangesAsync();
 
