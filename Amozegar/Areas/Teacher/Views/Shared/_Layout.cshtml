@@ -39,9 +39,13 @@
                         <i class="fa-solid fa-book-tanakh"></i>
                         <span>درخواست های ورود <partial name="~/Areas/Teacher/Views/PartialsViews/StudentRequestCount.cshtml" model="@ViewBag.classId" /></span>
                     </a>
-                    <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "ChangePassword" ? "active" : "")">
-                        <i class="fas fa-key"></i>
-                        <span>امتحانات</span>
+                    <a asp-action="StudentsList" asp-controller="Home" asp-area="Teacher" asp-route-classId="@ViewBag.ClassId" class="menu-item @(ViewBag.Route == "StudentsList" ? "active" : "")">
+                        <i class="fa-solid fa-users"></i>
+                        <span>لیست دانش آموزان</span>
+                    </a>
+                    <a asp-action="BannedStudentsList" asp-controller="Home" asp-area="Teacher" asp-route-classId="@ViewBag.ClassId" class="menu-item @(ViewBag.Route == "BannedStudentsList" ? "active" : "")">
+                        <i class="fa-solid fa-users-slash"></i>
+                        <span>لیست دانش آموزان مسدود شده</span>
                     </a>
                     <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "ChangePassword" ? "active" : "")">
                         <i class="fas fa-key"></i>

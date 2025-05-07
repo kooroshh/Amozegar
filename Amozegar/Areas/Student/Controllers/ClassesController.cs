@@ -46,7 +46,7 @@ namespace Amozegar.Areas.Student.Controllers
             {
                 return View(addClass);
             }
-            var existClass = await this._context.ClassesRepository.GetActiveClassByIdentity(addClass.ClassIdentity);
+            var existClass = await this._context.ClassesRepository.GetActiveClassByIdentityAsync(addClass.ClassIdentity);
             if (existClass == null)
             {
                 ModelState.AddModelError("ClassIdentity", "چنین کلاسی وجود ندارد. لطفا اطلاعات را دوباره برسی نمایید");
@@ -61,9 +61,9 @@ namespace Amozegar.Areas.Student.Controllers
 
             var user = await this._userManager.FindByNameAsync(User.Identity.Name);
             var isNew = await this._context.ClassStudentsRepository
-                .GetByCheckStudentIsInClass(user, existClass.ClassId);
+                .GetByCheckStudentIsInClassAsync(user, existClass.ClassId);
 
-            var pendingState = await _context.ClassStudentsStatesRepository.GetStateByName("Pending");
+            var pendingState = await _context.ClassStudentsStatesRepository.GetStateByNameAsync("Pending");
  
 
             if (isNew == null)
@@ -112,7 +112,7 @@ namespace Amozegar.Areas.Student.Controllers
         {
 
             var exisitClass = await this._context.ClassesRepository
-                .GetByCheckStudentIsInClass(User.Identity.Name, classId);
+                .GetByCheckStudentIsInClassAsync(User.Identity.Name, classId);
 
             if (exisitClass == null)
             {
@@ -131,7 +131,7 @@ namespace Amozegar.Areas.Student.Controllers
         public async Task<IActionResult> DeleteClass(DeleteClassViewModel deleteClass)
         {
             var exisitClass = await this._context.ClassesRepository
-                .GetByCheckStudentIsInClass(User.Identity.Name, deleteClass.ClassId);
+                .GetByCheckStudentIsInClassAsync(User.Identity.Name, deleteClass.ClassId);
 
             if (exisitClass == null)
             {
@@ -143,7 +143,7 @@ namespace Amozegar.Areas.Student.Controllers
             var deleteStudent = exisitClass.StudentToClasses
                 .Single(stc => stc.StudentId == user.Id && stc.ClassId == exisitClass.ClassId);
 
-            var deleteState = await _context.ClassStudentsStatesRepository.GetStateByName("Dropped");
+            var deleteState = await _context.ClassStudentsStatesRepository.GetStateByNameAsync("Dropped");
 
             deleteStudent.ClassStudentStateId = deleteState.id;
 

@@ -10,7 +10,7 @@ namespace Amozegar.Data.Repositories.Implementations
         {
         }
 
-        public async Task<ClassStudentState> GetStateByName(string state)
+        public async Task<ClassStudentState> GetStateByNameAsync(string state)
         {
             var backState = await this._context.ClassesStudentsStates.SingleAsync(css => css.State == state);
             return backState;

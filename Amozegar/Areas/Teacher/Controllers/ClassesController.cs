@@ -32,7 +32,7 @@ namespace Amozegar.Areas.Teacher.Controllers
 
         private async Task<ClassRoam?> isClassExistForTeacher(int classId)
         {
-            var existClass = await this._context.ClassesRepository.GetClassByIdAndState(classId, User.Identity.Name, "Active");
+            var existClass = await this._context.ClassesRepository.GetClassByIdAndStateAsync(classId, User.Identity.Name, "Active");
             return existClass;
         }
 

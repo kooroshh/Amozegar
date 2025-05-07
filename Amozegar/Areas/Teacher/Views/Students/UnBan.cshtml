@@ -1,12 +1,12 @@
 ﻿@model StudentsActionsViewModel
 @{
-    ViewData["Title"] = "رد کردن دانش آموز";
+    ViewData["Title"] = "رفع مسدودیت دانش آموز";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container my-2">
     <div class="alert alert-warning">
-        آیا از رد کردن دانش آموز با نام @Model.StudentName اطمینان دارید؟
+        آیا از رفع مسدودیت دانش آموز با نام @Model.StudentName اطمینان دارید؟ این کار باعث میشود دانش آموز توانایی درخواست ورود را داشته باشد.
         <form method="post" class="my-3">
             @Html.AntiForgeryToken()
             @Html.HiddenFor(s => s.StudentInClassId)
@@ -15,7 +15,7 @@
                asp-area="Teacher"
                asp-route-classId="@ViewBag.ClassId"
                class="btn btn-warning">برگشت به کلاس</a>
-            <button type="submit" class="btn btn-danger">رد کردن</button>
+            <button type="submit" class="btn btn-danger">رفع مسدودیت</button>
         </form>
     </div>
 </div>

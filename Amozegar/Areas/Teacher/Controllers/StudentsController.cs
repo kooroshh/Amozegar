@@ -45,7 +45,7 @@ namespace Amozegar.Areas.Teacher.Controllers
 
         private async Task setNewStateForStudentInClass(ClassStudents studentInClass, string state)
         {
-            var newStudentState = await this._context.ClassStudentsStatesRepository.GetStateByName(state);
+            var newStudentState = await this._context.ClassStudentsStatesRepository.GetStateByNameAsync(state);
             studentInClass.State = newStudentState;
             studentInClass.ClassStudentStateId = newStudentState.id;
             await this._context.SaveChangesAsync();
@@ -78,7 +78,7 @@ namespace Amozegar.Areas.Teacher.Controllers
             await this.setNewStateForStudentInClass(studentInClass, newState);
 
 
-            return RedirectToAction("LoginsToClass", "Home", new { area = "Teacher", classId = this.classId });
+            return RedirectToAction("Index", "Home", new { area = "Teacher", classId = this.classId });
         }
 
 
@@ -120,5 +120,28 @@ namespace Amozegar.Areas.Teacher.Controllers
             return await this.doPostActions(ban, "Banned");
         }
 
+        [Route("Remove")]
+        public async Task<IActionResult> Remove(string classId, int studentInClassId)
+        {
+            return await this.doGetActions(studentInClassId);
+        }
+
+        [HttpPost("Remove")]
+        public async Task<IActionResult> Remove(string classId, StudentsActionsViewModel remove)
+        {
+            return await this.doPostActions(remove, "Removed");
+        }
+
+        [Route("UnBan")]
+        public async Task<IActionResult> UnBan(string classId, int studentInClassId)
+        {
+            return await this.doGetActions(studentInClassId);
+        }
+
+        [HttpPost("UnBan")]
+        public async Task<IActionResult> UnBan(string classId, StudentsActionsViewModel unBan)
+        {
+            return await this.doPostActions(unBan, "Removed");
+        }
     }
 }

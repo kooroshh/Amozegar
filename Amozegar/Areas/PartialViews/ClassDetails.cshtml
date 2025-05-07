@@ -8,7 +8,7 @@
 
 @{
     string classId = ViewBag.classId;
-    var currentClass = await _context.ClassesRepository.GetByClassIdentity(classId);
+    var currentClass = await _context.ClassesRepository.GetByClassIdentityAsync(classId);
     var teacher = await _userManager.FindByIdAsync(currentClass.TeacherId);
 }
 

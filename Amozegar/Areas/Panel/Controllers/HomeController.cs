@@ -128,12 +128,12 @@ namespace Amozegar.Areas.Panel.Controllers
 
             if (roleName == "Teacher")
             {
-                classes = await this._context.ClassesRepository.GetTeachersClasses(user);
+                classes = await this._context.ClassesRepository.GetTeachersClassesAsync(user);
             }
             else if (roleName == "Student")
             {
 
-                classes = await this._context.ClassesRepository.GetStudentsClasses(user);
+                classes = await this._context.ClassesRepository.GetStudentsClassesAsync(user);
 
             }
 

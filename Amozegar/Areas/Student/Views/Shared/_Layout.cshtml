@@ -35,9 +35,13 @@
                         <i class="fas fa-home"></i>
                         <span>برگشت به خانه</span>
                     </a>
-                    <a asp-action="Index" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "Dashboard" ? "active" : "")">
+                    <a asp-action="Index" asp-controller="Home" asp-area="Student" asp-route-classId="@ViewBag.ClassId" class="menu-item @(ViewBag.Route == "Dashboard" ? "active" : "")">
                         <i class="fas fa-tachometer-alt"></i>
                         <span>داشبورد</span>
+                    </a>
+                    <a asp-action="StudentsList" asp-controller="Home" asp-area="Student" asp-route-classId="@ViewBag.ClassId" class="menu-item @(ViewBag.Route == "StudentsList" ? "active" : "")">
+                        <i class="fa-solid fa-users"></i>
+                        <span>دانش آموزان کلاس</span>
                     </a>
                     <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "Edit" ? "active" : "")">
                         <i class="fas fa-user-edit"></i>

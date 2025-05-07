@@ -89,8 +89,8 @@ namespace Amozegar.Data.SeedData
 
             #region Add ClassStudents States
 
-                string[] StudentsStates = { "Accepted", "Rejected", "Pending", "Dropped", "Banned" };
-                string[] StudentsStatesPersian = { "قبول شده", "قبول نشده", "در انتظار تأیید", "ترک کرده", "بن شده" };
+                string[] StudentsStates = { "Accepted", "Rejected", "Pending", "Dropped", "Banned", "Removed" };
+                string[] StudentsStatesPersian = { "قبول شده", "قبول نشده", "در انتظار تأیید", "ترک کرده", "بن شده", "اخراج شده" };
                 foreach (var state in StudentsStates)
                 {
                     if (!await context.ClassStudentsStatesRepository.AnyAsync(css => css.State == state))

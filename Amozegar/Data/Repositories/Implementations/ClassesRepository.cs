@@ -16,7 +16,7 @@ namespace Amozegar.Data.Repositories.Implementations
             this._userManager = userManager;
         }
 
-        public async Task<ClassRoam?> GetActiveClassByIdentity(string classIdentity)
+        public async Task<ClassRoam?> GetActiveClassByIdentityAsync(string classIdentity)
         {
             var cls = await this._context.Classes
                 .Include(c => c.ClassState)
@@ -25,7 +25,7 @@ namespace Amozegar.Data.Repositories.Implementations
             return cls;
         }
 
-        public async Task<ClassRoam?> GetByCheckStudentIsInClass(string studentName, int classId)
+        public async Task<ClassRoam?> GetByCheckStudentIsInClassAsync(string studentName, int classId)
         {
             var user = await _userManager.FindByNameAsync(studentName);
             var exisitClass = await this._context.Classes
@@ -41,12 +41,12 @@ namespace Amozegar.Data.Repositories.Implementations
             return exisitClass;
         }
 
-        public async Task<ClassRoam?> GetByClassIdentity(string classIdentity)
+        public async Task<ClassRoam?> GetByClassIdentityAsync(string classIdentity)
         {
             return await this._context.Classes.SingleOrDefaultAsync(c => c.ClassIdentity == classIdentity);
         }
 
-        public async Task<ClassRoam?> GetClassByIdAndState(int classId, string teacherName, string state)
+        public async Task<ClassRoam?> GetClassByIdAndStateAsync(int classId, string teacherName, string state)
         {
             var user = await _userManager.FindByNameAsync(teacherName);
             var exisitClass = await this._context.Classes
@@ -55,7 +55,7 @@ namespace Amozegar.Data.Repositories.Implementations
             return exisitClass;
         }
 
-        public async Task<List<AddStudentViewModel>?> GetClassStudentsRequests(string classIdentity)
+        public async Task<List<AddStudentViewModel>?> GetClassStudentsRequestsAsync(string classIdentity)
         {
             var students = new List<AddStudentViewModel>();
             var studentsRequests = await _context.Classes
@@ -94,7 +94,7 @@ namespace Amozegar.Data.Repositories.Implementations
             return studentRequestCount;
         }
 
-        public async Task<IEnumerable<ClassesViewModel>> GetStudentsClasses(User user)
+        public async Task<IEnumerable<ClassesViewModel>> GetStudentsClassesAsync(User user)
         {
             var classes = await this._context.Classes
                 .Include(c => c.ClassState)
@@ -126,7 +126,7 @@ namespace Amozegar.Data.Repositories.Implementations
             return classes;
         }
 
-        public async Task<IEnumerable<ClassesViewModel>> GetTeachersClasses(User user)
+        public async Task<IEnumerable<ClassesViewModel>> GetTeachersClassesAsync(User user)
         { 
             var classes = await this._dbSet
                 .Include(c => c.ClassState)
