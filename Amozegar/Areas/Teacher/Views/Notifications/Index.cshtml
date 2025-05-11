@@ -1,0 +1,53 @@
+﻿@model NotificationsDetailsViewModel
+@{
+    ViewData["Title"] = $"اعلان {Model.NotificationTitle}";
+}
+
+<!-- Notifications List -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+
+
+        <div class="d-flex gap-3 align-items-center mb-4">
+            <h3 class="card-title mb-0">اعلان‌</h3>
+            <div>
+                <a asp-action="Notifications"
+                   asp-controller="Home"
+                   asp-area="Teacher"
+                   asp-route-classId="@ViewBag.ClassId"
+                   class="btn btn-primary">برگشت به اعلانات</a>
+            </div>
+        </div>
+
+        <div class="notifications-list">
+
+            <div class="notification-item-details">
+
+                <div>
+                    <h4 class="notification-title mb-3">@Model.NotificationTitle</h4>
+                    <p class="notification-text mb-4">@Model.NotificationBody</p>
+                </div>
+
+                <div class="row g-3 mb-3">
+
+                    @foreach(var picturePath in Model.PicturePaths)
+                    {
+                        <div class="col-md-4">
+                            <a href="~/images/notifications/@(picturePath)" target="_blank" class="gallery-image border border-3 shadow-sm">
+                                <img src="~/images/notifications/@(picturePath)" alt="تصاویر اعلان" class="img-fluid rounded">
+                            </a>
+                        </div>
+                    }
+
+                </div>
+
+                <div class="notification-meta text-muted">
+                    <small>@Model.CreatedAt</small>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>

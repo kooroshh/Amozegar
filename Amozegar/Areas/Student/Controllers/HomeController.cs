@@ -22,14 +22,5 @@ namespace Amozegar.Areas.Student.Controllers
             return View();
         }
 
-        [Route("Students-List")]
-        public async Task<IActionResult> StudentsList(string classId)
-        {
-            ViewBag.Route = "StudentsList";
-            var students = await this._context.ClassStudentsRepository
-                .GetStudentsByClassIdentityByStateForStudentsAsync(classId, "Accepted");
-
-            return View(students);
-        }
     }
 }

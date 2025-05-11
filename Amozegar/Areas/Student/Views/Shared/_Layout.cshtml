@@ -39,9 +39,13 @@
                         <i class="fas fa-tachometer-alt"></i>
                         <span>داشبورد</span>
                     </a>
-                    <a asp-action="StudentsList" asp-controller="Home" asp-area="Student" asp-route-classId="@ViewBag.ClassId" class="menu-item @(ViewBag.Route == "StudentsList" ? "active" : "")">
+                    <a asp-action="Index" asp-controller="Students" asp-area="Shared" asp-route-classId="@ViewBag.ClassId" asp-route-roleName="Student" asp-route-type="Students-List" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "Students-List" ? "active" : "")">
                         <i class="fa-solid fa-users"></i>
                         <span>دانش آموزان کلاس</span>
+                    </a>
+                    <a asp-action="Index" asp-controller="Notifications" asp-area="Shared" asp-route-classId="@ViewBag.ClassId" asp-route-roleName="Student" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "ShowNotifications" ? "active" : "")">
+                        <i class="fa-solid fa-message"></i>
+                        <span>اعلانات</span>
                     </a>
                     <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "Edit" ? "active" : "")">
                         <i class="fas fa-user-edit"></i>
@@ -54,10 +58,6 @@
                     <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "ChangePassword" ? "active" : "")">
                         <i class="fas fa-key"></i>
                         <span>همکلاسیان</span>
-                    </a>
-                    <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "ChangePassword" ? "active" : "")">
-                        <i class="fas fa-key"></i>
-                        <span>اعلانات</span>
                     </a>
 
                 </nav>
@@ -90,7 +90,7 @@
                     </div>
                 </div>
 
-                <partial name="~/Areas/PartialViews/ClassDetails.cshtml" model="@ViewBag.classId" />
+                <partial name="~/Areas/Shared/PartialViews/ClassDetails.cshtml" model="@ViewBag.classId" />
 
                 @RenderBody()
             </div>

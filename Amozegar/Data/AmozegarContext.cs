@@ -16,6 +16,10 @@ namespace Amozegar.Data
         public DbSet<ClassStudents> ClassesStudents { get; set; }
         public DbSet<ClassStudentState> ClassesStudentsStates { get; set; }
         public DbSet<ClassStates> ClassesStates { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Picture> Pictures { get; set; }
+        public DbSet<PictureType> PictureTypes { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +35,10 @@ namespace Amozegar.Data
 
             modelBuilder.Entity<ClassRoam>()
                 .Property(c => c.Date)
+                .HasDefaultValueSql("GETDATE()");
+
+            modelBuilder.Entity<Notification>()
+                .Property(c => c.CreatedAt)
                 .HasDefaultValueSql("GETDATE()");
 
             modelBuilder.Entity<User>()

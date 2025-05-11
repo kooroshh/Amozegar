@@ -17,7 +17,7 @@ namespace Amozegar.Models.CustomAnnotations
             {
                 if (file.Length > (_maxFileSizeInBytes * 1024 * 1024))
                 {
-                    return new ValidationResult($"حجم فایل نباید بیشتر از {_maxFileSizeInBytes / (1024 * 1024)} مگابایت باشد.");
+                    return new ValidationResult($"حجم فایل نباید بیشتر از {_maxFileSizeInBytes} مگابایت باشد.");
                 }
             }
 

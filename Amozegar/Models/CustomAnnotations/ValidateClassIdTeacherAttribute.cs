@@ -1,10 +1,10 @@
 ﻿
 
 using Amozegar.Data;
+using Amozegar.Data.UnitOfWork;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
 
 namespace Amozegar.Models.CustomAnnotations
 {
@@ -13,7 +13,7 @@ namespace Amozegar.Models.CustomAnnotations
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var db = context.HttpContext.RequestServices.GetService(typeof(AmozegarContext)) as AmozegarContext;
+            var db = context.HttpContext.RequestServices.GetService(typeof(IUnitOfWork)) as IUnitOfWork;
             var userManager = context.HttpContext.RequestServices.GetService(typeof(UserManager<User>)) as UserManager<User>;
 
             var user = await userManager.FindByNameAsync(context.HttpContext.User.Identity.Name);
@@ -26,9 +26,8 @@ namespace Amozegar.Models.CustomAnnotations
 
             if (context.ActionArguments.TryGetValue("classId", out var classIdObj) && classIdObj is string classId)
             {
-                var classExists = await db.Classes
-                    .Include(c => c.ClassState)
-                    .AnyAsync(c => c.ClassIdentity == classId && c.TeacherId == user.Id && c.ClassState.State == "Active");
+                var classExists = await db.ClassesRepository
+                    .IsClassForTeacherByClassIdentityAndUserIdAsync(classId, user.Id);
 
                 if (!classExists)
                 {

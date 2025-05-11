@@ -11,6 +11,9 @@ namespace Amozegar.Data.UnitOfWork
         public IClassStudentsRepository ClassStudentsRepository { get; }
         public IClassStudentsStatesRepository ClassStudentsStatesRepository { get; }
         public IClassStateRepository ClassStateRepository { get; }
+        public IGenericRepository<PictureType> PictureTypesRepository { get; }
+        public IPicturesRepository PictureRepository { get; }
+        public INotificationsRepository NotificationsRepository { get; }
         Task SaveChangesAsync();
     }
 }

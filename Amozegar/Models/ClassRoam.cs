@@ -37,5 +37,7 @@ namespace Amozegar.Models
 
         [ForeignKey("CLassStateId")]
         public ClassStates ClassState { get; set; }
+
+        public ICollection<Notification> Notifications { get; set; }
     }
 }

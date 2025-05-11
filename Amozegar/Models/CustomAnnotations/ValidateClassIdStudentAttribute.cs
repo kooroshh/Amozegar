@@ -2,6 +2,7 @@
 
 using Amozegar.Areas.Panel.Models;
 using Amozegar.Data;
+using Amozegar.Data.UnitOfWork;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -14,7 +15,7 @@ namespace Amozegar.Models.CustomAnnotations
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var db = context.HttpContext.RequestServices.GetService(typeof(AmozegarContext)) as AmozegarContext;
+            var db = context.HttpContext.RequestServices.GetService(typeof(IUnitOfWork)) as IUnitOfWork;
             var userManager = context.HttpContext.RequestServices.GetService(typeof(UserManager<User>)) as UserManager<User>;
 
             var user = await userManager.FindByNameAsync(context.HttpContext.User.Identity.Name);
@@ -28,15 +29,8 @@ namespace Amozegar.Models.CustomAnnotations
             if (context.ActionArguments.TryGetValue("classId", out var classIdObj) && classIdObj is string classId)
             {
 
-                var classExists = await db.Classes
-                    .Include(c => c.ClassState)
-                    .Where(c => c.ClassState.State == "Active" && c.ClassIdentity == classId)
-                    .Include(c => c.StudentToClasses)
-                    .ThenInclude(cl => cl.State)
-                    .AnyAsync(cls => cls.StudentToClasses.
-                        Single(stc => stc.StudentId == user.Id).ClassId == cls.ClassId &&
-                        cls.StudentToClasses.Single(stc => stc.StudentId == user.Id && stc.ClassId == cls.ClassId).State.State == "Accepted"
-                    );
+                var classExists = await db.ClassesRepository
+                    .IsStudentInClassByClassIdentityAndUserIdAsync(classId, user.Id);
 
                 if (!classExists)
                 {

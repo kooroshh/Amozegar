@@ -147,6 +147,82 @@ namespace Amozegar.Migrations
                     b.ToTable("ClassesStudents");
                 });
 
+            modelBuilder.Entity("Amozegar.Models.Notification", b =>
+                {
+                    b.Property<int>("NotificationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"));
+
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("NotificationBody")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NotificationTitle")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("NotificationId");
+
+                    b.HasIndex("ClassId");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.Picture", b =>
+                {
+                    b.Property<int>("PictureId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PictureId"));
+
+                    b.Property<string>("PicturePath")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("PictureTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PictureTypeRecordId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PictureId");
+
+                    b.HasIndex("PictureTypeId");
+
+                    b.ToTable("Pictures");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.PictureType", b =>
+                {
+                    b.Property<int>("TypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TypeId"));
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("TypeId");
+
+                    b.ToTable("PictureTypes");
+                });
+
             modelBuilder.Entity("Amozegar.Models.Report", b =>
                 {
                     b.Property<int>("ReportId")
@@ -450,6 +526,28 @@ namespace Amozegar.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Amozegar.Models.Notification", b =>
+                {
+                    b.HasOne("Amozegar.Models.ClassRoam", "ClassRoam")
+                        .WithMany("Notifications")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ClassRoam");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.Picture", b =>
+                {
+                    b.HasOne("Amozegar.Models.PictureType", "PictureType")
+                        .WithMany("Picture")
+                        .HasForeignKey("PictureTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PictureType");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Amozegar.Models.UserRole", null)
@@ -503,6 +601,8 @@ namespace Amozegar.Migrations
 
             modelBuilder.Entity("Amozegar.Models.ClassRoam", b =>
                 {
+                    b.Navigation("Notifications");
+
                     b.Navigation("StudentToClasses");
                 });
 
@@ -514,6 +614,11 @@ namespace Amozegar.Migrations
             modelBuilder.Entity("Amozegar.Models.ClassStudentState", b =>
                 {
                     b.Navigation("ClassStudents");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.PictureType", b =>
+                {
+                    b.Navigation("Picture");
                 });
 
             modelBuilder.Entity("Amozegar.Models.User", b =>

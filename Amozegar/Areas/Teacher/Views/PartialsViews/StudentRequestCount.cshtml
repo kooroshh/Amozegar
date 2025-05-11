@@ -4,7 +4,7 @@
 @using Microsoft.EntityFrameworkCore
 @inject IUnitOfWork _context
 @{
-    var studentRequestCount = await _context.ClassesRepository.GetClassStudentsRequestsCountAsync(Model);
+    var studentRequestCount = await _context.ClassStudentsRepository.GetClassStudentsRequestsCountAsync(Model);
 }
 
 @if(studentRequestCount > 0)

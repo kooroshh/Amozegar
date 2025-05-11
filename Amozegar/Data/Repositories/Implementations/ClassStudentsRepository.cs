@@ -1,7 +1,10 @@
-﻿using Amozegar.Areas.Student.Models;
+﻿using System.Formats.Tar;
+using Amozegar.Areas.Shared.Models;
+using Amozegar.Areas.Student.Models;
 using Amozegar.Areas.Teacher.Models;
 using Amozegar.Data.Repositories.Interfaces;
 using Amozegar.Models;
+using Amozegar.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,9 +46,13 @@ namespace Amozegar.Data.Repositories.Implementations
             return cls;
         }
 
-        private async Task<IEnumerable<ClassAndStudentAndClassStudentIdAndState>> getClassStudentsByClassIdentityForRelationshipByStateAsync(string classIdentity, string state)
+        private async Task<IEnumerable<ClassAndStudentAndClassStudentIdAndState>> getClassStudentsByClassIdentityForRelationshipByStateByPageNumberAsync(string classIdentity, string state, int pageNumber)
         {
+
             var cls = await this.getClassByIdentityForRelationshipAsync(classIdentity);
+            int page = pageNumber > 0 ? pageNumber : 0;
+            int pageSize = pageNumber > 0 ? DefaultPageCount.Count : 0;
+
             var classStudents = await this._context.ClassesStudents
                 .Include(cs => cs.State)
                 .Select(cs => new ClassAndStudentAndClassStudentIdAndState()
@@ -56,17 +63,19 @@ namespace Amozegar.Data.Repositories.Implementations
                     ClassStudentId = cs.id
                 })
                 .Where(cs => cs.ClassId == cls.ClassId && cs.State == state)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
             return classStudents;
         }
 
 
-
-        public async Task<IEnumerable<StudentsListViewModel>> GetStudentsByClassIdentityByStateAsync(string classIdentity, string state)
+        // Working Now
+        public async Task<IEnumerable<StudentsListViewModel>> GetStudentsByClassIdentityByStateByPageNumberAsync(string classIdentity, string state, int pageNumber)
         {
 
             var classStudents = await this
-                .getClassStudentsByClassIdentityForRelationshipByStateAsync(classIdentity, state);
+                .getClassStudentsByClassIdentityForRelationshipByStateByPageNumberAsync(classIdentity, state, pageNumber);
 
             var students = new List<StudentsListViewModel>();
 
@@ -84,24 +93,6 @@ namespace Amozegar.Data.Repositories.Implementations
             return students;
         }
 
-        public async Task<IEnumerable<StudentsListForStudentsViewModel>> GetStudentsByClassIdentityByStateForStudentsAsync(string classIdentity, string state)
-        {
-            var classStudents = await this
-                .getClassStudentsByClassIdentityForRelationshipByStateAsync(classIdentity, state);
-
-            var students = new List<StudentsListForStudentsViewModel>();
-
-            foreach (var student in classStudents)
-            {
-                var studentsInfo = await this._userManager.FindByIdAsync(student.StudentId);
-                students.Add(new StudentsListForStudentsViewModel()
-                {
-                    StudentFullName = studentsInfo.FullName,
-                    StudentPicture = studentsInfo.PicturePath,
-                });
-            }
-            return students;
-        }
 
         public async Task<ClassStudents?> GetByCheckStudentIsInClassAsync(User student, int classId)
         {
@@ -121,6 +112,55 @@ namespace Amozegar.Data.Repositories.Implementations
                 .SingleOrDefaultAsync(cs => cs.id == studentInClassId && cs.ClassId == cls.ClassId);
 
             return studentInClass;
+        }
+
+        public async Task<int> GetStudentsCountByClassIdentityByStateAsync(string classIdentity, string state)
+        {
+            var cls = await this.getClassByIdentityForRelationshipAsync(classIdentity);
+            var classStudentsCount = await this._context.ClassesStudents
+                .Include(cs => cs.State)
+                .CountAsync(cs => cs.ClassId == cls.ClassId && cs.State.State == state);
+                
+            return classStudentsCount;
+        }
+
+        public async Task<int> GetClassStudentsRequestsCountAsync(string classIdentity)
+        {
+            var cls = await this.getClassByIdentityForRelationshipAsync(classIdentity);
+
+            var count = await this._context.ClassesStudents
+                .Include(cs => cs.State)
+                .CountAsync(cs => cs.ClassId == cls.ClassId && cs.State.State == "Pending");
+
+            return count;
+        }
+
+        public async Task<List<AddStudentViewModel>?> GetClassStudentsRequestsByClassIdentityByPageNumberAsync(string classIdentity, int pageNumber)
+        {
+            var cls = await this.getClassByIdentityForRelationshipAsync(classIdentity);
+            int page = pageNumber > 0 ? pageNumber : 0;
+            int pageSize = pageNumber > 0 ? DefaultPageCount.Count : 0;
+
+            var students = new List<AddStudentViewModel>();
+            var studentsRequests = await _context.ClassesStudents
+                .Include(c => c.State)
+                .Where(c => c.ClassId == cls.ClassId && c.State.State == "Pending")
+                .Skip((page -1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            foreach (var item in studentsRequests)
+            {
+                var user = await this._userManager.FindByIdAsync(item.StudentId);
+                students.Add(new AddStudentViewModel()
+                {
+                    StudentEmail = user.Email,
+                    StudentImage = user.PicturePath,
+                    StudentInClassId = item.id,
+                    StudentName = user.FullName
+                });
+            }
+            return students;
         }
     }
 }

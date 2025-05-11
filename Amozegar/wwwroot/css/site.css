@@ -567,11 +567,85 @@ body {
     gap: 0.5rem;
 }
 
+
+
+
+
+/* Notifications List */
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.notification-item-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    transition: var(--transition);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    transition: var(--transition);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+    .notification-item:hover, notification-item-details:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+    color: var(--dark-color);
+}
+
+.notification-date {
+    font-size: 0.85rem;
+    color: var(--gray-color);
+    margin: 0;
+}
+
+.notification-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+
+
+
+
 /* Responsive Styles */
 @media (max-width: 991.98px) {
     .main-content {
         margin-right: 0;
         padding: 150px 0;
+    }
+
+    .notification-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .notification-actions {
+        margin-top: 1rem;
+        align-self: flex-end;
     }
 }
 
@@ -625,6 +699,39 @@ body {
     gap: 0.5rem;
 }
 
+/* Gallery Styles */
+.gallery-item {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: var(--transition);
+}
+
+    .gallery-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+.gallery-image {
+    display: block;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+    .gallery-image img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        transition: var(--transition);
+    }
+
+    .gallery-image:hover img {
+        transform: scale(1.05);
+    }
+
+
 
 
 @media (max-width: 767.98px) {
@@ -639,4 +746,9 @@ body {
     .user-actions {
         justify-content: flex-end;
     }
+
+    .gallery-item {
+        margin-bottom: 2rem;
+    }
+
 }

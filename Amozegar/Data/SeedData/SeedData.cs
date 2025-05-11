@@ -13,6 +13,8 @@ namespace Amozegar.Data.SeedData
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
             var context = serviceProvider.GetRequiredService<IUnitOfWork>();
 
+            #region Add Default User Roles
+
             string[] roleNames = { "Admin", "Teacher", "Student" };
             string[] roleNamesPersian = { "ادمین", "معلم", "دانش آموز" };
             foreach (var roleName in roleNames)
@@ -26,6 +28,11 @@ namespace Amozegar.Data.SeedData
                         );
                 }
             }
+
+            #endregion
+
+            #region Add Default Users
+
             // Add Admin
             var adminUser = new User()
             {
@@ -87,9 +94,11 @@ namespace Amozegar.Data.SeedData
                 }
             }
 
+            #endregion
+
             #region Add ClassStudents States
 
-                string[] StudentsStates = { "Accepted", "Rejected", "Pending", "Dropped", "Banned", "Removed" };
+            string[] StudentsStates = { "Accepted", "Rejected", "Pending", "Dropped", "Banned", "Removed" };
                 string[] StudentsStatesPersian = { "قبول شده", "قبول نشده", "در انتظار تأیید", "ترک کرده", "بن شده", "اخراج شده" };
                 foreach (var state in StudentsStates)
                 {
@@ -102,11 +111,10 @@ namespace Amozegar.Data.SeedData
                         });
                     }
                 }
-                await context.SaveChangesAsync();
 
             #endregion
 
-            #region
+            #region Add ClassState
 
                 string[] classStates = { "Active", "Banned", "Deleted" };
                 string[] classStatesPersian = { "فعال", "بن شده", "حذف شده" };
@@ -121,9 +129,27 @@ namespace Amozegar.Data.SeedData
                         });
                     }
                 }
-                await context.SaveChangesAsync();
 
             #endregion
+
+
+            #region Add PictureTypes
+
+            string[] pictureTypes = { "Notifications" };
+            foreach (var type in pictureTypes)
+            {
+                if (!await context.PictureTypesRepository.AnyAsync(cs => cs.Type == type))
+                {
+                    await context.PictureTypesRepository.AddAsync(new PictureType()
+                    {
+                        Type = type
+                    });
+                }
+            }
+
+            #endregion
+
+            await context.SaveChangesAsync();
         }
     }
 }

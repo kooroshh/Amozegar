@@ -10,9 +10,9 @@ namespace Amozegar.Data.Repositories.Interfaces
         Task<IEnumerable<ClassesViewModel>> GetTeachersClassesAsync(User user);
         Task<ClassRoam?> GetByCheckStudentIsInClassAsync(string studentName, int classId);
         Task<ClassRoam?> GetActiveClassByIdentityAsync(string classIdentity);
-        Task<List<AddStudentViewModel>?> GetClassStudentsRequestsAsync(string classIdentity);
-        Task<int> GetClassStudentsRequestsCountAsync(string classIdentity);
         Task<ClassRoam?> GetClassByIdAndStateAsync(int classId, string teacherName, string state);
         Task<ClassRoam?> GetByClassIdentityAsync(string classIdentity);
+        Task<bool> IsStudentInClassByClassIdentityAndUserIdAsync(string classIdentity, string userId);
+        Task<bool> IsClassForTeacherByClassIdentityAndUserIdAsync(string classIdentity, string userId);
     }
 }

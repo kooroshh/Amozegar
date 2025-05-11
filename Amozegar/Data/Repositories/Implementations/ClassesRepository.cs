@@ -4,6 +4,7 @@ using Amozegar.Areas.Teacher.Models;
 using Amozegar.Data.Repositories.Interfaces;
 using Amozegar.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Amozegar.Data.Repositories.Implementations
@@ -55,45 +56,6 @@ namespace Amozegar.Data.Repositories.Implementations
             return exisitClass;
         }
 
-        public async Task<List<AddStudentViewModel>?> GetClassStudentsRequestsAsync(string classIdentity)
-        {
-            var students = new List<AddStudentViewModel>();
-            var studentsRequests = await _context.Classes
-                .Include(c => c.StudentToClasses)
-                .ThenInclude(c => c.State)
-                .Where(c => c.ClassIdentity == classIdentity)
-                .SelectMany(c => c.StudentToClasses
-                    .Where(stc => stc.State.State == "Pending")
-                )
-                .ToListAsync();
-
-            foreach (var item in studentsRequests)
-            {
-                var user = await this._userManager.FindByIdAsync(item.StudentId);
-                students.Add(new AddStudentViewModel()
-                {
-                    StudentEmail = user.Email,
-                    StudentImage = user.PicturePath,
-                    StudentInClassId = item.id,
-                    StudentName = user.FullName
-                });
-            }
-            return students;
-        }
-
-        public async Task<int> GetClassStudentsRequestsCountAsync(string classIdentity)
-        {
-            var studentRequestCount = await _context.Classes
-                    .Include(c => c.StudentToClasses)
-                    .ThenInclude(c => c.State)
-                    .Where(c =>
-                        c.ClassIdentity == classIdentity &&
-                        c.StudentToClasses.Any(stc => stc.State.State == "Pending")
-                    )
-                    .CountAsync();
-            return studentRequestCount;
-        }
-
         public async Task<IEnumerable<ClassesViewModel>> GetStudentsClassesAsync(User user)
         {
             var classes = await this._context.Classes
@@ -142,5 +104,32 @@ namespace Amozegar.Data.Repositories.Implementations
             return classes;
         }
 
+        public async Task<bool> IsClassForTeacherByClassIdentityAndUserIdAsync(string classIdentity, string userId)
+        {
+            var cls = await _context.Classes
+                .Include(c => c.ClassState)
+                .AnyAsync(c => c.ClassIdentity == classIdentity && c.TeacherId == userId && c.ClassState.State == "Active");
+            return cls;
+        }
+
+        public async Task<bool> IsStudentInClassByClassIdentityAndUserIdAsync(string classIdentity, string userId)
+        {
+            var cls = await _context.Classes
+                .Include(c => c.ClassState)
+                .Where(c => c.ClassState.State == "Active" && c.ClassIdentity == classIdentity)
+                .Include(c => c.StudentToClasses)
+                .ThenInclude(cl => cl.State)
+                .AnyAsync(cls => cls.StudentToClasses
+                    .Single(stc =>
+                        stc.StudentId == userId
+                    ).ClassId == cls.ClassId &&
+                    cls.StudentToClasses
+                        .Single(stc =>
+                            stc.StudentId == userId &&
+                            stc.ClassId == cls.ClassId
+                        ).State.State == "Accepted"
+                );
+            return cls;
+        }
     }
 }
