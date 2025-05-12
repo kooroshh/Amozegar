@@ -114,30 +114,61 @@ namespace Amozegar.Areas.Panel.Controllers
             }
         }
 
-        [Route("Panel/Classes/{roleName}")]
-        public async Task<IActionResult> Classes(string roleName)
+        [Route("Panel/Classes/{roleName}/{pageNumber}")]
+        public async Task<IActionResult> Classes(string roleName, int pageNumber)
         {
+
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
             if (!(await _userManager.IsInRoleAsync(user, roleName)) || roleName == "Admin")
             {
                 return RedirectToAction("Index", "Home", new { area = "Panel" });
             }
+
             ViewBag.Role = roleName;
             IEnumerable<ClassesViewModel> classes = new List<ClassesViewModel>();
-
+            var classesCount = 0;
 
             if (roleName == "Teacher")
             {
-                classes = await this._context.ClassesRepository.GetTeachersClassesAsync(user);
+                classes = await this._context.ClassesRepository
+                    .GetTeachersClassesByUserByPageNumberAsync(user, pageNumber);
+
+                classesCount = await this._context.ClassesRepository
+                    .GetTeachersClassesCountByPageNumberAsync(user);
             }
             else if (roleName == "Student")
             {
+                classes = await this._context.ClassesRepository
+                    .GetStudentsClassesByUserByPageNumberAsync(user, pageNumber);
 
-                classes = await this._context.ClassesRepository.GetStudentsClassesAsync(user);
+                classesCount = await this._context.ClassesRepository
+                    .GetStudentsClassesCountByPageNumberAsync(user);
+            }
+            // Set ViewBags
+            ViewBag.HasNext = false;
+            ViewBag.HasPrev = false;
+            ViewBag.CurrentPage = pageNumber;
+            ViewBag.ClassesCount = classesCount;
 
+            if (pageNumber != 1 && classes.Count() <= 0)
+            {
+                return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = roleName, pageNumber = 1 });
             }
 
-                return View(classes);
+            // Check Prev And Next Buttons
+            var thisPageCount = DefaultPageCount.Count * pageNumber;
+
+            if (classesCount > thisPageCount)
+            {
+                ViewBag.HasNext = true;
+            }
+
+            if (!(thisPageCount - 10 <= 0))
+            {
+                ViewBag.HasPrev = true;
+            }
+
+            return View(classes);
             
         }
 

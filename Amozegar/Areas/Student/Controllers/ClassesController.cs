@@ -31,6 +31,14 @@ namespace Amozegar.Areas.Student.Controllers
         }
 
 
+        // Utilities
+
+        private IActionResult returnToClassLists()
+        {
+            return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Student", pageNumber = "1" });
+        }
+
+        // Main Methods
 
         [Route("Add-Class")]
         public IActionResult AddClass()
@@ -104,7 +112,7 @@ namespace Amozegar.Areas.Student.Controllers
 
             await this._context.SaveChangesAsync();
 
-            return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Student" });
+            return this.returnToClassLists();
         }
 
         [Route("Delete-Class/{classId}")]
@@ -116,7 +124,7 @@ namespace Amozegar.Areas.Student.Controllers
 
             if (exisitClass == null)
             {
-                return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Student" });
+                return this.returnToClassLists();
             }
             var classModel = new DeleteClassViewModel()
             {
@@ -135,7 +143,7 @@ namespace Amozegar.Areas.Student.Controllers
 
             if (exisitClass == null)
             {
-                return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Student" });
+                return this.returnToClassLists();
             }
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
 
@@ -153,7 +161,7 @@ namespace Amozegar.Areas.Student.Controllers
 
             await this._context.SaveChangesAsync();
 
-            return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Student" });
+            return this.returnToClassLists();
         }
 
     }

@@ -36,6 +36,15 @@ namespace Amozegar.Areas.Teacher.Controllers
             return existClass;
         }
 
+        // Utilities
+
+        private IActionResult returnToClassLists()
+        {
+            return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher", pageNumber = "1" });
+        }
+
+
+        // Main Methods
 
         [Route("Add-Class")]
         public IActionResult AddClass()
@@ -92,7 +101,7 @@ namespace Amozegar.Areas.Teacher.Controllers
                 await this._context.SaveChangesAsync();
             }
 
-            return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher" });
+            return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher", pageNumber = "1" });
         }
 
 
@@ -103,7 +112,7 @@ namespace Amozegar.Areas.Teacher.Controllers
 
             if (existClass == null)
             {
-                return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher" });
+                return this.returnToClassLists();
             }
 
             var classModel = new DeleteClassViewModel()
@@ -123,7 +132,7 @@ namespace Amozegar.Areas.Teacher.Controllers
 
             if (existClass == null)
             {
-                return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher" });
+                return this.returnToClassLists();
             }
 
             var deleteState = await this._context.ClassStateRepository.GetClassStateByStateAsync("Deleted");
@@ -133,7 +142,7 @@ namespace Amozegar.Areas.Teacher.Controllers
             await this._context.SaveChangesAsync();
 
 
-            return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher" });
+            return this.returnToClassLists();
         }
 
 
@@ -144,7 +153,7 @@ namespace Amozegar.Areas.Teacher.Controllers
 
             if (existClass == null)
             {
-                return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher" });
+                return this.returnToClassLists();
             }
 
             var editClass = new EditClassViewModel()
@@ -169,7 +178,7 @@ namespace Amozegar.Areas.Teacher.Controllers
 
             if (existClass == null)
             {
-                return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher" });
+                return this.returnToClassLists();
             }
 
             var IsClassExisit = await this._context.ClassesRepository
@@ -202,7 +211,7 @@ namespace Amozegar.Areas.Teacher.Controllers
 
 
 
-            return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher" });
+            return this.returnToClassLists();
         }
 
 

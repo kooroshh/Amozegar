@@ -55,10 +55,21 @@
                     {
                         @if (User.IsInRole(role.Name))
                         {
-                            <a asp-action="Classes" asp-controller="Home" asp-area="Panel" asp-route-roleName="@role.Name" class="menu-item">
-                                <i class="fas fa-user-cog"></i>
-                                <span>پنل @role.PersianName</span>
-                            </a>
+                            if(role.Name == "Admin")
+                            {
+                                <a asp-action="Classes" asp-controller="Home" asp-area="Panel" asp-route-roleName="@role.Name" class="menu-item">
+                                    <i class="fas fa-user-cog"></i>
+                                    <span>پنل @role.PersianName</span>
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-action="Classes" asp-controller="Home" asp-area="Panel" asp-route-roleName="@role.Name" asp-route-pageNumber="1" class="menu-item">
+                                    <i class="fas fa-user-cog"></i>
+                                    <span>پنل @role.PersianName</span>
+                                </a>
+                            }
+
                         }
                     }
 

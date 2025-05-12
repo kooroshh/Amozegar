@@ -3,6 +3,7 @@ using Amozegar.Areas.Panel.Models;
 using Amozegar.Areas.Teacher.Models;
 using Amozegar.Data.Repositories.Interfaces;
 using Amozegar.Models;
+using Amozegar.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -56,8 +57,11 @@ namespace Amozegar.Data.Repositories.Implementations
             return exisitClass;
         }
 
-        public async Task<IEnumerable<ClassesViewModel>> GetStudentsClassesAsync(User user)
+        public async Task<IEnumerable<ClassesViewModel>> GetStudentsClassesByUserByPageNumberAsync(User user, int pageNumber)
         {
+            int page = pageNumber > 0 ? pageNumber : 0;
+            int pageSize = pageNumber > 0 ? DefaultPageCount.Count : 0;
+
             var classes = await this._context.Classes
                 .Include(c => c.ClassState)
                 .Include(c => c.Teacher)
@@ -72,6 +76,8 @@ namespace Amozegar.Data.Repositories.Implementations
                             stc.State.State != "Dropped"
                         )
                 )
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(c => new ClassesViewModel()
                 {
                     ClassId = c.ClassId,
@@ -88,11 +94,36 @@ namespace Amozegar.Data.Repositories.Implementations
             return classes;
         }
 
-        public async Task<IEnumerable<ClassesViewModel>> GetTeachersClassesAsync(User user)
-        { 
+        public async Task<int> GetStudentsClassesCountByPageNumberAsync(User user)
+        {
+
+            var classesCount = await this._context.Classes
+                .Include(c => c.ClassState)
+                .Include(c => c.Teacher)
+                .Include(c => c.StudentToClasses)
+                .ThenInclude(cl => cl.State)
+                .Where(cls =>
+                    cls.ClassState.State == "Active" &&
+                    cls.StudentToClasses
+                        .Any(stc =>
+                            stc.StudentId == user.Id &&
+                            stc.ClassId == cls.ClassId &&
+                            stc.State.State != "Dropped"
+                        )
+                ).CountAsync();
+            return classesCount;
+        }
+
+        public async Task<IEnumerable<ClassesViewModel>> GetTeachersClassesByUserByPageNumberAsync(User user, int pageNumber)
+        {
+            int page = pageNumber > 0 ? pageNumber : 0;
+            int pageSize = pageNumber > 0 ? DefaultPageCount.Count : 0;
+
             var classes = await this._dbSet
                 .Include(c => c.ClassState)
                 .Where(classes => classes.TeacherId == user.Id && classes.ClassState.State == "Active")
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(c => new ClassesViewModel
                 {
                     ClassId = c.ClassId,
@@ -102,6 +133,15 @@ namespace Amozegar.Data.Repositories.Implementations
                     ClassIdentity = c.ClassIdentity
                 }).ToListAsync();
             return classes;
+        }
+
+        public async Task<int> GetTeachersClassesCountByPageNumberAsync(User user)
+        {
+            var classesCount = await this._dbSet
+                .Include(c => c.ClassState)
+                .Where(classes => classes.TeacherId == user.Id && classes.ClassState.State == "Active")
+                .CountAsync();
+            return classesCount;
         }
 
         public async Task<bool> IsClassForTeacherByClassIdentityAndUserIdAsync(string classIdentity, string userId)

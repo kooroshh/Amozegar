@@ -6,8 +6,10 @@ namespace Amozegar.Data.Repositories.Interfaces
 {
     public interface IClassesRepository : IGenericRepository<ClassRoam>
     {
-        Task<IEnumerable<ClassesViewModel>> GetStudentsClassesAsync(User user);
-        Task<IEnumerable<ClassesViewModel>> GetTeachersClassesAsync(User user);
+        Task<IEnumerable<ClassesViewModel>> GetStudentsClassesByUserByPageNumberAsync(User user, int pageNumber);
+        Task<int> GetStudentsClassesCountByPageNumberAsync(User user);
+        Task<IEnumerable<ClassesViewModel>> GetTeachersClassesByUserByPageNumberAsync(User user, int pageNumber);
+        Task<int> GetTeachersClassesCountByPageNumberAsync(User user);
         Task<ClassRoam?> GetByCheckStudentIsInClassAsync(string studentName, int classId);
         Task<ClassRoam?> GetActiveClassByIdentityAsync(string classIdentity);
         Task<ClassRoam?> GetClassByIdAndStateAsync(int classId, string teacherName, string state);

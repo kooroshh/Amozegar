@@ -29,9 +29,9 @@ namespace Amozegar.Data.Repositories.Implementations
 
             var notifications = await this._context.Notifications
                 .Where(n => n.ClassId == classId)
+                .OrderByDescending(n => n.CreatedAt)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .OrderByDescending(n => n.CreatedAt)
                 .Select(c => new NotificationsViewModel()
                 {
                     NotificationId = c.NotificationId,
