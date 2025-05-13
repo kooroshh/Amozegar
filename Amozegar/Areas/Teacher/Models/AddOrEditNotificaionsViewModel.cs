@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Amozegar.Models;
+using Amozegar.Areas.Shared.Models;
 using Amozegar.Models.CustomAnnotations;
 
 namespace Amozegar.Areas.Teacher.Models

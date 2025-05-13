@@ -133,14 +133,14 @@ namespace Amozegar.Data.SeedData
             #endregion
 
 
-            #region Add PictureTypes
+            #region Add Table Types
 
-            string[] pictureTypes = { "Notifications" };
-            foreach (var type in pictureTypes)
+            string[] tableTypes = { "Notifications" };
+            foreach (var type in tableTypes)
             {
-                if (!await context.PictureTypesRepository.AnyAsync(cs => cs.Type == type))
+                if (!await context.TableTypesRepository.AnyAsync(cs => cs.Type == type))
                 {
-                    await context.PictureTypesRepository.AddAsync(new PictureType()
+                    await context.TableTypesRepository.AddAsync(new TableType()
                     {
                         Type = type
                     });

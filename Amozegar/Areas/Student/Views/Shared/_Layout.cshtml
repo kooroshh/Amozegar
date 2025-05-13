@@ -45,7 +45,7 @@
                     </a>
                     <a asp-action="Index" asp-controller="Notifications" asp-area="Shared" asp-route-classId="@ViewBag.ClassId" asp-route-roleName="Student" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "ShowNotifications" ? "active" : "")">
                         <i class="fa-solid fa-message"></i>
-                        <span>اعلانات</span>
+                        <span>اعلانات @await Component.InvokeAsync("NotReadComponent", new { type = "Notifications" })</span>
                     </a>
                     <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "Edit" ? "active" : "")">
                         <i class="fas fa-user-edit"></i>
@@ -90,7 +90,7 @@
                     </div>
                 </div>
 
-                <partial name="~/Areas/Shared/PartialViews/ClassDetails.cshtml" model="@ViewBag.classId" />
+                <partial name="~/Areas/Shared/PartialViews/_ClassDetails.cshtml" model="@ViewBag.classId" />
 
                 @RenderBody()
             </div>

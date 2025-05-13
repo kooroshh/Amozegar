@@ -616,6 +616,11 @@ body {
     color: var(--dark-color);
 }
 
+.notification-text{
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
 .notification-date {
     font-size: 0.85rem;
     color: var(--gray-color);

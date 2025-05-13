@@ -18,7 +18,8 @@ namespace Amozegar.Data
         public DbSet<ClassStates> ClassesStates { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Picture> Pictures { get; set; }
-        public DbSet<PictureType> PictureTypes { get; set; }
+        public DbSet<TableType> TableTypes { get; set; }
+        public DbSet<UserView> UsersViews { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

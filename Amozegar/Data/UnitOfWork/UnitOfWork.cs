@@ -16,9 +16,10 @@ namespace Amozegar.Data.UnitOfWork
         private IClassStudentsRepository _classStudentsRepository;
         private IClassStudentsStatesRepository _classStudentsStatesRepository;
         private IClassStateRepository _classStateRepository;
-        private IGenericRepository<PictureType> _pictureTypesRepository;
+        private IGenericRepository<TableType> _pictureTypesRepository;
         private IPicturesRepository _picturesRepository;
         private INotificationsRepository _notificationRepository;
+        private IUsersViewsRepository _usersViewsRepository;
 
         public UnitOfWork(AmozegarContext context, UserManager<User> userManager)
         {
@@ -86,13 +87,13 @@ namespace Amozegar.Data.UnitOfWork
             }
         }
 
-        public IGenericRepository<PictureType> PictureTypesRepository
+        public IGenericRepository<TableType> TableTypesRepository
         {
             get
             {
                 if (this._pictureTypesRepository == null)
                 {
-                    this._pictureTypesRepository = new GenericRepository<PictureType>(this._context);
+                    this._pictureTypesRepository = new GenericRepository<TableType>(this._context);
                 }
                 return this._pictureTypesRepository;
             }
@@ -119,6 +120,18 @@ namespace Amozegar.Data.UnitOfWork
                     this._picturesRepository = new PicturesRepository(this._context);
                 }
                 return this._picturesRepository;
+            }
+        }
+
+        public IUsersViewsRepository UsersViewsRepository
+        {
+            get
+            {
+                if (this._usersViewsRepository == null)
+                {
+                    this._usersViewsRepository = new UsersViewsRepository(this._context);
+                }
+                return this._usersViewsRepository;
             }
         }
 

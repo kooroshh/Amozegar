@@ -61,12 +61,12 @@ namespace Amozegar.Data.Repositories.Implementations
                 return null;
             }
 
-            var pictureType = await this._context.PictureTypes
+            var pictureType = await this._context.TableTypes
                 .SingleAsync(pt => pt.Type == "Notifications");
 
 
             var pictures = await this._context.Pictures
-                .Where(p => p.PictureType == pictureType && p.PictureTypeRecordId == notification.NotificationId)
+                .Where(p => p.TableType == pictureType && p.TableTypeRecordId == notification.NotificationId)
                 .Select(p => p.PicturePath)
                 .ToListAsync();
 
@@ -101,13 +101,13 @@ namespace Amozegar.Data.Repositories.Implementations
                 })
                 .ToListAsync();
 
-            var pictureType = await this._context.PictureTypes
+            var pictureType = await this._context.TableTypes
                 .SingleAsync(pt => pt.Type == "Notifications");
 
             foreach(var notification in notifications)
             {
                 notification.PicturePaths = await this._context.Pictures
-                .Where(p => p.PictureType == pictureType && p.PictureTypeRecordId == notification.NotificationId)
+                .Where(p => p.TableType == pictureType && p.TableTypeRecordId == notification.NotificationId)
                 .Select(p => p.PicturePath)
                 .ToListAsync();
             }

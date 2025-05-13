@@ -3,14 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Amozegar.Models
 {
-    public class Picture
+    public class UserView
     {
         [Key]
-        public int PictureId { get; set; }
+        public int UserViewId { get; set; }
 
         [Required]
-        [MaxLength(255)]
-        public string PicturePath { get; set; }
+        public string UserId { get; set; }
 
         [Required]
         public int TableTypeId { get; set; }
@@ -21,5 +20,8 @@ namespace Amozegar.Models
 
         [ForeignKey("TableTypeId")]
         public TableType TableType { get; set; }
+
+        [ForeignKey("UserId")]
+        public User User { get; set; }
     }
 }

@@ -10,10 +10,12 @@ namespace Amozegar.Areas.Shared.Controllers
     public class NotificationsController : BaseController
     {
         private IUnitOfWork _context;
+        private UserManager<User> _userManager;
 
-        public NotificationsController(IUnitOfWork context)
+        public NotificationsController(IUnitOfWork context, UserManager<User> userManager)
         {
             this._context = context;
+            this._userManager = userManager;
         }
 
         public async Task<IActionResult> Index(string classId, string roleName, int pageNumber)
@@ -45,7 +47,9 @@ namespace Amozegar.Areas.Shared.Controllers
                 ViewBag.HasPrev = true;
             }
 
-
+            var user = await this._userManager.FindByNameAsync(User.Identity.Name);
+            await this._context.UsersViewsRepository
+                .ReadAllNotificationsAsync(user);
 
             return View(notifications);
         }

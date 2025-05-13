@@ -1,4 +1,5 @@
-﻿using Amozegar.Data.Repositories.Interfaces;
+﻿using Amozegar.Areas.Shared.Models;
+using Amozegar.Data.Repositories.Interfaces;
 using Amozegar.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,9 +11,9 @@ namespace Amozegar.Data.Repositories.Implementations
         {
         }
 
-        private async Task<PictureType> getPictureTypeByType(string type)
+        private async Task<TableType> getPictureTypeByType(string type)
         {
-            return await this._context.PictureTypes
+            return await this._context.TableTypes
                 .SingleAsync(pt => pt.Type == type);
         }
 
@@ -23,9 +24,9 @@ namespace Amozegar.Data.Repositories.Implementations
             var newPicture = new Picture()
             {
                 PicturePath = path,
-                PictureType = pictureType,
-                PictureTypeId = pictureType.TypeId,
-                PictureTypeRecordId = recordId
+                TableType = pictureType,
+                TableTypeId = pictureType.TypeId,
+                TableTypeRecordId = recordId
             };
 
             await this._context.Pictures.AddAsync(newPicture);
@@ -37,7 +38,7 @@ namespace Amozegar.Data.Repositories.Implementations
             var pictureType = await this.getPictureTypeByType(type);
 
             var pictures = await this._context.Pictures
-                .Where(p => p.PictureType == pictureType && p.PictureTypeRecordId == recordId)
+                .Where(p => p.TableType == pictureType && p.TableTypeRecordId == recordId)
                 .ToListAsync();
 
             this._context.Pictures.RemoveRange(pictures);
@@ -48,7 +49,7 @@ namespace Amozegar.Data.Repositories.Implementations
             var pictureType = await this.getPictureTypeByType(type);
 
             var pictures = await this._context.Pictures
-                .Where(p => p.PictureType == pictureType && p.PictureTypeRecordId == recordId)
+                .Where(p => p.TableType == pictureType && p.TableTypeRecordId == recordId)
                 .Select(p => p.PicturePath)
                 .ToListAsync();
 
@@ -60,7 +61,7 @@ namespace Amozegar.Data.Repositories.Implementations
             var pictureType = await this.getPictureTypeByType(type);
 
             var pictures = await this._context.Pictures
-                .Where(p => p.PictureType == pictureType && p.PictureTypeRecordId == recordId)
+                .Where(p => p.TableType == pictureType && p.TableTypeRecordId == recordId)
                 .Select(p => new PictureForEditViewModel()
                 {
                     PicturePath = p.PicturePath,
@@ -77,8 +78,8 @@ namespace Amozegar.Data.Repositories.Implementations
 
             var picture = await this._context.Pictures
                 .SingleOrDefaultAsync(p =>
-                    p.PictureType == pictureType &&
-                    p.PictureTypeRecordId == recordId &&
+                    p.TableType == pictureType &&
+                    p.TableTypeRecordId == recordId &&
                     p.PictureId == pictureId
                 );
 

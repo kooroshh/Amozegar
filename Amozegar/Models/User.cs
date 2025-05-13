@@ -12,5 +12,6 @@ namespace Amozegar.Models
         public string FullName { get; set; }
 
         public ICollection<ClassStudents> StudentToClasses { get; set; }
+        public ICollection<UserView> UserViews { get; set; }
     }
 }

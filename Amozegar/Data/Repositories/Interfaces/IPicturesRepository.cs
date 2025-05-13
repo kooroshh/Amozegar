@@ -1,4 +1,5 @@
-﻿using Amozegar.Models;
+﻿using Amozegar.Areas.Shared.Models;
+using Amozegar.Models;
 
 namespace Amozegar.Data.Repositories.Interfaces
 {
