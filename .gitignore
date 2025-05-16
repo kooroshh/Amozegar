@@ -7,3 +7,8 @@
 *.vspscc
 *.vssscc
 
+**/images/
+!**/images/classes/classes.png
+!**/images/home
+!**/images/users/user.webp
+
