@@ -13,6 +13,9 @@ namespace Amozegar.Models
         public string PicturePath { get; set; }
 
         [Required]
+        public int ClassId { get; set; }
+
+        [Required]
         public int TableTypeId { get; set; }
 
         [Required]
@@ -21,5 +24,8 @@ namespace Amozegar.Models
 
         [ForeignKey("TableTypeId")]
         public TableType TableType { get; set; }
+
+        [ForeignKey("ClassId")]
+        public ClassRoam ClassRoam { get; set; }
     }
 }

@@ -1,0 +1,24 @@
+﻿@model ChangeHomeworkStateViewModel
+@{
+    ViewData["Title"] = "حذف تکلیف";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-2">
+    <div class="alert alert-warning">
+        آیا از حذف کردن تکلیف با عنوان @Model.HomeworkTitle اطمینان دارید؟
+        <span class="text-danger" asp-validation-for="@Model.HomeworkTitle"></span>
+        <form method="post" class="my-3">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(n => n.HomeworkId)
+            @Html.HiddenFor(n => n.HomeworkTitle)
+            <a asp-action="Homeworks"
+               asp-controller="Home"
+               asp-area="Teacher"
+               asp-route-classId="@ViewBag.ClassId"
+               asp-route-pageNumber="1"
+               class="btn btn-warning">برگشت به تکالیف</a>
+            <button type="submit" class="btn btn-danger">حذف کردن</button>
+        </form>
+    </div>
+</div>

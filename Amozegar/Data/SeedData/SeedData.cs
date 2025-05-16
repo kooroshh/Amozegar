@@ -98,7 +98,7 @@ namespace Amozegar.Data.SeedData
 
             #region Add ClassStudents States
 
-            string[] StudentsStates = { "Accepted", "Rejected", "Pending", "Dropped", "Banned", "Removed" };
+                string[] StudentsStates = { "Accepted", "Rejected", "Pending", "Dropped", "Banned", "Removed" };
                 string[] StudentsStatesPersian = { "قبول شده", "قبول نشده", "در انتظار تأیید", "ترک کرده", "بن شده", "اخراج شده" };
                 foreach (var state in StudentsStates)
                 {
@@ -135,7 +135,7 @@ namespace Amozegar.Data.SeedData
 
             #region Add Table Types
 
-            string[] tableTypes = { "Notifications" };
+            string[] tableTypes = { "Notifications", "Homeworks", "StudentsHomeworks" };
             foreach (var type in tableTypes)
             {
                 if (!await context.TableTypesRepository.AnyAsync(cs => cs.Type == type))
@@ -143,6 +143,43 @@ namespace Amozegar.Data.SeedData
                     await context.TableTypesRepository.AddAsync(new TableType()
                     {
                         Type = type
+                    });
+                }
+            }
+
+            #endregion
+
+
+            #region Add Homework States
+
+            string[] homeworkState = { "Closed", "Open", "Deleted" };
+            string[] homeworkPersianState = { "بسته شده", "باز", "حذف شده" };
+            foreach (var state in homeworkState)
+            {
+                if (!await context.HomeworkStateRepository.AnyAsync(hs => hs.State == state))
+                {
+                    await context.HomeworkStateRepository.AddAsync(new HomeworkState()
+                    {
+                        State = state,
+                        PersianState = homeworkPersianState[Array.IndexOf(homeworkState, state)]
+                    });
+                }
+            }
+
+            #endregion
+
+            #region Add Homework Student States
+
+            string[] homeworkStudenState = { "Accepted", "Rejected", "Pending" };
+            string[] homeworkStudentPersianState = { "قبول شده", "قبول نشده",  "در حال بررسی"};
+            foreach (var state in homeworkStudenState)
+            {
+                if (!await context.StudentHomeworkStateRepository.AnyAsync(shs => shs.State == state))
+                {
+                    await context.StudentHomeworkStateRepository.AddAsync(new StudentHomeworkState()
+                    {
+                        State = state,
+                        PersianState = homeworkStudentPersianState[Array.IndexOf(homeworkStudenState, state)]
                     });
                 }
             }

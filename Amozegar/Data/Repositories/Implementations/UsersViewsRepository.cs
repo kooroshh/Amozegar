@@ -15,6 +15,15 @@ namespace Amozegar.Data.Repositories.Implementations
 
         // Utilities
 
+        private async Task<int> getClassIdByClassIdentity(string classIdentity)
+        {
+            var classId = await this._context.Classes
+                .Select(c => new { c.ClassIdentity, c.ClassId })
+                .SingleAsync(c => c.ClassIdentity == classIdentity);
+
+            return classId.ClassId;
+        }
+
         private async Task<TableType> getTableTypeByTypeAsync(string type)
         {
             var tableType = await this._context.TableTypes
@@ -23,21 +32,21 @@ namespace Amozegar.Data.Repositories.Implementations
             return tableType;
         }
 
-        private async Task<List<int>> getReadRecordsByTypeAsync(TableType type, string userId)
+        private async Task<List<int>> getReadRecordsByUserIdByClassIdByTypeAsync(TableType type, string userId, int classId)
         {
             var readRecords = await this._context.UsersViews
-                .Where(uv => uv.TableType == type && uv.UserId == userId)
+                .Where(uv => uv.TableType == type && uv.UserId == userId && uv.ClassId == classId)
                 .Select(uv => uv.TableTypeRecordId)
                 .ToListAsync();
 
             return readRecords;
         }
 
-        private async Task<List<int>> getReadRecordsByTypeAsync(string type, string userId)
+        private async Task<List<int>> getReadRecordsByUserIdByClassIdByTypeAsync(string type, string userId, int classId)
         {
             var tableType = await this.getTableTypeByTypeAsync(type);
             var readRecords = await this._context.UsersViews
-                .Where(uv => uv.TableType == tableType && uv.UserId == userId)
+                .Where(uv => uv.TableType == tableType && uv.UserId == userId && uv.ClassId == classId)
                 .Select(uv => uv.TableTypeRecordId)
                 .ToListAsync();
 
@@ -46,32 +55,33 @@ namespace Amozegar.Data.Repositories.Implementations
 
         // Main Methods
 
-        public async Task<int> GetUnreadNotificationsCountByUserIdAsync(string userId)
+        public async Task<int> GetUnreadNotificationsCountByUserIdAsync(string userId, string classIdentity)
         {
-
-            var readNotifications = await this.getReadRecordsByTypeAsync("Notifications", userId);
+            var classId = await this.getClassIdByClassIdentity(classIdentity);
+            var readNotifications = await this.getReadRecordsByUserIdByClassIdByTypeAsync("Notifications", userId, classId);
 
             var notificationsCount = await this._context.Notifications
-                .Where(n => !readNotifications.Contains(n.NotificationId))
-                .CountAsync();
+                .CountAsync(n => !readNotifications.Contains(n.NotificationId) && n.ClassId == classId);
 
             return notificationsCount;
         }
 
-        public async Task ReadAllNotificationsAsync(User user)
+        public async Task ReadAllNotificationsAsync(User user, string classIdentity)
         {
+            var classId = await this.getClassIdByClassIdentity(classIdentity);
             var type = await this.getTableTypeByTypeAsync("Notifications");
-            var readNotifications = await this.getReadRecordsByTypeAsync(type, user.Id);
+            var readNotifications = await this.getReadRecordsByUserIdByClassIdByTypeAsync(type, user.Id, classId);
 
             var unreadNotifications = await this._context.Notifications
-                .Where(n => !readNotifications.Contains(n.NotificationId))
+                .Where(n => !readNotifications.Contains(n.NotificationId) && n.ClassId == classId)
                 .Select(n => new UserView()
                 {
                     User = user,
                     UserId = user.Id,
                     TableType = type,
                     TableTypeId = type.TypeId,
-                    TableTypeRecordId = n.NotificationId
+                    TableTypeRecordId = n.NotificationId,
+                    ClassId = classId
                 })
                 .ToListAsync();
 

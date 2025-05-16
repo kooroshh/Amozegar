@@ -26,5 +26,7 @@ namespace Amozegar.Models
 
         [ForeignKey("ClassStudentStateId")]
         public ClassStudentState State { get; set; }
+
+        public ICollection<StudentHomework> StudentsHomeworks { get; set; }
     }
 }

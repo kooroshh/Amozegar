@@ -53,11 +53,11 @@
                     </a>
                     <a asp-action="Index" asp-controller="Notifications" asp-area="Shared" asp-route-classId="@ViewBag.ClassId" asp-route-roleName="Teacher" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "ShowNotifications" ? "active" : "")">
                         <i class="fa-solid fa-message"></i>
-                        <span>اعلانات @await Component.InvokeAsync("NotReadComponent", new { type = "Notifications" })</span>
+                        <span>اعلانات @await Component.InvokeAsync("NotReadComponent", new { type = "Notifications", classIdentity = ViewBag.ClassId })</span>
                     </a>
-                    <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "ChangePassword" ? "active" : "")">
-                        <i class="fas fa-key"></i>
-                        <span>اعلانات</span>
+                    <a asp-action="Homeworks" asp-controller="Home" asp-area="Teacher" asp-route-classId="@ViewBag.ClassId" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "Homeworks" ? "active" : "")">
+                        <i class="fa-solid fa-pen"></i>
+                        <span>تکالیف</span>
                     </a>
 
                 </nav>

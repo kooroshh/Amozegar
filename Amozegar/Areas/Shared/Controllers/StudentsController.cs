@@ -46,7 +46,7 @@ namespace Amozegar.Areas.Shared.Controllers
 
                 case "Banned-Students-List":
                     {
-                        ViewData["Title"] = "لیست دانش آموزان کلاس";
+                        ViewData["Title"] = "لیست دانش آموزان مسدود شده کلاس";
                         students
                             .AddRange(
                                 await this._context.ClassStudentsRepository

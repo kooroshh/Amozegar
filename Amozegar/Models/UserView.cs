@@ -9,6 +9,9 @@ namespace Amozegar.Models
         public int UserViewId { get; set; }
 
         [Required]
+        public int ClassId { get; set; }
+
+        [Required]
         public string UserId { get; set; }
 
         [Required]
@@ -23,5 +26,8 @@ namespace Amozegar.Models
 
         [ForeignKey("UserId")]
         public User User { get; set; }
+
+        [ForeignKey("ClassId")]
+        public ClassRoam ClassRoam { get; set; }
     }
 }

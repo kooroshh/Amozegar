@@ -26,47 +26,6 @@ namespace Amozegar.Areas.Teacher.Controllers
                 .GetNotificationByIdAndClassIdentityAsync(ViewBag.ClassId, notificationId);
         }
 
-        private async Task<int> getCounterAsync(int notificationId)
-        {
-            var picturesPaths = await this._context.PictureRepository
-                .GetPicturesPathsByTypeAndRecordIdAsync(notificationId, "Notifications");
-
-            var lastCount = 0;
-
-            foreach (var picture in picturesPaths)
-            {
-                var startIndex = picture.IndexOf("/") + 1;
-                var lastIndex = picture.IndexOf(".");
-                var number = int.Parse(picture.Substring(startIndex, lastIndex - startIndex));
-
-                if (number > lastCount)
-                {
-                    lastCount = number;
-                }
-            }
-
-            return (lastCount + 1);
-        }
-
-        private async Task addImagesAsync(int notificationId, List<IFormFile>? pictures)
-        {
-            if (pictures != null && pictures.Count() > 0)
-            {
-                int counter = await this.getCounterAsync(notificationId);
-                foreach (var picture in pictures)
-                {
-                    string fileName = $"{counter}" + Path.GetExtension(picture.FileName);
-                    await picture.SaveImage(fileName, "notifications", $"{notificationId}");
-                    fileName = $"{notificationId}/" + fileName;
-                    await this._context.PictureRepository
-                        .AddImagesAsync(fileName, notificationId, "Notifications");
-
-                    counter++;
-                }
-                await this._context.SaveChangesAsync();
-            }
-        }
-
         private IActionResult returnToNotifications()
         {
             return RedirectToAction("Notifications", "Home", new { area = "Teacher", classId = ViewBag.classId, pageNumber = 1 });
@@ -80,7 +39,7 @@ namespace Amozegar.Areas.Teacher.Controllers
         {
             var notification = await this.getNotificationByIdAsync(notificationId);
             var picture = await this._context.PictureRepository
-                .GetPictureByTypeAndRecordIdAndPictureIdAsync(pictureId, notificationId, "Notifications");
+                .GetPictureByClassIdentityByTypeAndRecordIdAndPictureIdAsync(this.classId, pictureId, notificationId, "Notifications");
 
             if (notification == null || picture == null)
             {
@@ -109,7 +68,7 @@ namespace Amozegar.Areas.Teacher.Controllers
             var notification = await this.getNotificationByIdAsync(notificationId);
 
             var picture = await this._context.PictureRepository
-                .GetPictureByTypeAndRecordIdAndPictureIdAsync(editPicture.PictureId, notificationId, "Notifications");
+                .GetPictureByClassIdentityByTypeAndRecordIdAndPictureIdAsync(this.classId, editPicture.PictureId, notificationId, "Notifications");
 
             if (notification == null || picture == null || pictureId != editPicture.PictureId)
             {
@@ -166,7 +125,10 @@ namespace Amozegar.Areas.Teacher.Controllers
                 return this.returnToNotifications();
             }
 
-            await this.addImagesAsync(notification.NotificationId, addPicture.Pictures);
+            if (addPicture.Pictures != null)
+            {
+                await addPicture.Pictures.SaveImages(this.classId, notification.NotificationId, _context, "Notifications");
+            }
 
             return RedirectToAction("EditNotification", "Notifications", new { area = "Teacher", classId = classId, notificationId = notificationId });
         }
@@ -230,7 +192,10 @@ namespace Amozegar.Areas.Teacher.Controllers
                 .AddAsync(notification);
             await this._context.SaveChangesAsync();
 
-            await this.addImagesAsync(notification.NotificationId, add.Pictures);
+            if (add.Pictures != null)
+            {
+                await add.Pictures.SaveImages(this.classId, notification.NotificationId, _context, "Notifications");
+            }
 
             return this.returnToNotifications();
         }
@@ -267,7 +232,7 @@ namespace Amozegar.Areas.Teacher.Controllers
             }
 
 
-            await this._context.PictureRepository.DeleteByTypeAndRecordIdAsync(notificationId, "Notifications");
+            await this._context.PictureRepository.DeleteByClassIdentityByTypeAndRecordIdAsync(this.classId, notificationId, "Notifications");
             var imagesPath = Path.Combine(
                 Directory.GetCurrentDirectory(),
                 "wwwroot",
@@ -301,7 +266,7 @@ namespace Amozegar.Areas.Teacher.Controllers
 
 
             var picturesPaths = await this._context.PictureRepository
-                .GetPicturesForEditByTypeAndRecordIdAsync(notificationId, "Notifications");
+                .GetPicturesForEditByClassIdentityByTypeAndRecordIdAsync(this.classId, notificationId, "Notifications");
 
             ViewBag.NotificationId = notificationId;
 

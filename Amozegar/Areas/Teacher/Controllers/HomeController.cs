@@ -119,5 +119,32 @@ namespace Amozegar.Areas.Teacher.Controllers
             return View(notifications);
         }
 
+
+
+        [Route("Homeworks/{pageNumber}")]
+        public async Task<IActionResult> Homeworks(string classId, int pageNumber)
+        {
+            ViewBag.Route = "Homeworks";
+            var classHomeworks = await this._context.HomeworkRepository
+                .GetHomeworskByClassIdentityByPageNumberAsync(classId, pageNumber);
+
+            this.setPaginationViewBags(pageNumber);
+
+            if (validateUserPageNumber(pageNumber, classHomeworks.Count()))
+            {
+                return this.returnToPaginationView();
+            }
+
+            var homeworksCount = await this._context.HomeworkRepository
+                .GetHomeworksCountByClassIdentityAsync(classId);
+
+            this.checkNextOrPrevForViewBags(homeworksCount, pageNumber);
+
+            ViewBag.HomeworksCount = homeworksCount;
+
+            return View(classHomeworks);
+        }
+
+
     }
 }

@@ -4,6 +4,7 @@ using Amozegar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Amozegar.Migrations
 {
     [DbContext(typeof(AmozegarContext))]
-    partial class AmozegarContextModelSnapshot : ModelSnapshot
+    [Migration("20250515054152_addHomeworksTables")]
+    partial class addHomeworksTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,10 +161,8 @@ namespace Amozegar.Migrations
                     b.Property<int>("ClassId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("HomeworkDescription")
                         .IsRequired()
@@ -247,9 +248,6 @@ namespace Amozegar.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PictureId"));
 
-                    b.Property<int>("ClassId")
-                        .HasColumnType("int");
-
                     b.Property<string>("PicturePath")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -262,8 +260,6 @@ namespace Amozegar.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("PictureId");
-
-                    b.HasIndex("ClassId");
 
                     b.HasIndex("TableTypeId");
 
@@ -320,9 +316,6 @@ namespace Amozegar.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentHomeworkId"));
 
-                    b.Property<int>("ClassStudentId")
-                        .HasColumnType("int");
-
                     b.Property<int>("HomeworkId")
                         .HasColumnType("int");
 
@@ -330,8 +323,6 @@ namespace Amozegar.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("StudentHomeworkId");
-
-                    b.HasIndex("ClassStudentId");
 
                     b.HasIndex("HomeworkId");
 
@@ -500,9 +491,6 @@ namespace Amozegar.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserViewId"));
 
-                    b.Property<int>("ClassId")
-                        .HasColumnType("int");
-
                     b.Property<int>("TableTypeId")
                         .HasColumnType("int");
 
@@ -514,8 +502,6 @@ namespace Amozegar.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserViewId");
-
-                    b.HasIndex("ClassId");
 
                     b.HasIndex("TableTypeId");
 
@@ -706,31 +692,17 @@ namespace Amozegar.Migrations
 
             modelBuilder.Entity("Amozegar.Models.Picture", b =>
                 {
-                    b.HasOne("Amozegar.Models.ClassRoam", "ClassRoam")
-                        .WithMany("Picures")
-                        .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Amozegar.Models.TableType", "TableType")
                         .WithMany("Picture")
                         .HasForeignKey("TableTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ClassRoam");
-
                     b.Navigation("TableType");
                 });
 
             modelBuilder.Entity("Amozegar.Models.StudentHomework", b =>
                 {
-                    b.HasOne("Amozegar.Models.ClassStudents", "ClassStudent")
-                        .WithMany("StudentsHomeworks")
-                        .HasForeignKey("ClassStudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Amozegar.Models.Homework", "Homework")
                         .WithMany("StudentHomeworks")
                         .HasForeignKey("HomeworkId")
@@ -743,8 +715,6 @@ namespace Amozegar.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ClassStudent");
-
                     b.Navigation("Homework");
 
                     b.Navigation("StudentHomeworkState");
@@ -752,12 +722,6 @@ namespace Amozegar.Migrations
 
             modelBuilder.Entity("Amozegar.Models.UserView", b =>
                 {
-                    b.HasOne("Amozegar.Models.ClassRoam", "ClassRoam")
-                        .WithMany("usersViews")
-                        .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Amozegar.Models.TableType", "TableType")
                         .WithMany("UserViews")
                         .HasForeignKey("TableTypeId")
@@ -769,8 +733,6 @@ namespace Amozegar.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ClassRoam");
 
                     b.Navigation("TableType");
 
@@ -834,11 +796,7 @@ namespace Amozegar.Migrations
 
                     b.Navigation("Notifications");
 
-                    b.Navigation("Picures");
-
                     b.Navigation("StudentToClasses");
-
-                    b.Navigation("usersViews");
                 });
 
             modelBuilder.Entity("Amozegar.Models.ClassStates", b =>
@@ -849,11 +807,6 @@ namespace Amozegar.Migrations
             modelBuilder.Entity("Amozegar.Models.ClassStudentState", b =>
                 {
                     b.Navigation("ClassStudents");
-                });
-
-            modelBuilder.Entity("Amozegar.Models.ClassStudents", b =>
-                {
-                    b.Navigation("StudentsHomeworks");
                 });
 
             modelBuilder.Entity("Amozegar.Models.Homework", b =>

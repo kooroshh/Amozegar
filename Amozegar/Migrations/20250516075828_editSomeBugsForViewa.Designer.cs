@@ -4,6 +4,7 @@ using Amozegar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Amozegar.Migrations
 {
     [DbContext(typeof(AmozegarContext))]
-    partial class AmozegarContextModelSnapshot : ModelSnapshot
+    [Migration("20250516075828_editSomeBugsForViewa")]
+    partial class editSomeBugsForViewa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -247,9 +250,6 @@ namespace Amozegar.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PictureId"));
 
-                    b.Property<int>("ClassId")
-                        .HasColumnType("int");
-
                     b.Property<string>("PicturePath")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -262,8 +262,6 @@ namespace Amozegar.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("PictureId");
-
-                    b.HasIndex("ClassId");
 
                     b.HasIndex("TableTypeId");
 
@@ -706,19 +704,11 @@ namespace Amozegar.Migrations
 
             modelBuilder.Entity("Amozegar.Models.Picture", b =>
                 {
-                    b.HasOne("Amozegar.Models.ClassRoam", "ClassRoam")
-                        .WithMany("Picures")
-                        .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Amozegar.Models.TableType", "TableType")
                         .WithMany("Picture")
                         .HasForeignKey("TableTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ClassRoam");
 
                     b.Navigation("TableType");
                 });
@@ -833,8 +823,6 @@ namespace Amozegar.Migrations
                     b.Navigation("Homeworks");
 
                     b.Navigation("Notifications");
-
-                    b.Navigation("Picures");
 
                     b.Navigation("StudentToClasses");
 

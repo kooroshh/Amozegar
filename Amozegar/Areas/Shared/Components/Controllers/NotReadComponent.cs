@@ -18,7 +18,7 @@ namespace Amozegar.Areas.Shared.Components.Controllers
             this._userManager = userManager;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string type, string classIdentity = "")
+        public async Task<IViewComponentResult> InvokeAsync(string type, string classIdentity)
         {
             var count = 0;
             var user = await this._userManager.FindByNameAsync(User.Identity.Name);
@@ -27,7 +27,7 @@ namespace Amozegar.Areas.Shared.Components.Controllers
                 case "Notifications":
                     {
                         count = await this._context.UsersViewsRepository
-                            .GetUnreadNotificationsCountByUserIdAsync(user.Id);
+                            .GetUnreadNotificationsCountByUserIdAsync(user.Id, classIdentity);
                         break;
                     }
 

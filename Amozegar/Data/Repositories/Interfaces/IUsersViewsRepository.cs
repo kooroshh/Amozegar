@@ -4,7 +4,7 @@ namespace Amozegar.Data.Repositories.Interfaces
 {
     public interface IUsersViewsRepository : IGenericRepository<UserView>
     {
-        Task<int> GetUnreadNotificationsCountByUserIdAsync(string userId);
-        Task ReadAllNotificationsAsync(User user);
+        Task<int> GetUnreadNotificationsCountByUserIdAsync(string userId, string classIdentity);
+        Task ReadAllNotificationsAsync(User user, string classIdentity);
     }
 }

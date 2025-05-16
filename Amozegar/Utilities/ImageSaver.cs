@@ -1,4 +1,8 @@
-﻿namespace Amozegar.Utilities
+﻿using Amozegar.Data.UnitOfWork;
+using Amozegar.Models;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+namespace Amozegar.Utilities
 {
     public static class ImageSaver
     {
@@ -27,5 +31,26 @@
                 await file.CopyToAsync(stream);
             }
         }
+
+        public static async Task SaveImages(this List<IFormFile> files, string classIdentity,  int recordId, IUnitOfWork context, string type)
+        {
+            if (files != null && files.Count() > 0)
+            {
+                int counter = await context.PictureRepository
+                    .GetLastImageCountByClassIdentityByRecordIdByTypeForAddAsync(classIdentity, recordId, type);
+                foreach (var file in files)
+                {
+                    string fileName = $"{counter}" + Path.GetExtension(file.FileName);
+                    await file.SaveImage(fileName, type.ToLowerInvariant(), $"{recordId}");
+                    fileName = Path.Combine($"{recordId}", fileName);
+                    await context.PictureRepository
+                        .AddImagesAsync(fileName, recordId, type, classIdentity);
+
+                    counter++;
+                }
+                await context.SaveChangesAsync();
+            }
+        }
+
     }
 }

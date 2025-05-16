@@ -1,0 +1,25 @@
+﻿@model PictureForEditViewModel
+@{
+    ViewData["Title"] = "حذف تصویر";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-2">
+    <a href="~/images/homeworks/@(Model.PicturePath)" target="_blank" class="mx-auto text-center d-block my-2">
+        <img src="~/images/homeworks/@(Model.PicturePath)" class="img-fluid img-thumbnail" width="250" height="250" style="object-fit:cover;" />
+    </a>
+    <div class="alert alert-warning">
+        آیا از حذف عکس بالا اطمینان دارید؟
+        <form method="post" class="my-3">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(p => p.PictureId)
+            <a asp-action="EditHomework"
+               asp-controller="Homeworks"
+               asp-area="Teacher"
+               asp-route-classId="@ViewBag.ClassId"
+               asp-route-homeworkId="@ViewBag.HomeworkId"
+               class="btn btn-warning">برگشت به تکلیف</a>
+            <button type="submit" class="btn btn-danger">حذف</button>
+        </form>
+    </div>
+</div>

@@ -49,7 +49,7 @@ namespace Amozegar.Areas.Shared.Controllers
 
             var user = await this._userManager.FindByNameAsync(User.Identity.Name);
             await this._context.UsersViewsRepository
-                .ReadAllNotificationsAsync(user);
+                .ReadAllNotificationsAsync(user, classId);
 
             return View(notifications);
         }

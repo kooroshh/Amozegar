@@ -20,6 +20,9 @@ namespace Amozegar.Data.UnitOfWork
         private IPicturesRepository _picturesRepository;
         private INotificationsRepository _notificationRepository;
         private IUsersViewsRepository _usersViewsRepository;
+        private IHomeworkStateRepository _homeworkStateRepository;
+        private IGenericRepository<StudentHomeworkState> _studentHomeworkStateRepository;
+        private IHomeworkRepository _homeworkRepository;
 
         public UnitOfWork(AmozegarContext context, UserManager<User> userManager)
         {
@@ -132,6 +135,42 @@ namespace Amozegar.Data.UnitOfWork
                     this._usersViewsRepository = new UsersViewsRepository(this._context);
                 }
                 return this._usersViewsRepository;
+            }
+        }
+
+        public IHomeworkStateRepository HomeworkStateRepository
+        {
+            get
+            {
+                if (this._homeworkStateRepository == null)
+                {
+                    this._homeworkStateRepository = new HomeworkStateRepository(this._context);
+                }
+                return this._homeworkStateRepository;
+            }
+        }
+
+        public IGenericRepository<StudentHomeworkState> StudentHomeworkStateRepository
+        {
+            get
+            {
+                if (this._studentHomeworkStateRepository == null)
+                {
+                    this._studentHomeworkStateRepository = new GenericRepository<StudentHomeworkState>(this._context);
+                }
+                return this._studentHomeworkStateRepository;
+            }
+        }
+
+        public IHomeworkRepository HomeworkRepository
+        {
+            get
+            {
+                if (this._homeworkRepository == null)
+                {
+                    this._homeworkRepository = new HomeworkRepository(this._context);
+                }
+                return this._homeworkRepository;
             }
         }
 

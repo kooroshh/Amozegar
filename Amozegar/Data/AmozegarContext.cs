@@ -20,6 +20,10 @@ namespace Amozegar.Data
         public DbSet<Picture> Pictures { get; set; }
         public DbSet<TableType> TableTypes { get; set; }
         public DbSet<UserView> UsersViews { get; set; }
+        public DbSet<Homework> Homeworks { get; set; }
+        public DbSet<HomeworkState> HomeworksStates { get; set; }
+        public DbSet<StudentHomework> StudentsHomeworks { get; set; }
+        public DbSet<StudentHomeworkState> StudentsHomeworskStates { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -39,6 +43,11 @@ namespace Amozegar.Data
                 .HasDefaultValueSql("GETDATE()");
 
             modelBuilder.Entity<Notification>()
+                .Property(c => c.CreatedAt)
+                .HasDefaultValueSql("GETDATE()");
+
+
+            modelBuilder.Entity<Homework>()
                 .Property(c => c.CreatedAt)
                 .HasDefaultValueSql("GETDATE()");
 

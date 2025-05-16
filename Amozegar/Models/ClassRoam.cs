@@ -39,5 +39,8 @@ namespace Amozegar.Models
         public ClassStates ClassState { get; set; }
 
         public ICollection<Notification> Notifications { get; set; }
+        public ICollection<Homework> Homeworks { get; set; }
+        public ICollection<UserView> usersViews { get; set; }
+        public ICollection<Picture> Picures { get; set; }
     }
 }
