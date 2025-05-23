@@ -20,32 +20,22 @@ namespace Amozegar.Areas.Shared.Controllers
 
         public async Task<IActionResult> Index(string classId, string roleName, int pageNumber)
         {
-            ViewBag.Route = "ShowNotifications";
-            ViewBag.CurrentPage = pageNumber;
+            ViewBag.Route = "Notifications";
 
             var notifications = await this._context.NotificationsRepository
                 .GetNotificationsWithPicturesByClassIdentityByPageNumberAsync(classId, pageNumber);
 
-            if (pageNumber != 1 && notifications.Count() <= 0)
+            this.setPaginationViewBags(pageNumber);
+
+            if (this.validateUserPageNumber(pageNumber, notifications.Count()))
             {
-                pageNumber = 1;
-                return RedirectToAction("Index", "Notifications", new { classId = classId, roleName = roleName, pageNumber = pageNumber });
+                return this.returnToPaginationView();
             }
 
             var notificationsCount = await this._context.NotificationsRepository
                     .GetNotificationsCountByClassIdentityAsync(classId);
 
-            var thisPageNotificationsCount = DefaultPageCount.Count * pageNumber;
-
-            if (notificationsCount > thisPageNotificationsCount)
-            {
-                ViewBag.HasNext = true;
-            }
-
-            if (!(thisPageNotificationsCount - 10 <= 0))
-            {
-                ViewBag.HasPrev = true;
-            }
+            this.checkNextOrPrevForViewBags(notificationsCount, pageNumber);
 
             var user = await this._userManager.FindByNameAsync(User.Identity.Name);
             await this._context.UsersViewsRepository

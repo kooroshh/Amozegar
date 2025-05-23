@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Amozegar.Areas.Shared.Models;
 using Amozegar.Areas.Teacher.Models;
 using Amozegar.Data.Repositories.Interfaces;
 using Amozegar.Models;
@@ -31,11 +32,14 @@ namespace Amozegar.Data.Repositories.Implementations
 
         // Main Methods
 
-        public async Task<IEnumerable<HomeworksViewModel>> GetHomeworskByClassIdentityByPageNumberAsync(string classIdentity, int pageNumber)
+        public async Task<IEnumerable<HomeworksViewModel>> GetHomeworksByClassIdentityByStudentIdByPageNumberAsync(string classIdentity, string studentId, int pageNumber)
         {
             var cls = await this.getClassByClassIdentityAsync(classIdentity);
             int page = pageNumber > 0 ? pageNumber : 0;
             int pageSize = pageNumber > 0 ? DefaultPageCount.Count : 0;
+
+            var classStudent = await this._context.ClassesStudents
+                .SingleOrDefaultAsync(cs => cs.ClassId == cls.ClassId && cs.StudentId == studentId);
 
             var homeworks = await this._context.Homeworks
                 .Include(h => h.HomeworkState)
@@ -48,9 +52,23 @@ namespace Amozegar.Data.Repositories.Implementations
                     CreatedAt = h.CreatedAt.ToShamsi(),
                     HomewordTitle = h.HomeworkTitle,
                     HomeworkId = h.HomeworkId,
-                    State = h.HomeworkState.PersianState
+                    State = h.HomeworkState.PersianState,
                 })
                 .ToListAsync();
+
+            if (classStudent != null)
+            {
+                foreach (var homework in homeworks)
+                {
+                    var studentToHomeworks = await this._context.ClassStudentsToHomeworks
+                        .Include(csth => csth.ClassStudentsToHomeworkState)
+                        .SingleOrDefaultAsync(csth => csth.HomeworkId == homework.HomeworkId && csth.ClassStudentId == classStudent.id);
+                    homework.StudentState = studentToHomeworks == null ? "" : studentToHomeworks.ClassStudentsToHomeworkState.State;
+                    homework.PersianStudentState = studentToHomeworks == null ? "ارسال نشده" : studentToHomeworks.ClassStudentsToHomeworkState.PersianState;
+                }
+            }
+
+
 
             return homeworks;
         }
@@ -125,7 +143,7 @@ namespace Amozegar.Data.Repositories.Implementations
             return homework;
         }
 
-        public async Task<Homework?> GetHomeworkByIdByNotThisStateAsync(string classIdentity, int homeworkId, string state)
+        public async Task<Homework?> GetHomeworkByClassIdentityByIdByNotThisStateAsync(string classIdentity, int homeworkId, string state)
         {
             var cls = await this.getClassByClassIdentityAsync(classIdentity);
 
@@ -138,6 +156,80 @@ namespace Amozegar.Data.Repositories.Implementations
                     h.ClassId == cls.ClassId &&
                     h.HomeworkState != homeworkState
                 );
+
+            return homework;
+        }
+
+        public async Task<HomeworkDetailsViewModel?> GetHomeworkWithPicturesByIdAndClassIdentityByStudentIdByIdByNotThisStateAsync(string classIdentity, string studentId, int homeworkId, string state)
+        {
+            var cls = await this.getClassByClassIdentityAsync(classIdentity);
+
+            var homeworkState = await this.getStateByStateAsync(state);
+
+            var homework = await this._context.Homeworks
+                .Include(h => h.HomeworkState)
+                .SingleOrDefaultAsync(h =>
+                    h.HomeworkId == homeworkId &&
+                    h.ClassId == cls.ClassId &&
+                    h.HomeworkState != homeworkState
+                );
+
+
+            if (homework == null)
+            {
+                return null;
+            }
+
+            var pictureType = await this._context.TableTypes
+                .SingleAsync(pt => pt.Type == "Homeworks");
+
+
+            var pictures = await this._context.Pictures
+                .Where(p => p.TableType == pictureType && p.TableTypeRecordId == homework.HomeworkId && p.ClassId == cls.ClassId)
+                .Select(p => p.PicturePath)
+                .ToListAsync();
+
+            var classStudent = await this._context.ClassesStudents
+                .SingleAsync(cs => cs.ClassId == cls.ClassId && cs.StudentId == studentId);
+
+            var studentToHomeworks = await this._context.ClassStudentsToHomeworks
+                .Include(csth => csth.ClassStudentsToHomeworkState)
+                .SingleOrDefaultAsync(csth => csth.HomeworkId == homework.HomeworkId && csth.ClassStudentId == classStudent.id);
+
+            var detaildHomework = new HomeworkDetailsViewModel()
+            {
+                CreatedAt = homework.CreatedAt.ToShamsi(),
+                HomeworkBody = homework.HomeworkDescription,
+                HomeworkTitle = homework.HomeworkTitle,
+                HomeworkId = homework.HomeworkId,
+                PicturePaths = pictures,
+                PersianStudentState = (studentToHomeworks == null) ? "ارسال نشده" : studentToHomeworks.ClassStudentsToHomeworkState.PersianState,
+                StudentState = (studentToHomeworks == null) ? "" : studentToHomeworks.ClassStudentsToHomeworkState.State,
+            };
+
+            return detaildHomework;
+        }
+
+        public async Task<ChangeHomeworkStateViewModel?> IsHomeworkExistByClassIdentityByIdByStateAsync(string classIdentity, int homeworkId, string state)
+        {
+            var cls = await this.getClassByClassIdentityAsync(classIdentity);
+
+            var homeworkState = await this.getStateByStateAsync(state);
+
+
+
+            var homework = await this._context.Homeworks
+                .Include(h => h.HomeworkState)
+                .Where(h =>
+                    h.HomeworkId == homeworkId &&
+                    h.ClassId == cls.ClassId &&
+                    h.HomeworkState == homeworkState
+                ).Select(h => new ChangeHomeworkStateViewModel()
+                {
+                    HomeworkId = h.HomeworkId,
+                    HomeworkTitle = h.HomeworkTitle
+                })
+                .SingleOrDefaultAsync();
 
             return homework;
         }

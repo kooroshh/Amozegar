@@ -4,6 +4,7 @@ using Amozegar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Amozegar.Migrations
 {
     [DbContext(typeof(AmozegarContext))]
-    partial class AmozegarContextModelSnapshot : ModelSnapshot
+    [Migration("20250522152257_addSendAtToStudentsToHomeworks")]
+    partial class addSendAtToStudentsToHomeworks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,7 +72,7 @@ namespace Amozegar.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Classes", (string)null);
+                    b.ToTable("Classes");
                 });
 
             modelBuilder.Entity("Amozegar.Models.ClassStates", b =>
@@ -92,7 +95,7 @@ namespace Amozegar.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("ClassesStates", (string)null);
+                    b.ToTable("ClassesStates");
                 });
 
             modelBuilder.Entity("Amozegar.Models.ClassStudentState", b =>
@@ -115,7 +118,7 @@ namespace Amozegar.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("ClassesStudentsStates", (string)null);
+                    b.ToTable("ClassesStudentsStates");
                 });
 
             modelBuilder.Entity("Amozegar.Models.ClassStudents", b =>
@@ -144,7 +147,7 @@ namespace Amozegar.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("ClassesStudents", (string)null);
+                    b.ToTable("ClassesStudents");
                 });
 
             modelBuilder.Entity("Amozegar.Models.ClassStudentsToHomework", b =>
@@ -186,7 +189,7 @@ namespace Amozegar.Migrations
 
                     b.HasIndex("HomeworkId");
 
-                    b.ToTable("ClassStudentsToHomeworks", (string)null);
+                    b.ToTable("ClassStudentsToHomeworks");
                 });
 
             modelBuilder.Entity("Amozegar.Models.ClassStudentsToHomeworkState", b =>
@@ -209,7 +212,7 @@ namespace Amozegar.Migrations
 
                     b.HasKey("ClassStudentsToHomeworkStateId");
 
-                    b.ToTable("ClassStudentsToHomeworkStates", (string)null);
+                    b.ToTable("ClassStudentsToHomeworkStates");
                 });
 
             modelBuilder.Entity("Amozegar.Models.Homework", b =>
@@ -246,7 +249,7 @@ namespace Amozegar.Migrations
 
                     b.HasIndex("HomeworkStateId");
 
-                    b.ToTable("Homeworks", (string)null);
+                    b.ToTable("Homeworks");
                 });
 
             modelBuilder.Entity("Amozegar.Models.HomeworkState", b =>
@@ -269,7 +272,7 @@ namespace Amozegar.Migrations
 
                     b.HasKey("HomeworkStateId");
 
-                    b.ToTable("HomeworksStates", (string)null);
+                    b.ToTable("HomeworksStates");
                 });
 
             modelBuilder.Entity("Amozegar.Models.Notification", b =>
@@ -301,7 +304,7 @@ namespace Amozegar.Migrations
 
                     b.HasIndex("ClassId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("Amozegar.Models.Picture", b =>
@@ -332,7 +335,7 @@ namespace Amozegar.Migrations
 
                     b.HasIndex("TableTypeId");
 
-                    b.ToTable("Pictures", (string)null);
+                    b.ToTable("Pictures");
                 });
 
             modelBuilder.Entity("Amozegar.Models.Report", b =>
@@ -374,7 +377,7 @@ namespace Amozegar.Migrations
 
                     b.HasKey("ReportId");
 
-                    b.ToTable("Reports", (string)null);
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("Amozegar.Models.TableType", b =>
@@ -392,7 +395,7 @@ namespace Amozegar.Migrations
 
                     b.HasKey("TypeId");
 
-                    b.ToTable("TableTypes", (string)null);
+                    b.ToTable("TableTypes");
                 });
 
             modelBuilder.Entity("Amozegar.Models.User", b =>
@@ -535,7 +538,7 @@ namespace Amozegar.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UsersViews", (string)null);
+                    b.ToTable("UsersViews");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

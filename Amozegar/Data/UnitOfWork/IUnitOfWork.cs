@@ -1,4 +1,5 @@
 ﻿using Amozegar.Data.Repositories;
+using Amozegar.Data.Repositories.Implementations;
 using Amozegar.Data.Repositories.Interfaces;
 using Amozegar.Models;
 
@@ -16,8 +17,9 @@ namespace Amozegar.Data.UnitOfWork
         public INotificationsRepository NotificationsRepository { get; }
         public IUsersViewsRepository UsersViewsRepository { get; }
         public IHomeworkStateRepository HomeworkStateRepository { get; }
-        public IGenericRepository<StudentHomeworkState> StudentHomeworkStateRepository { get; }
+        public IClassStudentsToHomeworksStatesRepository ClassStudentsToHomeworksStatesRepository { get; }
         public IHomeworkRepository HomeworkRepository { get; }
+        public IClassStudentsToHomeworksRepository ClassStudentsToHomeworksRepository { get; }
         Task SaveChangesAsync();
     }
 }

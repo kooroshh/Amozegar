@@ -89,10 +89,11 @@
 
 
                             <div class="mb-4 d-flex ">
-                                <a asp-action="Homeworks"
-                                   asp-controller="Home"
-                                   asp-area="Teacher"
+                                <a asp-action="Index"
+                                   asp-controller="Homeworks"
+                                   asp-area="Shared"
                                    asp-route-classId="@ViewBag.ClassId"
+                                   asp-route-roleName="Teacher"
                                    asp-route-pageNumber="1"
                                    class="btn btn-warning w-50 py-3 d-block rounded-end-0">برگشت به تکالیف</a>
                                 <button type="submit" class="btn btn-primary w-50 py-3 d-block rounded-start-0">

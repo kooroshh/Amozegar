@@ -1,0 +1,23 @@
+﻿@model ChangeHomeworkSentViewModel
+@{
+    ViewData["Title"] = "رد کردن تکلیف ارسال شده";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-2">
+    <div class="alert alert-warning">
+        آیا از رد کردن تکلیف ارسال شده توسط دانش آموزش @Model.UserName اطمینان دارید؟
+        <form method="post" class="my-3">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(chsvm => chsvm.StudentToHomeworkId)
+            @Html.HiddenFor(chsvm => chsvm.UserName)
+            <a asp-action="HomeworksSent"
+               asp-controller="Homeworks"
+               asp-area="Teacher"
+               asp-route-classId="@ViewBag.ClassId"
+               asp-route-pageNumber="1"
+               class="btn btn-warning">برگشت به تکالیف ارسال شده</a>
+            <button type="submit" class="btn btn-danger">رد کردن</button>
+        </form>
+    </div>
+</div>

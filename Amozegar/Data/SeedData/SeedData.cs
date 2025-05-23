@@ -135,7 +135,7 @@ namespace Amozegar.Data.SeedData
 
             #region Add Table Types
 
-            string[] tableTypes = { "Notifications", "Homeworks", "StudentsHomeworks" };
+            string[] tableTypes = { "Notifications", "Homeworks", "ClassStudentsToHomeworks" };
             foreach (var type in tableTypes)
             {
                 if (!await context.TableTypesRepository.AnyAsync(cs => cs.Type == type))
@@ -170,13 +170,13 @@ namespace Amozegar.Data.SeedData
 
             #region Add Homework Student States
 
-            string[] homeworkStudenState = { "Accepted", "Rejected", "Pending" };
-            string[] homeworkStudentPersianState = { "قبول شده", "قبول نشده",  "در حال بررسی"};
+            string[] homeworkStudenState = { "Accepted", "Rejected", "Pending", "Resubmitted" };
+            string[] homeworkStudentPersianState = { "قبول شده", "قبول نشده",  "در حال بررسی", "در حال بازبررسی" };
             foreach (var state in homeworkStudenState)
             {
-                if (!await context.StudentHomeworkStateRepository.AnyAsync(shs => shs.State == state))
+                if (!await context.ClassStudentsToHomeworksStatesRepository.AnyAsync(shs => shs.State == state))
                 {
-                    await context.StudentHomeworkStateRepository.AddAsync(new StudentHomeworkState()
+                    await context.ClassStudentsToHomeworksStatesRepository.AddAsync(new ClassStudentsToHomeworkState()
                     {
                         State = state,
                         PersianState = homeworkStudentPersianState[Array.IndexOf(homeworkStudenState, state)]

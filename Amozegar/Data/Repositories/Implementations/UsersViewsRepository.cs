@@ -90,5 +90,41 @@ namespace Amozegar.Data.Repositories.Implementations
 
             await this._context.SaveChangesAsync();
         }
+
+        public async Task<int> GetUnreadHomeworksCountByUserIdAsync(string userId, string classIdentity)
+        {
+            var classId = await this.getClassIdByClassIdentity(classIdentity);
+            var readHomeworks = await this.getReadRecordsByUserIdByClassIdByTypeAsync("Homeworks", userId, classId);
+
+            var homeworksCount = await this._context.Homeworks
+                .CountAsync(h => !readHomeworks.Contains(h.HomeworkId) && h.ClassId == classId && h.HomeworkState.State != "Deleted");
+
+            return homeworksCount;
+        }
+
+        public async Task ReadAllHomeworksAsync(User user, string classIdentity)
+        {
+            var classId = await this.getClassIdByClassIdentity(classIdentity);
+            var type = await this.getTableTypeByTypeAsync("Homeworks");
+            var readHomeworks = await this.getReadRecordsByUserIdByClassIdByTypeAsync(type, user.Id, classId);
+
+            var unreadHomeworks = await this._context.Homeworks
+                .Where(h => !readHomeworks.Contains(h.HomeworkId) && h.ClassId == classId && h.HomeworkState.State != "Deleted")
+                .Select(h => new UserView()
+                {
+                    User = user,
+                    UserId = user.Id,
+                    TableType = type,
+                    TableTypeId = type.TypeId,
+                    TableTypeRecordId = h.HomeworkId,
+                    ClassId = classId
+                })
+                .ToListAsync();
+
+            await this._context.UsersViews
+                .AddRangeAsync(unreadHomeworks);
+
+            await this._context.SaveChangesAsync();
+        }
     }
 }

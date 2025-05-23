@@ -22,8 +22,8 @@ namespace Amozegar.Data
         public DbSet<UserView> UsersViews { get; set; }
         public DbSet<Homework> Homeworks { get; set; }
         public DbSet<HomeworkState> HomeworksStates { get; set; }
-        public DbSet<StudentHomework> StudentsHomeworks { get; set; }
-        public DbSet<StudentHomeworkState> StudentsHomeworskStates { get; set; }
+        public DbSet<ClassStudentsToHomework> ClassStudentsToHomeworks { get; set; }
+        public DbSet<ClassStudentsToHomeworkState> ClassStudentsToHomeworkStates { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -50,6 +50,12 @@ namespace Amozegar.Data
             modelBuilder.Entity<Homework>()
                 .Property(c => c.CreatedAt)
                 .HasDefaultValueSql("GETDATE()");
+
+
+            modelBuilder.Entity<ClassStudentsToHomework>()
+                .Property(c => c.SendAt)
+                .HasDefaultValueSql("GETDATE()");
+
 
             modelBuilder.Entity<User>()
                 .Property(u => u.PicturePath)

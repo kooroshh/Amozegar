@@ -12,10 +12,11 @@
             @Html.AntiForgeryToken()
             @Html.HiddenFor(n => n.HomeworkId)
             @Html.HiddenFor(n => n.HomeworkTitle)
-            <a asp-action="Homeworks"
-               asp-controller="Home"
-               asp-area="Teacher"
+            <a asp-action="Index"
+               asp-controller="Homeworks"
+               asp-area="Shared"
                asp-route-classId="@ViewBag.ClassId"
+               asp-route-roleName="Teacher"
                asp-route-pageNumber="1"
                class="btn btn-warning">برگشت به تکالیف</a>
             <button type="submit" class="btn btn-danger">حذف کردن</button>

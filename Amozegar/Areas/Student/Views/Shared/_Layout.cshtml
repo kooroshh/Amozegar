@@ -19,83 +19,83 @@
 
 	@await Component.InvokeAsync("MobileNavigationComponent")
 
-    <div class="panel-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <a asp-action="Index" asp-controller="Home" asp-area="" class="sidebar-logo d-flex justify-content-center align-items-center gap-1">
-                    <img src="~/images/home/logo.png" alt="آموزگار">
-                    آموزگار
-                </a>
-            </div>
+	<div class="panel-container">
+		<!-- Sidebar -->
+		<aside class="sidebar">
+			<div class="sidebar-header">
+				<a asp-action="Index" asp-controller="Home" asp-area="" class="sidebar-logo d-flex justify-content-center align-items-center gap-1">
+					<img src="~/images/home/logo.png" alt="آموزگار">
+					آموزگار
+				</a>
+			</div>
 
-            <div class="sidebar-menu">
-                <nav>
-                    <a class="menu-item" asp-action="Index" asp-controller="Home" asp-area="">
-                        <i class="fas fa-home"></i>
-                        <span>برگشت به خانه</span>
-                    </a>
-                    <a asp-action="Index" asp-controller="Home" asp-area="Student" asp-route-classId="@ViewBag.ClassId" class="menu-item @(ViewBag.Route == "Dashboard" ? "active" : "")">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span>داشبورد</span>
-                    </a>
-                    <a asp-action="Index" asp-controller="Students" asp-area="Shared" asp-route-classId="@ViewBag.ClassId" asp-route-roleName="Student" asp-route-type="Students-List" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "Students-List" ? "active" : "")">
-                        <i class="fa-solid fa-users"></i>
-                        <span>دانش آموزان کلاس</span>
-                    </a>
-                    <a asp-action="Index" asp-controller="Notifications" asp-area="Shared" asp-route-classId="@ViewBag.ClassId" asp-route-roleName="Student" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "ShowNotifications" ? "active" : "")">
-                        <i class="fa-solid fa-message"></i>
-                        <span>اعلانات @await Component.InvokeAsync("NotReadComponent", new { type = "Notifications", classIdentity = ViewBag.ClassId })</span>
-                    </a>
-                    <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "Edit" ? "active" : "")">
-                        <i class="fas fa-user-edit"></i>
-                        <span>تکالیف</span>
-                    </a>
-                    <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "ChangePassword" ? "active" : "")">
-                        <i class="fas fa-key"></i>
-                        <span>امتحانات</span>
-                    </a>
-                    <a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "ChangePassword" ? "active" : "")">
-                        <i class="fas fa-key"></i>
-                        <span>همکلاسیان</span>
-                    </a>
+			<div class="sidebar-menu">
+				<nav>
+					<a class="menu-item" asp-action="Index" asp-controller="Home" asp-area="">
+						<i class="fas fa-home"></i>
+						<span>برگشت به خانه</span>
+					</a>
+					<a asp-action="Index" asp-controller="Home" asp-area="Student" asp-route-classId="@ViewBag.ClassId" class="menu-item @(ViewBag.Route == "Dashboard" ? "active" : "")">
+						<i class="fas fa-tachometer-alt"></i>
+						<span>داشبورد</span>
+					</a>
+					<a asp-action="Index" asp-controller="Students" asp-area="Shared" asp-route-classId="@ViewBag.ClassId" asp-route-roleName="Student" asp-route-type="Students-List" asp-route-pageNumber="1" class="menu-item @(ViewBag.Type == "Students-List" ? "active" : "")">
+						<i class="fa-solid fa-users"></i>
+						<span>دانش آموزان کلاس</span>
+					</a>
+					<a asp-action="Index" asp-controller="Notifications" asp-area="Shared" asp-route-classId="@ViewBag.ClassId" asp-route-roleName="Student" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "Notifications" ? "active" : "")">
+						<i class="fa-solid fa-message"></i>
+						<span>اعلانات @await Component.InvokeAsync("NotReadComponent", new { type = "Notifications", classIdentity = ViewBag.ClassId })</span>
+					</a>
+					<a asp-action="Index" asp-controller="Homeworks" asp-area="Shared" asp-route-classId="@ViewBag.ClassId" asp-route-roleName="Student" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "Homeworks" ? "active" : "")">
+						<i class="fas fa-user-edit"></i>
+						<span>تکالیف @await Component.InvokeAsync("NotReadComponent", new { type = "Homeworks", classIdentity = ViewBag.ClassId })</span>
+					</a>
+					<a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "ChangePassword" ? "active" : "")">
+						<i class="fas fa-key"></i>
+						<span>امتحانات</span>
+					</a>
+					<a asp-action="" asp-controller="Home" asp-area="Teacher" class="menu-item @(ViewBag.Route == "ChangePassword" ? "active" : "")">
+						<i class="fas fa-key"></i>
+						<span>همکلاسیان</span>
+					</a>
 
-                </nav>
-            </div>
+				</nav>
+			</div>
 
-            <div class="sidebar-footer">
-                <a class="menu-item text-danger" asp-action="Classes" asp-controller="Home" asp-area="Panel" asp-route-roleName="Student" asp-route-pageNumber="1">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>خروج از کلاس</span>
-                </a>
-            </div>
-        </aside>
+			<div class="sidebar-footer">
+				<a class="menu-item text-danger" asp-action="Classes" asp-controller="Home" asp-area="Panel" asp-route-roleName="Student" asp-route-pageNumber="1">
+					<i class="fas fa-sign-out-alt"></i>
+					<span>خروج از کلاس</span>
+				</a>
+			</div>
+		</aside>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="container-fluid py-4">
+		<!-- Main Content -->
+		<main class="main-content">
+			<div class="container-fluid py-4">
 
-                <div class="container-fluid">
-                    <!-- User Info Header -->
-                    <div class="user-info-header">
-                        <div class="user-info-content">
-                            <div class="user-avatar">
-                                <img src="~/images/users/@(User.FindFirstValue("Image"))" alt="تصویر کاربر">
-                            </div>
-                            <div class="user-details">
-                                <h2 class="user-name">@(User.FindFirstValue("FullName"))</h2>
-                                <p class="user-username text-truncate text-md-start text-center">@(User.Identity?.Name)</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <partial name="~/Areas/Shared/PartialViews/_ClassDetails.cshtml" model="@ViewBag.classId" />
+				<!-- User Info Header -->
+				<div class="user-info-header">
+					<div class="user-info-content">
+						<div class="user-avatar">
+							<img src="~/images/users/@(User.FindFirstValue("Image"))" alt="تصویر کاربر">
+						</div>
+						<div class="user-details">
+							<h2 class="user-name">@(User.FindFirstValue("FullName"))</h2>
+							<p class="user-username text-truncate text-md-start text-center">@(User.Identity?.Name)</p>
+						</div>
+					</div>
+				</div>
 
-                @RenderBody()
-            </div>
-        </main>
-    </div>
+
+				<partial name="~/Areas/Shared/PartialViews/_ClassDetails.cshtml" model="@ViewBag.classId" />
+
+				@RenderBody()
+			</div>
+		</main>
+	</div>
 
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

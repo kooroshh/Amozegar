@@ -13,11 +13,12 @@
         <form method="post" class="my-3">
             @Html.AntiForgeryToken()
             @Html.HiddenFor(p => p.PictureId)
-            <a asp-action="EditHomework"
+            <a asp-action="Index"
                asp-controller="Homeworks"
-               asp-area="Teacher"
+               asp-area="Shared"
                asp-route-classId="@ViewBag.ClassId"
-               asp-route-homeworkId="@ViewBag.HomeworkId"
+               asp-route-roleName="Teacher"
+               asp-route-pageNumber="1"
                class="btn btn-warning">برگشت به تکلیف</a>
             <button type="submit" class="btn btn-danger">حذف</button>
         </form>

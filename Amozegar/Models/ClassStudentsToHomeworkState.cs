@@ -2,10 +2,10 @@
 
 namespace Amozegar.Models
 {
-    public class StudentHomeworkState
+    public class ClassStudentsToHomeworkState
     {
         [Key]
-        public int StudentHomeworkStateId { get; set; }
+        public int ClassStudentsToHomeworkStateId { get; set; }
 
         [MaxLength(255)]
         public string State { get; set; }
@@ -14,6 +14,6 @@ namespace Amozegar.Models
         public string PersianState { get; set; }
 
 
-        public ICollection<StudentHomework> StudentsHomeworks { get; set; }
+        public ICollection<ClassStudentsToHomework> ClassStudentsToHomeworks { get; set; }
     }
 }

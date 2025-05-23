@@ -38,6 +38,20 @@ namespace Amozegar.Areas.Shared.Components.Controllers
                         break;
                     }
 
+                case "Homeworks":
+                    {
+                        count = await _context.UsersViewsRepository
+                            .GetUnreadHomeworksCountByUserIdAsync(user.Id, classIdentity);
+                        break;
+                    }
+
+                case "HomeworksSent":
+                    {
+                        count = await _context.ClassStudentsToHomeworksRepository
+                            .GetCountByClassIdentityForSentListAsync(classIdentity);
+                        break;
+                    }
+
             }
             return View("/Areas/Shared/Components/Views/NotRead.cshtml", count);
         }

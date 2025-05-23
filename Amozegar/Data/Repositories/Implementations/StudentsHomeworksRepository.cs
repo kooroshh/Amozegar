@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Amozegar.Data.Repositories.Implementations
 {
-    public class StudentsHomeworksRepository : GenericRepository<StudentHomework>, IStudentsHomeworksRepository
+    public class StudentsHomeworksRepository : GenericRepository<ClassStudentsToHomework>, IStudentsHomeworksRepository
     {
         public StudentsHomeworksRepository(AmozegarContext context) : base(context)
         {
@@ -21,9 +21,9 @@ namespace Amozegar.Data.Repositories.Implementations
         }
 
 
-        private async Task<StudentHomeworkState> getStudentHomeworkStateByStateAsync(string state)
+        private async Task<ClassStudentsToHomeworkState> getStudentHomeworkStateByStateAsync(string state)
         {
-            var studentHomeworkstate = await this._context.StudentsHomeworskStates
+            var studentHomeworkstate = await this._context.ClassStudentsToHomeworkStates
                 .SingleAsync(shs => shs.State == state);
             return studentHomeworkstate;
         }
@@ -36,16 +36,16 @@ namespace Amozegar.Data.Repositories.Implementations
 
             var defaultState = await this.getStudentHomeworkStateByStateAsync("Pending");
 
-            var studentHomework = new StudentHomework()
+            var studentHomework = new ClassStudentsToHomework()
             {
                 Homework = homework,
                 HomeworkId = homework.HomeworkId,
-                StudentHomeworkState = defaultState,
-                StudentHomeworkStateId = defaultState.StudentHomeworkStateId,
+                ClassStudentsToHomeworkState = defaultState,
+                ClassStudentHomeworkStateId = defaultState.ClassStudentsToHomeworkStateId,
                 ClassStudentId = classStudentId
             };
 
-            await this._context.StudentsHomeworks
+            await this._context.ClassStudentsToHomeworks
                 .AddAsync(studentHomework);
 
         }

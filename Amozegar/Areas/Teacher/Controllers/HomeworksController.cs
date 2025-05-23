@@ -3,6 +3,7 @@ using Amozegar.Areas.Teacher.Models;
 using Amozegar.Data.UnitOfWork;
 using Amozegar.Models;
 using Amozegar.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Amozegar.Areas.Teacher.Controllers
@@ -11,26 +12,33 @@ namespace Amozegar.Areas.Teacher.Controllers
     public class HomeworksController : BaseController
     {
         private IUnitOfWork _context;
+        private UserManager<User> _userManager;
 
-        public HomeworksController(IUnitOfWork context)
+        public HomeworksController(IUnitOfWork context, UserManager<User> userManager)
         {
             this._context = context;
+            this._userManager = userManager;
+
         }
 
         // Utilities
 
         private IActionResult returnToHomeworks()
         {
-            return RedirectToAction("Homeworks", "Home", new { area = "Teacher", classId = this.classId, pageNumber = 1 });
+            return RedirectToAction("Index", "Homeworks", new { area = "Shared", roleName = "Teacher", classId = this.classId, pageNumber = 1 });
         }
 
-        private IActionResult returnToNotifications(int homeworkId)
+        private IActionResult returnToHomeworks(int homeworkId)
         {
             return RedirectToAction("EditHomework", "Homeworks", new { area = "Teacher", classId = classId, homeworkId = homeworkId });
         }
 
+        private IActionResult returnToHomeworksSent()
+        {
+            return RedirectToAction("HomeworksSent", "Homeworks", new { area = "Teacher", classId = ViewBag.classId, pageNumber = 1 });
+        }
 
-        private async Task<IActionResult> doGetChangeActions(int homeworkId)
+        private async Task<IActionResult> doGetChangeActionsForHomeworksAsync(int homeworkId)
         {
             var homework = await this._context.HomeworkRepository
                     .GetHomeworkByClassIdentityByHomeworkIdByNotThisStateForChangeStateAsync(this.classId, homeworkId, "Deleted");
@@ -43,7 +51,7 @@ namespace Amozegar.Areas.Teacher.Controllers
             return View(homework);
         }
 
-        private async Task<IActionResult> doPostChnageAction(int homeworkId, ChangeHomeworkStateViewModel change, string shouldBe, string to)
+        private async Task<IActionResult> doPostChnageActionForHomeworksAsync(int homeworkId, ChangeHomeworkStateViewModel change, string shouldBe, string to)
         {
             if (!ModelState.IsValid && change.HomeworkId != homeworkId)
             {
@@ -94,7 +102,7 @@ namespace Amozegar.Areas.Teacher.Controllers
         private async Task<Homework?> getNotDeletedHomeworkByIdAsync(int homeworkId)
         {
             var homework = await this._context.HomeworkRepository
-                .GetHomeworkByIdByNotThisStateAsync(this.classId, homeworkId, "Deleted");
+                .GetHomeworkByClassIdentityByIdByNotThisStateAsync(this.classId, homeworkId, "Deleted");
 
             return homework;
         }
@@ -106,6 +114,45 @@ namespace Amozegar.Areas.Teacher.Controllers
 
             return picture;
         }
+
+        private async Task<IActionResult> doGetChangeActionForHomeworkSentAsync(int studentToHomeworkId)
+        {
+            var StudentToHomework = await this._context.ClassStudentsToHomeworksRepository
+                .GetByClassIdentityByIdForChangeStateAsync(this.classId, studentToHomeworkId);
+
+            if (StudentToHomework == null)
+            {
+                return returnToHomeworksSent();
+            }
+
+            return View(StudentToHomework);
+        }
+
+        private async Task<IActionResult> doPostChangeActionForHomeworkSentAsync(int studentToHomeworkId, string state, ChangeHomeworkSentViewModel change)
+        {
+
+            var StudentToHomework = await this._context.ClassStudentsToHomeworksRepository
+                .GetByClassIdentityByIdForChangeStateAsync(this.classId, studentToHomeworkId);
+
+            if (StudentToHomework == null)
+            {
+                return returnToHomeworksSent();
+            }
+
+            if (!ModelState.IsValid || change.StudentToHomeworkId != studentToHomeworkId)
+            {
+                return View(StudentToHomework);
+            }
+
+
+            await this._context.ClassStudentsToHomeworksRepository
+                .ChangeStateByClassIdentityByIdByStateAsync(this.classId, studentToHomeworkId, state);
+
+            await this._context.SaveChangesAsync();
+
+            return returnToHomeworksSent();
+        }
+
 
         // Pictures Methods
 
@@ -165,7 +212,7 @@ namespace Amozegar.Areas.Teacher.Controllers
                 System.IO.File.Delete(picturePath);
             }
 
-            return this.returnToNotifications(homeworkId);
+            return this.returnToHomeworks(homeworkId);
         }
 
         [Route("{homeworkId}/Add-Picture")]
@@ -204,7 +251,7 @@ namespace Amozegar.Areas.Teacher.Controllers
                 await addPicture.Pictures.SaveImages(this.classId, homework.HomeworkId, _context, "Homeworks");
             }
 
-            return this.returnToNotifications(homeworkId);
+            return this.returnToHomeworks(homeworkId);
         }
 
 
@@ -258,40 +305,40 @@ namespace Amozegar.Areas.Teacher.Controllers
         [Route("Open/{homeworkId}")]
         public async Task<IActionResult> OpenHomework(string classId, int homeworkId)
         {
-            return await this.doGetChangeActions(homeworkId);
+            return await this.doGetChangeActionsForHomeworksAsync(homeworkId);
         }
 
         [HttpPost("Open/{homeworkId}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OpenHomework(string classId, int homeworkId, ChangeHomeworkStateViewModel change)
         {
-            return await this.doPostChnageAction(homeworkId, change, "Closed", "Open");
+            return await this.doPostChnageActionForHomeworksAsync(homeworkId, change, "Closed", "Open");
         }
 
         [Route("Close/{homeworkId}")]
         public async Task<IActionResult> CloseHomework(string classId, int homeworkId)
         {
-            return await this.doGetChangeActions(homeworkId);
+            return await this.doGetChangeActionsForHomeworksAsync(homeworkId);
         }
 
         [HttpPost("Close/{homeworkId}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CloseHomework(string classId, int homeworkId, ChangeHomeworkStateViewModel change)
         {
-            return await this.doPostChnageAction(homeworkId, change, "Open", "Closed");
+            return await this.doPostChnageActionForHomeworksAsync(homeworkId, change, "Open", "Closed");
         }
 
         [Route("Delete/{homeworkId}")]
         public async Task<IActionResult> DeleteHomework(string classId, int homeworkId)
         {
-            return await this.doGetChangeActions(homeworkId);
+            return await this.doGetChangeActionsForHomeworksAsync(homeworkId);
         }
 
         [HttpPost("Delete/{homeworkId}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteHomework(string classId, int homeworkId, ChangeHomeworkStateViewModel change)
         {
-            return await this.doPostChnageAction(homeworkId, change, "Closed", "Deleted");
+            return await this.doPostChnageActionForHomeworksAsync(homeworkId, change, "Closed", "Deleted");
         }
 
 
@@ -343,6 +390,75 @@ namespace Amozegar.Areas.Teacher.Controllers
             await this._context.SaveChangesAsync();
 
             return this.returnToHomeworks();
+        }
+
+
+        [Route("HomeworksSent/{pageNumber}")]
+        public async Task<IActionResult> HomeworksSent(string classId, int pageNumber)
+        {
+            ViewBag.Route = "HomeworksSent";
+
+            var homeworksSents = await this._context.ClassStudentsToHomeworksRepository
+                .GetByClassIdentityByPageNumberForSentListAsync(classId, pageNumber);
+
+
+
+            this.setPaginationViewBags(pageNumber);
+
+            if (this.validateUserPageNumber(pageNumber, homeworksSents.Count()))
+            {
+                return this.returnToHomeworksSent();
+            }
+
+            var classStudentsToHomeworksCount = await this._context.ClassStudentsToHomeworksRepository
+                .GetCountByClassIdentityForSentListAsync(classId);
+
+            this.checkNextOrPrevForViewBags(classStudentsToHomeworksCount, pageNumber);
+
+            return View(homeworksSents);
+        }
+
+
+        [Route("HomeworksSent/Check/{studentToHomeworkId}")]
+        public async Task<IActionResult> CheckHomeworkSent(string classId, int studentToHomeworkId)
+        {
+            ViewBag.Route = "HomeworksSent";
+
+            var checkSent = await this._context.ClassStudentsToHomeworksRepository
+                .GetByClassIdByIdForCheckSentAsync(classId, studentToHomeworkId);
+
+            if (checkSent == null)
+            {
+                return this.returnToHomeworksSent();
+            }
+
+            return View(checkSent);
+        }
+
+        [Route("HomeworksSent/Check/Accept/{studentToHomeworkId}")]
+        public async Task<IActionResult> AcceptSentHomework(string classId, int studentToHomeworkId)
+        {
+            return await this.doGetChangeActionForHomeworkSentAsync(studentToHomeworkId);
+        }
+
+        [HttpPost("HomeworksSent/Check/Accept/{studentToHomeworkId}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AcceptSentHomework(string classId, int studentToHomeworkId, ChangeHomeworkSentViewModel accept)
+        {
+            return await this.doPostChangeActionForHomeworkSentAsync(studentToHomeworkId, "Accepted", accept);
+        }
+
+        [Route("HomeworksSent/Check/Reject/{studentToHomeworkId}")]
+        public async Task<IActionResult> RejectSentHomework(string classId, int studentToHomeworkId)
+        {
+            return await this.doGetChangeActionForHomeworkSentAsync(studentToHomeworkId);
+        }
+
+        [HttpPost("HomeworksSent/Check/Reject/{studentToHomeworkId}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RejectSentHomework(string classId, int studentToHomeworkId, ChangeHomeworkSentViewModel reject)
+        {
+            return await this.doPostChangeActionForHomeworkSentAsync(studentToHomeworkId, "Rejected", reject);
         }
 
 

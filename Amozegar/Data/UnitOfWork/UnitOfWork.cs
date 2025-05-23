@@ -21,8 +21,9 @@ namespace Amozegar.Data.UnitOfWork
         private INotificationsRepository _notificationRepository;
         private IUsersViewsRepository _usersViewsRepository;
         private IHomeworkStateRepository _homeworkStateRepository;
-        private IGenericRepository<StudentHomeworkState> _studentHomeworkStateRepository;
+        private IClassStudentsToHomeworksStatesRepository _classStudentsToHomeworksStatesRepository;
         private IHomeworkRepository _homeworkRepository;
+        private IClassStudentsToHomeworksRepository _classStudentsToHomeworksRepository;
 
         public UnitOfWork(AmozegarContext context, UserManager<User> userManager)
         {
@@ -150,15 +151,15 @@ namespace Amozegar.Data.UnitOfWork
             }
         }
 
-        public IGenericRepository<StudentHomeworkState> StudentHomeworkStateRepository
+        public IClassStudentsToHomeworksStatesRepository ClassStudentsToHomeworksStatesRepository
         {
             get
             {
-                if (this._studentHomeworkStateRepository == null)
+                if (this._classStudentsToHomeworksStatesRepository == null)
                 {
-                    this._studentHomeworkStateRepository = new GenericRepository<StudentHomeworkState>(this._context);
+                    this._classStudentsToHomeworksStatesRepository = new ClassStudentsToHomeworksStatesRepository(this._context);
                 }
-                return this._studentHomeworkStateRepository;
+                return this._classStudentsToHomeworksStatesRepository;
             }
         }
 
@@ -174,6 +175,17 @@ namespace Amozegar.Data.UnitOfWork
             }
         }
 
+        public IClassStudentsToHomeworksRepository ClassStudentsToHomeworksRepository
+        {
+            get
+            {
+                if (this._classStudentsToHomeworksRepository == null)
+                {
+                    this._classStudentsToHomeworksRepository = new ClassStudentsToHomeworksRepository(this._context, this._userManager);
+                }
+                return this._classStudentsToHomeworksRepository;
+            }
+        }
 
         public void Dispose()
         {

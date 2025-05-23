@@ -1,0 +1,172 @@
+﻿@model IEnumerable<HomeworksViewModel>
+@{
+	ViewData["Title"] = "تکالیف";
+}
+
+
+<div class="card border-0 shadow-sm">
+	<div class="card-body p-4">
+
+
+		<div class="d-flex gap-3 align-items-center mb-4">
+
+			<h3 class="card-title mb-0">تکالیف‌</h3>
+			@if (ViewBag.IsTeacher)
+			{
+				<div>
+					<a asp-action="AddHomework"
+					   asp-controller="Homeworks"
+					   asp-area="Teacher"
+					   asp-route-classId="@ViewBag.classId"
+					   class="btn btn-primary">افزودن</a>
+				</div>
+			}
+
+			<div>
+				@if (ViewBag.HasPrev)
+				{
+					<a asp-action="Index"
+					   asp-controller="Homeworks"
+					   asp-area="Shared"
+					   asp-route-classId="@ViewBag.ClassId"
+					   asp-route-roleName="@ViewBag.roleName"
+					   asp-route-pageNumber="@(ViewBag.CurrentPage - 1)"
+					   class="btn btn-primary ">صفحه ی قبل</a>
+				}
+				else
+				{
+					<a class="btn btn-primary disabled">صفحه ی قبل</a>
+				}
+			</div>
+			<div>
+				@if (ViewBag.HasNext)
+				{
+					<a asp-action="Index"
+					   asp-controller="Homeworks"
+					   asp-area="Shared"
+					   asp-route-classId="@ViewBag.ClassId"
+					   asp-route-roleName="@ViewBag.roleName"
+					   asp-route-pageNumber="@(ViewBag.CurrentPage + 1)"
+					   class="btn btn-primary ">صفحه ی بعد</a>
+				}
+				else
+				{
+					<a class="btn btn-primary disabled">صفحه ی بعد</a>
+				}
+			</div>
+
+		</div>
+
+		<div class="notifications-list">
+
+			@if (Model.Count() <= 0)
+			{
+				<div class="alert alert-warning">
+					توجه هیچ تکلیفی وجود ندارد.
+				</div>
+			}
+			else
+			{
+				<div class="alert alert-light">
+					تعداد کل تکالیف : @ViewBag.HomeworksCount
+				</div>
+				foreach (var homework in Model)
+				{
+					<div class="notification-item">
+
+						<a asp-action="Details"
+						   asp-controller="Homeworks"
+						   asp-area="Shared"
+						   asp-route-roleName="@ViewBag.roleName"
+						   asp-route-classId="@ViewBag.ClassId"
+						   asp-route-homeworkId="@homework.HomeworkId"
+						   class="d-block flex-grow-1">
+							<div class="notification-content">
+								<h4 class="notification-title">@homework.HomewordTitle</h4>
+								<p class="notification-date">@homework.CreatedAt</p>
+								<p class="text-muted small">وضعیت : @homework.State</p>
+							</div>
+						</a>
+
+
+						<div class="notification-actions">
+
+							@if (ViewBag.IsTeacher)
+							{
+								<a asp-action="EditHomework"
+								   asp-controller="Homeworks"
+								   asp-route-classId="@ViewBag.ClassId"
+								   asp-route-homeworkId="@homework.HomeworkId"
+								   asp-area="Teacher"
+								   class="btn btn-outline-primary btn-sm">
+									<i class="fas fa-edit me-1"></i>
+									ویرایش
+								</a>
+								<a asp-action="CloseHomework"
+								   asp-controller="Homeworks"
+								   asp-route-classId="@ViewBag.ClassId"
+								   asp-route-homeworkId="@homework.HomeworkId"
+								   asp-area="Teacher"
+								   class="btn btn-outline-warning btn-sm">
+									<i class="fa-solid fa-lock me-1"></i>
+									بستن
+								</a>
+								<a asp-action="OpenHomework"
+								   asp-controller="Homeworks"
+								   asp-route-classId="@ViewBag.ClassId"
+								   asp-route-homeworkId="@homework.HomeworkId"
+								   asp-area="Teacher"
+								   class="btn btn-outline-success btn-sm">
+									<i class="fa-solid fa-lock-open me-1"></i>
+									باز کردن
+								</a>
+								<a asp-action="DeleteHomework"
+								   asp-controller="Homeworks"
+								   asp-route-classId="@ViewBag.ClassId"
+								   asp-route-homeworkId="@homework.HomeworkId"
+								   asp-area="Teacher"
+								   class="btn btn-outline-danger btn-sm">
+									<i class="fas fa-trash me-1"></i>
+									حذف
+								</a>
+							}
+							else
+							{
+								<div class="d-flex flex-column justify-content-center align-items-center">
+									@if (homework.StudentState == "" || homework.StudentState == "Rejected")
+									{
+										<a asp-action="Send"
+										   asp-controller="Homeworks"
+										   asp-route-classId="@ViewBag.ClassId"
+										   asp-route-homeworkId="@homework.HomeworkId"
+										   asp-area="Student"
+										   class="btn btn-outline-info btn-sm">
+											<i class="fa-solid fa-paper-plane me-1"></i>
+											ارسال تکلیف
+										</a>
+									}
+									else
+									{
+										<a class="btn btn-outline-info btn-sm disabled">
+											<i class="fa-solid fa-paper-plane me-1"></i>
+											ارسال تکلیف
+										</a>
+									}
+									<span class="small text-muted">@homework.PersianStudentState</span>
+								</div>
+
+
+							}
+
+						</div>
+
+					</div>
+				}
+			}
+
+
+
+		</div>
+	</div>
+</div>
+

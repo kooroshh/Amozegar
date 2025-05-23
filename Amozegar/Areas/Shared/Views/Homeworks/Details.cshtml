@@ -1,0 +1,82 @@
+﻿@model HomeworkDetailsViewModel
+@{
+    ViewData["Title"] = $"تکلیف {Model.HomeworkTitle}";
+}
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+
+
+        <div class="d-flex gap-3 align-items-center mb-4">
+            <h3 class="card-title mb-0">تکلیف‌</h3>
+            <div>
+                <a asp-action="Index"
+                   asp-controller="Homeworks"
+                   asp-area="Shared"
+                   asp-route-classId="@ViewBag.ClassId"
+                   asp-route-pageNumber="1"
+                   asp-route-roleName="@ViewBag.roleName"
+                   class="btn btn-primary">برگشت به تکالیف</a>
+            </div>
+        </div>
+
+        <div class="notifications-list">
+
+            <div class="notification-item-details">
+
+                <div>
+                    <h4 class="notification-title mb-3">@Model.HomeworkTitle</h4>
+                    <p class="notification-text mb-4">@Model.HomeworkBody</p>
+                </div>
+
+                <div class="row g-3 mb-3">
+
+                    @foreach (var picturePath in Model.PicturePaths)
+                    {
+                        <div class="col-md-4">
+                            <a href="~/images/homeworks/@(picturePath)" target="_blank" class="gallery-image border border-3 shadow-sm">
+                                <img src="~/images/homeworks/@(picturePath)" alt="تصاویر تکلیف" class="img-fluid rounded">
+                            </a>
+                        </div>
+                    }
+
+                </div>
+
+                <div class="notification-meta text-muted">
+                    <small>@Model.CreatedAt</small>
+                </div>
+
+                <div class="notification-actions my-2 py-2">
+                    @if(ViewBag.roleName == "Student")
+                    {
+                        <div class="d-flex flex-column justify-content-center align-items-center">
+                            @if (Model.StudentState == "" || Model.StudentState == "Rejected")
+                            {
+                                <a asp-action="Send"
+                                   asp-controller="Homeworks"
+                                   asp-route-classId="@ViewBag.ClassId"
+                                   asp-route-homeworkId="@Model.HomeworkId"
+                                   asp-area="Student"
+                                   class="btn btn-outline-info btn-sm">
+                                    <i class="fa-solid fa-paper-plane me-1"></i>
+                                    ارسال تکلیف
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-outline-info btn-sm disabled">
+                                    <i class="fa-solid fa-paper-plane me-1"></i>
+                                    ارسال تکلیف
+                                </a>
+                            }
+                            <span class="small text-muted">@Model.PersianStudentState</span>
+                        </div>
+                    }
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>

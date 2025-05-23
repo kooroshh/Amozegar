@@ -1,0 +1,89 @@
+﻿@model HomeworkSentCheckViewModel
+@{
+    ViewData["Title"] = "بررسی کردن تکلیف انجام شده";
+}
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+
+
+        <div class="d-flex gap-3 align-items-center mb-4">
+            <h3 class="card-title mb-0">تکلیف انجام شده‌</h3>
+            <div>
+                <a asp-action="HomeworksSent"
+                   asp-controller="Homeworks"
+                   asp-area="Teacher"
+                   asp-route-classId="@ViewBag.ClassId"
+                   asp-route-pageNumber="1"
+                   class="btn btn-primary">برگشت به تکالیف انجام داده شده</a>
+            </div>
+        </div>
+
+        <div class="notifications-list">
+
+            <div class="notification-item-details">
+
+                <h2 class="text-center fw-bold">عنوان تکلیف : @Model.HomeworkTitle</h2>
+
+                <div class="user-info-header">
+                    <div class="user-info-content">
+                        <div class="user-avatar">
+                            <img src="~/images/users/@(Model.StudentImage)" alt="تصویر کاربر">
+                        </div>
+                        <div class="user-details">
+                            <h2 class="user-name">@(Model.StudentName)</h2>
+                            <p class="user-username text-truncate text-md-start text-center">@Model.StudentEmail</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="notification-title mb-3">@Model.Title</h4>
+                    <p class="notification-text mb-4">@Model.Description</p>
+                </div>
+
+                <div class="row g-3 mb-3">
+
+                    @foreach (var picturePath in Model.Pictures)
+                    {
+                        <div class="col-md-4">
+                            <a href="~/images/classstudentstohomeworks/@(picturePath)" target="_blank" class="gallery-image border border-3 shadow-sm">
+                                <img src="~/images/classstudentstohomeworks/@(picturePath)" alt="تصاویر تکلیف" class="img-fluid rounded">
+                            </a>
+                        </div>
+                    }
+
+                </div>
+
+                <div class="notification-meta text-muted">
+                    <small>@Model.SendAt</small>
+                </div>
+
+                <div class="notification-actions my-2 py-2">
+                    <a asp-action="AcceptSentHomework"
+                       asp-controller="Homeworks"
+                       asp-route-classId="@ViewBag.ClassId"
+                       asp-route-studentToHomeworkId="@Model.StudentToHomeworkId"
+                       asp-area="Teacher"
+                       class="btn btn-success btn-sm">
+                        <i class="fa-solid fa-check me-1"></i>
+                        قبول کردن
+                    </a>
+                    <a asp-action="RejectSentHomework"
+                       asp-controller="Homeworks"
+                       asp-route-classId="@ViewBag.ClassId"
+                       asp-route-studentToHomeworkId="@Model.StudentToHomeworkId"
+                       asp-area="Teacher"
+                       class="btn btn-danger btn-sm">
+                        <i class="fa-solid fa-xmark me-1"></i>
+                        رد کردن
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+

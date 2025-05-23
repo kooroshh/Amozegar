@@ -67,7 +67,7 @@ namespace Amozegar.Areas.Teacher.Controllers
 
         private IActionResult returnToPaginationView()
         {
-            return RedirectToAction(ViewBag.Route, "Home", new { classId = this.classId, pageNumber = 1 });
+            return RedirectToAction(ViewBag.Route, "Home", new { classId = this.classId, pageNumber = 1, area = "Teacher" });
         }
 
         // Main Methods
@@ -99,7 +99,7 @@ namespace Amozegar.Areas.Teacher.Controllers
         [Route("Notifications/{pageNumber}/List")]
         public async Task<IActionResult> Notifications(string classId, int pageNumber)
         {
-            ViewBag.Route = "Notifications";
+            ViewBag.Route = "ControlNotifications";
 
             var notifications = await this._context.NotificationsRepository
                 .GetNotificationsByClassIdentityByPageNumberAsync(classId, pageNumber);
@@ -117,32 +117,6 @@ namespace Amozegar.Areas.Teacher.Controllers
 
             ViewBag.NotificationCount = notificationsCount;
             return View(notifications);
-        }
-
-
-
-        [Route("Homeworks/{pageNumber}")]
-        public async Task<IActionResult> Homeworks(string classId, int pageNumber)
-        {
-            ViewBag.Route = "Homeworks";
-            var classHomeworks = await this._context.HomeworkRepository
-                .GetHomeworskByClassIdentityByPageNumberAsync(classId, pageNumber);
-
-            this.setPaginationViewBags(pageNumber);
-
-            if (validateUserPageNumber(pageNumber, classHomeworks.Count()))
-            {
-                return this.returnToPaginationView();
-            }
-
-            var homeworksCount = await this._context.HomeworkRepository
-                .GetHomeworksCountByClassIdentityAsync(classId);
-
-            this.checkNextOrPrevForViewBags(homeworksCount, pageNumber);
-
-            ViewBag.HomeworksCount = homeworksCount;
-
-            return View(classHomeworks);
         }
 
 

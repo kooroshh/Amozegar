@@ -30,6 +30,6 @@ namespace Amozegar.Models
         [ForeignKey("HomeworkStateId")]
         public HomeworkState HomeworkState { get; set; }
 
-        public ICollection<StudentHomework> StudentHomeworks { get; set; }
+        public ICollection<ClassStudentsToHomework> ClassStudentsToHomeworks { get; set; }
     }
 }

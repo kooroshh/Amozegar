@@ -19,10 +19,9 @@ namespace Amozegar.Areas.Shared.Controllers
         {
             var students = new List<StudentsListViewModel>();
             var studentsCount = 0;
+            ViewBag.Route = "Students";
+            ViewBag.Type = type;
 
-
-            ViewBag.CurrentPage = pageNumber;
-            ViewBag.Route = type;
             if (type != "Students-List" && roleName.ToLowerInvariant() != "teacher")
             {
                 return NotFound();
@@ -62,29 +61,15 @@ namespace Amozegar.Areas.Shared.Controllers
 
             }
 
-            if (pageNumber != 1 && students.Count() <= 0)
+            this.setPaginationViewBags(pageNumber);
+
+            if (this.validateUserPageNumber(pageNumber, students.Count()))
             {
-                return RedirectToAction("Index", "Students", new
-                {
-                    classId = this.classId,
-                    roleName= ViewBag.roleName,
-                    type = ViewBag.Route,
-                    pageNumber = 1
-                });
+                return this.returnToPaginationView(type);
             }
 
 
-            var thisPageCount = DefaultPageCount.Count * pageNumber;
-
-            if (studentsCount > thisPageCount)
-            {
-                ViewBag.HasNext = true;
-            }
-
-            if (!(thisPageCount - 10 <= 0))
-            {
-                ViewBag.HasPrev = true;
-            }
+            this.checkNextOrPrevForViewBags(studentsCount, pageNumber);
 
             ViewBag.Count = studentsCount;
             return View(students);
