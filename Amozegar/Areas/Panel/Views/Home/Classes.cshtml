@@ -5,7 +5,7 @@
 }
 
 <!-- Main Content -->
-
+@await Component.InvokeAsync("Confirm")
 <div class="container-fluid my-5">
 	<!-- Classes Section -->
 	<div class="card border-0 shadow-sm">
@@ -76,7 +76,7 @@
 				else
 				{
 					<div class="alert alert-light">
-						تعداد کل کلاس ها: @ViewBag.ClassesCount
+						تعداد کل کلاس ها: @ViewBag.Count
 					</div>
 					foreach(var item in Model)
 					{
@@ -102,14 +102,13 @@
 							<div class="class-actions">
 								@if(ViewBag.Role == "Teacher")
 								{
-									<a class="btn btn-danger btn-sm"
-										asp-action="DeleteClass"
-										asp-controller="Classes"
-										asp-area="Teacher"
-										asp-route-classId="@item.ClassId">
-										<i class="fas fa-trash me-1"></i>
+									<a href="javascript:void(0)"
+									   onclick="openConfirmModal('@Url.Action("DeleteClass", "Classes", new { area = "Teacher", classId = @item.ClassId })', 'آیا از حذف کلاس اطمینان دارید؟')"
+									   class="btn btn-danger btn-sm">
+										<i class="fa-solid fa-right-from-bracket"></i>
 										حذف کلاس
 									</a>
+
 									<a class="btn btn-warning btn-sm"
 									   asp-action="EditClass"
 									   asp-controller="Classes"
@@ -121,11 +120,9 @@
 								}
 								else if (item.ClassState == "Accepted")
 								{
-									<a class="btn btn-danger btn-sm"
-										asp-action="DeleteClass"
-										asp-controller="Classes"
-										asp-area="Student"
-										asp-route-classId="@item.ClassId">
+									<a href="javascript:void(0)"
+									   onclick="openConfirmModal('@Url.Action("DeleteClass", "Classes", new { area = "Student", classId = @item.ClassId })', 'آیا از ترک کلاس اطمینان دارید؟')"
+									   class="btn btn-danger btn-sm">
 										<i class="fa-solid fa-right-from-bracket"></i>
 										ترک کلاس
 									</a>

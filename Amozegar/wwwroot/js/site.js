@@ -34,7 +34,57 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    window.openConfirmModal = function(actionUrl, message, mode = 'disclaimMode') {
+        const form = document.getElementById('confirmActionForm');
+        form.action = actionUrl;
 
+        if (!form) {
+            console.error('confirmActionForm not found');
+            return;
+        }
+
+        document.getElementById('confirmActionMessage').innerText = message || "آیا مطمئن هستید؟";
+
+        const confirmBtn = form.querySelector('button[type="submit"]');
+        const cancelBtn = form.querySelector('button[data-close="true"]');
+
+        confirmBtn.className = "btn";
+        cancelBtn.className = "btn";
+
+        if (mode === 'acceptMode') {
+            confirmBtn.classList.add('btn-success');
+            cancelBtn.classList.add('btn-danger');
+        } else {
+            confirmBtn.classList.add('btn-danger');
+            cancelBtn.classList.add('btn-secondary');
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('actionConfirmModal'));
+        modal.show();
+    }
+
+    window.openConfirmImagesModal = function(actionUrl) {
+        const form = document.getElementById('confirmImagesActionForm');
+
+        if (!form) {
+            console.error('confirmImagesActionForm not found');
+            return;
+        }
+        form.action = actionUrl;
+
+
+        const modal = new bootstrap.Modal(document.getElementById('actionConfirmImagesModal'));
+        modal.show();
+    }
+
+    let topButton = document.getElementById('goTopBtn');
+
+    if (topButton) {
+        topButton.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+    
 
 
 })

@@ -18,7 +18,7 @@ else
 	<div class="card border-0 shadow-sm">
 		<div class="card-body p-4">
 
-			<div class="d-flex gap-3 align-items-center mb-4">
+			<div class="d-flex gap-3 align-items-center mb-4 flex-wrap">
 
 				<h3 class="card-title mb-0">لیست دانش آموزان</h3>
 
@@ -61,7 +61,7 @@ else
 			</div>
 
 			<div class="table-responsive">
-				<table class="table table-hover align-middle">
+				<table class="table table-hover">
 					<thead>
 						<tr>
 							<th scope="col" style="width: 80px">تصویر</th>
@@ -97,35 +97,26 @@ else
 
 											@if (ViewBag.Type == "Banned-Students-List")
 											{
-											<a asp-action="UnBan"
-											   asp-controller="Students"
-											   asp-area="Teacher"
-											   asp-route-classId="@ViewBag.classId"
-											   asp-route-studentInClassId="@student.StudentInClassId"
-											   class="btn btn-warning btn-sm text-nowrap">
-												<i class="fa-solid fa-user-minus"></i>
-												رفع مسدودیت
-											</a>
+												<a href="javascript:void(0)"
+												   onclick="openConfirmModal('@Url.Action("UnBan", "Students", new { area = "Teacher", classId = ViewBag.classId, studentInClassId = student.StudentInClassId })', 'آیا از رفع مسدودیت دانش آموز اطمینان دارید؟')"
+												   class="btn btn-warning btn-sm text-nowrap">
+													<i class="fa-solid fa-user-minus me-1"></i>
+													رفع مسدودیت
+												</a>
 											}
 											else
 											{
-												<a asp-action="Ban"
-												   asp-controller="Students"
-												   asp-area="Teacher"
-												   asp-route-classId="@ViewBag.classId"
-												   asp-route-studentInClassId="@student.StudentInClassId"
+												<a href="javascript:void(0)"
+												   onclick="openConfirmModal('@Url.Action("Ban", "Students", new { area = "Teacher", classId = ViewBag.classId, studentInClassId = student.StudentInClassId })', 'آیا از مسدود کردن دانش آموز اطمینان دارید؟')"
 												   class="btn btn-danger btn-sm text-nowrap">
 													<i class="fa-solid fa-ban me-1"></i>
 													مسدود کردن
 												</a>
 
-												<a asp-action="Remove"
-												   asp-controller="Students"
-												   asp-area="Teacher"
-												   asp-route-classId="@ViewBag.classId"
-												   asp-route-studentInClassId="@student.StudentInClassId"
+												<a href="javascript:void(0)"
+												   onclick="openConfirmModal('@Url.Action("Remove", "Students", new { area = "Teacher", classId = ViewBag.classId, studentInClassId = student.StudentInClassId })', 'آیا از اخراج کردن دانش آموز اطمینان دارید؟')"
 												   class="btn btn-warning btn-sm text-nowrap">
-													<i class="fa-solid fa-user-minus"></i>
+													<i class="fa-solid fa-user-minus me-1"></i>
 													اخراج کردن
 												</a>
 											}

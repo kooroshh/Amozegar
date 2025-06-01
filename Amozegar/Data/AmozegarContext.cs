@@ -65,7 +65,6 @@ namespace Amozegar.Data
                 .Property(c => c.ClassImage)
                 .HasDefaultValue("classes.png");
 
-
             modelBuilder.Entity<ClassStudents>()
                 .HasOne(stc => stc.User)
                 .WithMany(u => u.StudentToClasses)

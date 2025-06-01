@@ -1,13 +1,8 @@
 ﻿using Amozegar.Areas.Teacher.Models;
-using Amozegar.Data;
 using Amozegar.Data.UnitOfWork;
 using Amozegar.Models;
-using Amozegar.Models.CustomAnnotations;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Amozegar.Areas.Teacher.Controllers
 {
@@ -23,26 +18,6 @@ namespace Amozegar.Areas.Teacher.Controllers
             this._userManager = userManager;
         }
 
-        private async Task<ClassStudents?> getStudent(int studentInClassId)
-        {
-            var studentInClass = await _context.ClassStudentsRepository
-                .GetStudentInClassByClassIdentityAndClassStudentIdAsync(studentInClassId, this.classId);
-
-            return studentInClass;
-        }
-
-        private async Task<StudentsActionsViewModel> setStudentInClassForModel(ClassStudents studentInClass)
-        {
-            var user = await this._userManager.FindByIdAsync(studentInClass.StudentId);
-            StudentsActionsViewModel studentInClassForModel = new StudentsActionsViewModel()
-            {
-                StudentInClassId = studentInClass.id,
-                StudentName = user.FullName
-            };
-
-            return studentInClassForModel;
-        }
-
         private async Task setNewStateForStudentInClass(ClassStudents studentInClass, string state)
         {
             var newStudentState = await this._context.ClassStudentsStatesRepository.GetStateByNameAsync(state);
@@ -51,97 +26,62 @@ namespace Amozegar.Areas.Teacher.Controllers
             await this._context.SaveChangesAsync();
         }
 
-        private async Task<IActionResult> doGetActions(int studentInClassId)
-        {
-            var studentInClass = await this.getStudent(studentInClassId);
-            if (studentInClass == null)
-            {
-                return RedirectToAction("LoginsToClass", "Home", new { area = "Teacher", classId = this.classId });
-            }
+        // Utilities
 
-            StudentsActionsViewModel studentInClassForModel = await this.setStudentInClassForModel(studentInClass);
-            return View(studentInClassForModel);
+        private IActionResult returnToStudents()
+        {
+            return RedirectToAction("Index", "Students", new { area = "Shared", roleName = "Teacher", classId = this.classId, type = "Class-Students-List", pageNumber = 1 });
         }
 
-        private async Task<IActionResult> doPostActions(StudentsActionsViewModel action, string newState)
+        // Main Methods
+        private async Task<IActionResult> doPostActions(int studentInClassId, string newState)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(action);
-            }
-            var studentInClass = await this.getStudent(action.StudentInClassId);
+            var studentInClass = await _context.ClassStudentsRepository
+                .GetStudentInClassByClassIdentityAndClassStudentIdAsync(studentInClassId, this.classId);
+
             if (studentInClass == null)
             {
-                return RedirectToAction("LoginsToClass", "Home", new { area = "Teacher", classId = this.classId });
+                return returnToStudents();
             }
 
             await this.setNewStateForStudentInClass(studentInClass, newState);
 
 
-            return RedirectToAction("Index", "Home", new { area = "Teacher", classId = this.classId });
+            return returnToStudents();
         }
 
 
-
-        [Route("Accept")]
-        public async Task<IActionResult> Accept(string classId, int studentInClassId)
-        {
-            return await this.doGetActions(studentInClassId);
-        }
 
         [HttpPost("Accept")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Accept(string classId, StudentsActionsViewModel accept)
+        public async Task<IActionResult> Accept(string classId, int studentInClassId)
         {
-            return await this.doPostActions(accept, "Accepted");
+            return await this.doPostActions(studentInClassId, "Accepted");
         }
 
-        [Route("Reject")]
-        public async Task<IActionResult> Reject(string classId, int studentInClassId)
-        {
-            return await this.doGetActions(studentInClassId);
-        }
 
         [HttpPost("Reject")]
-        public async Task<IActionResult> Reject(string classId, StudentsActionsViewModel reject)
+        public async Task<IActionResult> Reject(string classId, int studentInClassId)
         {
-            return await this.doPostActions(reject, "Rejected");
-        }
-
-        [Route("Ban")]
-        public async Task<IActionResult> Ban(string classId, int studentInClassId)
-        {
-            return await this.doGetActions(studentInClassId);
+            return await this.doPostActions(studentInClassId, "Rejected");
         }
 
         [HttpPost("Ban")]
-        public async Task<IActionResult> Ban(string classId, StudentsActionsViewModel ban)
+        public async Task<IActionResult> Ban(string classId, int studentInClassId)
         {
-            return await this.doPostActions(ban, "Banned");
-        }
-
-        [Route("Remove")]
-        public async Task<IActionResult> Remove(string classId, int studentInClassId)
-        {
-            return await this.doGetActions(studentInClassId);
+            return await this.doPostActions(studentInClassId, "Banned");
         }
 
         [HttpPost("Remove")]
-        public async Task<IActionResult> Remove(string classId, StudentsActionsViewModel remove)
+        public async Task<IActionResult> Remove(string classId, int studentInClassId)
         {
-            return await this.doPostActions(remove, "Removed");
-        }
-
-        [Route("UnBan")]
-        public async Task<IActionResult> UnBan(string classId, int studentInClassId)
-        {
-            return await this.doGetActions(studentInClassId);
+            return await this.doPostActions(studentInClassId, "Removed");
         }
 
         [HttpPost("UnBan")]
-        public async Task<IActionResult> UnBan(string classId, StudentsActionsViewModel unBan)
+        public async Task<IActionResult> UnBan(string classId, int studentInClassId)
         {
-            return await this.doPostActions(unBan, "Removed");
+            return await this.doPostActions(studentInClassId, "Removed");
         }
     }
 }

@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Amozegar.Areas.Shared.Components.Controllers
 {
-    public class NotReadComponent : ViewComponent
+    public class NotReadViewComponent : BaseViewComponent
     {
 
         private IUnitOfWork _context;
         private UserManager<User> _userManager;
 
-        public NotReadComponent(IUnitOfWork context, UserManager<User> userManager)
+        public NotReadViewComponent(IUnitOfWork context, UserManager<User> userManager) : base()
         {
             this._context = context;
             this._userManager = userManager;
@@ -52,8 +52,16 @@ namespace Amozegar.Areas.Shared.Components.Controllers
                         break;
                     }
 
+                case "NotSendHomeworks":
+                    {
+                        count = await _context.HomeworkRepository
+                            .GetNotSentHomeworksCountByClassIdentityByStudentIdAsync(classIdentity, user.Id);
+                        break;
+                    }
+
             }
-            return View("/Areas/Shared/Components/Views/NotRead.cshtml", count);
+            return View(this.setViewPath("NotReadComponents", "NotReadComponent.cshtml"), count);
         }
+
     }
 }

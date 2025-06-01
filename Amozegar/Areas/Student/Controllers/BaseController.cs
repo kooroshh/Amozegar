@@ -8,7 +8,7 @@ namespace Amozegar.Areas.Student.Controllers
     [Area("Student")]
     [ValidateClassIdStudent]
     [Authorize(Roles = "Student")]
-    public class BaseController : Controller
+    public class BaseController : Amozegar.Controllers.BaseController
     {
         protected string classId;
         public override void OnActionExecuting(ActionExecutingContext context)

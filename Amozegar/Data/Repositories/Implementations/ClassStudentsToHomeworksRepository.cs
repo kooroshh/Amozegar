@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using Amozegar.Areas.Panel.Models;
-using Amozegar.Areas.Teacher.Models;
+﻿using Amozegar.Areas.Teacher.Models;
 using Amozegar.Data.Repositories.Interfaces;
 using Amozegar.Models;
 using Amozegar.Utilities;
@@ -54,7 +52,8 @@ namespace Amozegar.Data.Repositories.Implementations
                 .Include(csth => csth.ClassStudentsToHomeworkState)
                 .SingleOrDefaultAsync(csth =>
                     csth.ClassStudentId == classStudentId &&
-                    csth.HomeworkId == homeworkId
+                    csth.HomeworkId == homeworkId &&
+                    csth.Homework.HomeworkState.State != "Deleted"
                 );
 
             return classStudentToHomework;
@@ -72,7 +71,12 @@ namespace Amozegar.Data.Repositories.Implementations
             var classStudentsToHomeworks = await this._context.ClassStudentsToHomeworks
                 .Include(csth => csth.Homework)
                 .OrderByDescending(csth => csth.SendAt)
-                .Where(csth => csth.ClassStudent.ClassId == clsId && states.Contains(csth.ClassStudentsToHomeworkState.State))
+                .Where(csth =>
+                    csth.ClassStudent.ClassId == clsId &&
+                    states.Contains(csth.ClassStudentsToHomeworkState.State) &&
+                    csth.Homework.HomeworkState.State != "Deleted" &&
+                    csth.ClassStudent.State.State == "Accepted"
+                )
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(csth => new StudentToHomeworksForHomeworksSentViewModel
@@ -110,7 +114,9 @@ namespace Amozegar.Data.Repositories.Implementations
                 .Include(csth => csth.Homework)
                 .CountAsync(csth =>
                     csth.ClassStudent.ClassId == clsId &&
-                    states.Contains(csth.ClassStudentsToHomeworkState.State)
+                    states.Contains(csth.ClassStudentsToHomeworkState.State) &&
+                    csth.Homework.HomeworkState.State != "Deleted" &&
+                    csth.ClassStudent.State.State == "Accepted"
                 );
 
 
@@ -126,7 +132,9 @@ namespace Amozegar.Data.Repositories.Implementations
                 .Where(csth =>
                     csth.ClassStudentsToHomeworkId == studentToHomeworkId &&
                     csth.ClassStudent.ClassId == clsId &&
-                    states.Contains(csth.ClassStudentsToHomeworkState.State)
+                    states.Contains(csth.ClassStudentsToHomeworkState.State) &&
+                    csth.Homework.HomeworkState.State != "Deleted" &&
+                    csth.ClassStudent.State.State == "Accepted"
                 )
                 .Select(csth => new
                 {
@@ -151,7 +159,10 @@ namespace Amozegar.Data.Repositories.Implementations
 
 
             var pictures = await this._context.Pictures
-                .Where(p => p.TableType == pictureType && p.TableTypeRecordId == classStudentsToHomeworks.ClassStudentToHomeworkId)
+                .Where(p =>
+                    p.TableType == pictureType &&
+                    p.TableTypeRecordId == classStudentsToHomeworks.ClassStudentToHomeworkId
+                )
                 .Select(p => p.PicturePath)
                 .ToListAsync();
 
@@ -171,7 +182,7 @@ namespace Amozegar.Data.Repositories.Implementations
             return HomeworkSentCheck;
         }
 
-        public async Task<ChangeHomeworkSentViewModel?> GetByClassIdentityByIdForChangeStateAsync(string classIdentity, int studentToHomeworkId)
+        public async Task<bool> GetByClassIdentityByIdForChangeStateAsync(string classIdentity, int studentToHomeworkId)
         {
             var states = await this.getPendingsStates();
             var clsId = await this.getClassIdByClassIdentity(classIdentity);
@@ -181,14 +192,12 @@ namespace Amozegar.Data.Repositories.Implementations
                 .Where(csth =>
                     csth.ClassStudentsToHomeworkId == studentToHomeworkId &&
                     csth.ClassStudent.ClassId == clsId &&
-                    states.Contains(csth.ClassStudentsToHomeworkState.State)
+                    states.Contains(csth.ClassStudentsToHomeworkState.State) &&
+                    csth.Homework.HomeworkState.State != "Deleted" &&
+                    csth.ClassStudent.State.State == "Accepted"
                 )
-                .Select(csth => new ChangeHomeworkSentViewModel
-                {
-                    UserName = csth.ClassStudent.User.FullName,
-                    StudentToHomeworkId = csth.ClassStudentsToHomeworkId
-                })
-                .SingleOrDefaultAsync();
+                .Select(csth => csth.ClassStudentsToHomeworkId)
+                .AnyAsync();
 
             return classStudentsToHomeworks;
         }

@@ -1,7 +1,7 @@
 ﻿using Amozegar.Models.CustomAnnotations;
 using System.ComponentModel.DataAnnotations;
 
-namespace Amozegar.Models
+namespace Amozegar.Areas.Shared.Models
 {
     public class AddPictureViewModel
     {

@@ -1,0 +1,34 @@
+﻿@model DetailsComponentViewModel
+
+@if (string.IsNullOrEmpty(Model.ClassIdentity))
+{
+	<div class="user-info-header">
+		<div class="user-info-content">
+			<div class="user-avatar">
+				<img src="~/images/users/@Model.ImagePath" alt="تصویر کاربر">
+			</div>
+			<div class="user-details">
+				<h2 class="user-name">@Model.UserFullName</h2>
+				<p class="user-username text-truncate text-sm-start text-center">@Model.UserName</p>
+			</div>
+		</div>
+	</div>
+
+}
+else
+{
+
+	<div class="user-info-header">
+		<div class="user-info-content">
+			<div class="user-avatar">
+				<img src="~/images/classes/@Model.ImagePath" alt="تصویر کلاس">
+			</div>
+			<div class="user-details">
+				<h2 class="user-name">@Model.ClassName</h2>
+				<p class="user-username text-truncate text-sm-start text-center">ایدی کلاس : @Model.ClassIdentity</p>
+				<p class="user-username text-truncate text-sm-start text-center">نام مدرس : @Model.UserFullName</p>
+			</div>
+		</div>
+	</div>
+
+}

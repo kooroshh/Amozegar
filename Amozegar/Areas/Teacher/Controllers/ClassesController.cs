@@ -104,31 +104,12 @@ namespace Amozegar.Areas.Teacher.Controllers
             return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = "Teacher", pageNumber = "1" });
         }
 
-
-        [Route("Delete-Class/{classId}")]
-        public async Task<IActionResult> DeleteClass(int classId)
-        {
-            var existClass = await this.isClassExistForTeacher(classId);
-
-            if (existClass == null)
-            {
-                return this.returnToClassLists();
-            }
-
-            var classModel = new DeleteClassViewModel()
-            {
-                ClassName = existClass.ClassName,
-                ClassId = existClass.ClassId
-            };
-            return View(classModel);
-        }
-
         [HttpPost("Delete-Class/{classId}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteClass(DeleteClassViewModel deleteClass)
+        public async Task<IActionResult> DeleteClass(int classId)
         {
 
-            var existClass = await this.isClassExistForTeacher(deleteClass.ClassId);
+            var existClass = await this.isClassExistForTeacher(classId);
 
             if (existClass == null)
             {
@@ -194,10 +175,22 @@ namespace Amozegar.Areas.Teacher.Controllers
             existClass.ClassName = editClass.ClassName;
             existClass.ClassIdentity = editClass.ClassIdentity;
             
-            if (editClass.ClassPassword != null)
+            if (editClass.ClassPassword != null || editClass.NewPassword != null)
             {
-                string hashedPassword = this._passwordHasher.HashPassword(existClass, editClass.ClassPassword);
-                existClass.ClassPassword = hashedPassword;
+                var checkPassword = _passwordHasher.VerifyHashedPassword(existClass, existClass.ClassPassword, (editClass.ClassPassword ?? ""));
+                if (checkPassword == PasswordVerificationResult.Failed)
+                {
+                    ModelState.AddModelError("ClassPassword", "پسورد کلاس اشتباه است");
+                    return View(editClass);
+                }
+                if (editClass.NewPassword == null)
+                {
+                    ModelState.AddModelError("NewPassword", "لطفا پسورد جدید را وارد کنید !!");
+                    return View(editClass);
+                }
+
+                string hashedNewPassword = this._passwordHasher.HashPassword(existClass, editClass.NewPassword);
+                existClass.ClassPassword = hashedNewPassword;
             }
             await this._context.SaveChangesAsync();
             if (editClass.ClassImage != null && editClass.ClassImage.Length > 0)

@@ -1,4 +1,5 @@
-﻿using Amozegar.Data.UnitOfWork;
+﻿using Amozegar.Areas.Shared.Models;
+using Amozegar.Data.UnitOfWork;
 using Amozegar.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,8 @@ namespace Amozegar.Areas.Shared.Controllers
         public async Task<IActionResult> Index(string classId, string roleName, int pageNumber)
         {
             ViewBag.Route = "Homeworks";
+            ViewBag.IsTeacher = roleName.ToLowerInvariant() == "teacher" ? true : false;
+
             var student = await this._userManager.FindByNameAsync(User.Identity.Name);
 
             var classHomeworks = await this._context.HomeworkRepository
@@ -39,14 +42,21 @@ namespace Amozegar.Areas.Shared.Controllers
 
             this.checkNextOrPrevForViewBags(homeworksCount, pageNumber);
 
-            ViewBag.HomeworksCount = homeworksCount;
-            ViewBag.IsTeacher = roleName.ToLowerInvariant() == "teacher" ? true : false;
 
             if (!ViewBag.IsTeacher)
             {
                 var user = await this._userManager.FindByNameAsync(User.Identity.Name);
                 await this._context.UsersViewsRepository
                     .ReadAllHomeworksAsync(user, classId);
+            }
+
+
+            foreach (var classHomework in classHomeworks)
+            {
+                if (TempData.ContainsKey(classHomework.HomeworkId.ToString()))
+                {
+                    ModelState.AddModelError("HomeworkId", TempData[classHomework.HomeworkId.ToString()].ToString());
+                }
             }
 
             return View(classHomeworks);

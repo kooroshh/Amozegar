@@ -1,0 +1,9 @@
+﻿@model string
+@if (TempData["Error"] != null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            window.openConfirmImagesModal('@Model');
+        });
+    </script>
+}

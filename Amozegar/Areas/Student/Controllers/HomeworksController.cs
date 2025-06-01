@@ -28,7 +28,40 @@ namespace Amozegar.Areas.Student.Controllers
 
         // Main Methods
 
-        [Route("{homeworkId}/SendNotifications")]
+
+        [Route("NotSendHomeworks/{pageNumber}")]
+        public async Task<IActionResult> NotSendHomeworks(string classId, int pageNumber)
+        {
+
+            ViewBag.Route = "NotSendHomeworks";
+
+            var student = await this._userManager.FindByNameAsync(User.Identity.Name);
+
+            var classHomeworks = await this._context.HomeworkRepository
+                .GetNotSentHomeworksByClassIdentityByStudentIdByPageNumber(classId, student.Id, pageNumber);
+
+            this.setPaginationViewBags(pageNumber);
+
+            if (this.validateUserPageNumber(pageNumber, classHomeworks.Count()))
+            {
+                return RedirectToAction("NotSendHomeworks", "Homeworks", new { area = "Student", classId = classId, pageNumber = 1 });
+            }
+
+            var homeworksCount = await this._context.HomeworkRepository
+                .GetNotSentHomeworksCountByClassIdentityByStudentIdAsync(classId, student.Id);
+
+            this.checkNextOrPrevForViewBags(homeworksCount, pageNumber);
+
+
+            //var user = await this._userManager.FindByNameAsync(User.Identity.Name);
+            //await this._context.UsersViewsRepository
+            //    .ReadAllHomeworksAsync(user, classId);
+
+            return View(classHomeworks);
+        }
+
+
+        [Route("{homeworkId}/SendHomework")]
         public async Task<IActionResult> Send(string classId, int homeworkId)
         {
 
@@ -64,7 +97,7 @@ namespace Amozegar.Areas.Student.Controllers
             return View(send);
         }
 
-        [HttpPost("{homeworkId}/SendNotifications")]
+        [HttpPost("{homeworkId}/SendHomework")]
         public async Task<IActionResult> Send(string classId, int homeworkId, SendHomeworkViewModel send)
         {
 

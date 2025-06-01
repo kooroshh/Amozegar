@@ -9,7 +9,7 @@ namespace Amozegar.Areas.Teacher.Controllers
     [Area("Teacher")]
     [Authorize(Roles = "Teacher")]
     [ValidateClassIdTeacher]
-    public class BaseController : Controller
+    public class BaseController : Amozegar.Controllers.BaseController
     {
         protected string classId;
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -22,41 +22,6 @@ namespace Amozegar.Areas.Teacher.Controllers
             }
 
             ViewBag.classId = this.classId;
-
-        }
-
-
-        // Utilities
-        protected void setPaginationViewBags(int pageNumber)
-        {
-            ViewBag.HasNext = false;
-            ViewBag.HasPrev = false;
-            ViewBag.CurrentPage = pageNumber;
-        }
-
-        protected bool validateUserPageNumber(int pageNumber, int count)
-        {
-            if (pageNumber != 1 && count <= 0)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        protected void checkNextOrPrevForViewBags(int count, int pageNumber)
-        {
-            var thisPageCount = DefaultPageCount.Count * pageNumber;
-
-            if (count > thisPageCount)
-            {
-                ViewBag.HasNext = true;
-            }
-
-            if (!(thisPageCount - 10 <= 0))
-            {
-                ViewBag.HasPrev = true;
-            }
-            ViewBag.Count = count;
 
         }
 

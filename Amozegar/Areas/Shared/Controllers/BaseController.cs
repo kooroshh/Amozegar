@@ -12,7 +12,7 @@ namespace Amozegar.Areas.Shared.Controllers
     [Authorize(Roles = "Teacher, Student")]
     [ValidateClassIdTeacherAndStudent]
     [ValidateUserIsInRole]
-    public class BaseController : Controller
+    public class BaseController : Amozegar.Controllers.BaseController
     {
         protected string? classId;
         protected string? roleName;
@@ -42,37 +42,6 @@ namespace Amozegar.Areas.Shared.Controllers
         protected IActionResult returnToPaginationView(string type = "")
         {
             return RedirectToAction("Index", ViewBag.Route, new { area = "Shared", roleName = ViewBag.roleName, classId = ViewBag.classId, pageNumber = 1, type = type });
-        }
-
-        protected void setPaginationViewBags(int pageNumber)
-        {
-            ViewBag.HasNext = false;
-            ViewBag.HasPrev = false;
-            ViewBag.CurrentPage = pageNumber;
-        }
-
-        protected bool validateUserPageNumber(int pageNumber, int count)
-        {
-            if (pageNumber != 1 && count <= 0)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        protected void checkNextOrPrevForViewBags(int count, int pageNumber)
-        {
-            var thisPageCount = DefaultPageCount.Count * pageNumber;
-
-            if (count > thisPageCount)
-            {
-                ViewBag.HasNext = true;
-            }
-
-            if (!(thisPageCount - 10 <= 0))
-            {
-                ViewBag.HasPrev = true;
-            }
         }
 
     }

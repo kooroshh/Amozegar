@@ -7,13 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Areas\Shared\Views\Shared\**" />
-    <Content Remove="Areas\Shared\Views\Shared\**" />
-    <EmbeddedResource Remove="Areas\Shared\Views\Shared\**" />
-    <None Remove="Areas\Shared\Views\Shared\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="wwwroot\fonts\webfonts\" />
     <Folder Include="wwwroot\images\home\" />
     <Folder Include="wwwroot\images\classes\" />

@@ -1,118 +1,126 @@
-﻿@model AddOrEditNotificaionsViewModel
+﻿@model AddOrEditNotificationsViewModel
 @{
-    ViewData["Title"] = "ویرایش اعلان";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewData["Title"] = "ویرایش اعلان";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
+@await Component.InvokeAsync("Confirm")
+@if (TempData["Error"] != null)
+{
+	@await Component.InvokeAsync("ConfirmImages", TempData["Error"])
+}
+else
+{
+	@await Component.InvokeAsync("ConfirmImages")
+}
 <div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <div class="card shadow-lg border-0">
-                    <div class="card-body p-md-5 p-2">
-                        <div class="text-center mb-5">
-                            <h2 class="fw-bold">ویرایش اعلان</h2>
-                            <p class="text-muted">اعلان خود را ویرایش کنید</p>
-                        </div>
+	<div class="container py-5">
+		<div class="row justify-content-center">
+			<div class="col-md-10">
+				<div class="card shadow-lg border-0">
+					<div class="card-body p-md-5 p-2">
+						<div class="text-center mb-5">
+							<h2 class="fw-bold">ویرایش اعلان</h2>
+							<p class="text-muted">اعلان خود را ویرایش کنید</p>
+						</div>
 
-                        <form method="post" novalidate>
-                            @Html.AntiForgeryToken()
-                            <div class="mb-4">
-                                <label asp-for="@Model.Title" class="form-label"></label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white">
-                                        <i class="fa-solid fa-heading text-primary"></i>
-                                    </span>
-                                    <input asp-for="@Model.Title" class="form-control">
-                                </div>
-                                <span class="small text-danger" asp-validation-for="@Model.Title"></span>
-                            </div>
+						<form method="post" novalidate>
+							@Html.AntiForgeryToken()
+							<div class="mb-4">
+								<label asp-for="@Model.Title" class="form-label"></label>
+								<div class="input-group">
+									<span class="input-group-text bg-white">
+										<i class="fa-solid fa-heading text-primary"></i>
+									</span>
+									<input asp-for="@Model.Title" class="form-control">
+								</div>
+								<span class="small text-danger" asp-validation-for="@Model.Title"></span>
+							</div>
 
-                            <div class="mb-4">
-                                <label asp-for="@Model.Body" class="form-label"></label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white">
-                                        <i class="fa-solid fa-file-lines text-primary"></i>
-                                    </span>
-                                    <textarea asp-for="@Model.Body" class="form-control"></textarea>
-                                </div>
-                                <span class="small text-danger" asp-validation-for="@Model.Body"></span>
-                            </div>
+							<div class="mb-4">
+								<label asp-for="@Model.Body" class="form-label"></label>
+								<div class="input-group">
+									<span class="input-group-text bg-white">
+										<i class="fa-solid fa-file-lines text-primary"></i>
+									</span>
+									<textarea asp-for="@Model.Body" class="form-control"></textarea>
+								</div>
+								<span class="small text-danger" asp-validation-for="@Model.Body"></span>
+							</div>
 
-                            <div class="card border-0 shadow-sm mb-4">
-                                <div class="card-body p-4">
-                                    <div class="d-flex align-items-center gap-2 mb-4">
-                                        <h3 class="card-title">تصاویر</h3>
-                                        <a asp-action="AddPicture"
-                                           asp-controller="Notifications"
-                                           asp-area="Teacher"
-                                           asp-route-classId="@ViewBag.ClassId"
-                                           asp-route-notificationId="@ViewBag.NotificationId"
-                                            class="btn btn-primary">افزودن تصاویر</a>
-                                    </div>
+							<div class="card border-0 shadow-sm mb-4">
+								<div class="card-body p-4">
+									<div class="d-flex align-items-center gap-2 mb-4">
+										<h3 class="card-title">تصاویر</h3>
 
-                                    @if (Model.PicturesList == null || Model.PicturesList.Count() <= 0)
-                                    {
-                                        <div class="bg-white text-center w-100 rounded p-3">
-                                            هیچ عکسی وجود ندارد
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="row g-4">
-                                            @foreach (var picture in Model.PicturesList)
-                                            {
-                                                <div class="col-md-4">
-                                                    <div class="gallery-item">
-                                                        <a href="~/images/notifications/@(picture.PicturePath)" target="_blank" class="gallery-image">
-                                                            <img src="~/images/notifications/@(picture.PicturePath)" alt="تصویر گالری" class="img-fluid">
-                                                        </a>
-                                                        <a asp-action="DeletePicture"
-                                                            asp-controller="Notifications"
-                                                            asp-area="Teacher"
-                                                            asp-route-classId="@ViewBag.ClassId"
-                                                            asp-route-notificationId="@ViewBag.NotificationId"
-                                                            asp-route-pictureId="@picture.PictureId"
-                                                            class="btn btn-outline-danger w-100 mt-2">
-                                                            <i class="fas fa-trash me-1"></i>
-                                                            حذف تصویر
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            }
-                                        </div>
-                                    }
+										<a href="javascript:void(0)"
+										   onclick="openConfirmImagesModal('@Url.Action("AddPicture", "Notifications", new { area = "Teacher", classId = ViewBag.ClassId, notificationId = ViewBag.notificationId })')"
+										   class="btn btn-primary">
+											افزودن تصاویر
+										</a>
 
-                                </div>
-                            </div>
+									</div>
 
+									@if (Model.PicturesList == null || Model.PicturesList.Count() <= 0)
+									{
+										<div class="bg-white text-center w-100 rounded p-3">
+											هیچ عکسی وجود ندارد
+										</div>
+									}
+									else
+									{
+										<div class="row g-4">
+											@foreach (var picture in Model.PicturesList)
+											{
+												<div class="col-md-4">
 
-                            <div class="mb-4 d-flex ">
-                                <a asp-action="Notifications"
-                                   asp-controller="Home"
-                                   asp-area="Teacher"
-                                   asp-route-classId="@ViewBag.ClassId"
-                                   asp-route-pageNumber="1"
-                                   class="btn btn-warning w-50 py-3 d-block rounded-end-0">برگشت به اعلانات</a>
-                                <button type="submit" class="btn btn-primary w-50 py-3 d-block rounded-start-0">
-                                    <i class="fas fa-edit me-2"></i>
-                                    ویرایش
-                                </button>
-                            </div>
+													<div class="gallery-item">
+														<a href="~/images/notifications/@(picture.PicturePath)" target="_blank" class="gallery-image">
+															<img src="~/images/notifications/@(picture.PicturePath)" alt="تصویر گالری" class="img-fluid">
+														</a>
+
+														<a href="javascript:void(0)"
+														   onclick="openConfirmModal('@Url.Action("DeletePicture", "Notifications", new { area = "Teacher", classId = ViewBag.ClassId, notificationId = ViewBag.notificationId, pictureId = picture.PictureId })', 'آیا از حذف تصویر اطمینان دارید؟')"
+														   class="btn btn-outline-danger w-100 mt-2">
+															<i class="fas fa-trash me-1"></i>
+															حذف تصویر
+														</a>
+													</div>
+												</div>
+											}
+										</div>
+									}
+
+								</div>
+							</div>
 
 
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+							<div class="mb-4 d-flex ">
+								<a asp-action="Notifications"
+								   asp-controller="Home"
+								   asp-area="Teacher"
+								   asp-route-classId="@ViewBag.ClassId"
+								   asp-route-pageNumber="1"
+								   class="btn btn-warning w-50 py-3 d-block rounded-end-0">برگشت به اعلانات</a>
+								<button type="submit" class="btn btn-primary w-50 py-3 d-block rounded-start-0">
+									<i class="fas fa-edit me-2"></i>
+									ویرایش
+								</button>
+							</div>
+
+
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+		await Html.RenderPartialAsync("_CheckErrorScriptsPartial", Url.Action("AddPicture", "Notifications", new { area = "Teacher", classId = ViewBag.ClassId, notificationId = ViewBag.notificationId }));
+	}
 }

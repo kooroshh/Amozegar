@@ -60,6 +60,18 @@ namespace Amozegar.Controllers
             return View("ContactState");
         }
 
+        [Route("Teacher")]
+        public IActionResult Teacher()
+        {
+            return View();
+        }
+
+        [Route("Student")]
+        public IActionResult Student()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

@@ -77,12 +77,18 @@
                                 <span class="small text-danger" asp-validation-for="@Model.ClassImage"></span>
                             </div>
 
+                            <div class="mb-4 d-flex ">
+                                <a asp-action="Classes"
+                                   asp-controller="Home"
+                                   asp-area="Panel"
+                                   asp-route-roleName="Teacher"
+                                   class="btn btn-warning w-50 py-3 d-block rounded-end-0">برگشت به کلاس ها</a>
+                                <button type="submit" class="btn btn-primary w-50 py-3 d-block rounded-start-0">
+                                    <i class="fas fa-edit me-2"></i>
+                                    ایجاد کلاس
+                                </button>
+                            </div>
 
-
-                            <button type="submit" class="btn btn-primary w-100 py-3 mb-4">
-                                <i class="fa-solid fa-book"></i>
-                                ایجاد کلاس
-                            </button>
                         </form>
                     </div>
                 </div>

@@ -31,46 +31,24 @@ namespace Amozegar.Areas.Teacher.Controllers
             return RedirectToAction("Notifications", "Home", new { area = "Teacher", classId = ViewBag.classId, pageNumber = 1 });
         }
 
+        private IActionResult returnToNotification(int notificationId)
+        {
+            return RedirectToAction("EditNotification", "Notifications", new { area = "Teacher", classId = ViewBag.classId, notificationId = notificationId });
+        }
 
         // Picture Methods
 
-        [Route("Delete-Picture/{pictureId}")]
+        [HttpPost("Delete-Picture/{pictureId}")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeletePicture(string classId, int notificationId, int pictureId)
         {
+            
             var notification = await this.getNotificationByIdAsync(notificationId);
+
             var picture = await this._context.PictureRepository
                 .GetPictureByClassIdentityByTypeAndRecordIdAndPictureIdAsync(this.classId, pictureId, notificationId, "Notifications");
 
             if (notification == null || picture == null)
-            {
-                return this.returnToNotifications();
-            }
-
-            ViewBag.NotificationId = notificationId;
-
-            var pictureModel = new PictureForEditViewModel()
-            {
-                PictureId = picture.PictureId,
-                PicturePath = picture.PicturePath
-            };
-            return View(pictureModel);
-        }
-
-        [HttpPost("Delete-Picture/{pictureId}")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeletePicture(string classId, int notificationId, int pictureId, PictureForEditViewModel editPicture)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View();
-            }
-
-            var notification = await this.getNotificationByIdAsync(notificationId);
-
-            var picture = await this._context.PictureRepository
-                .GetPictureByClassIdentityByTypeAndRecordIdAndPictureIdAsync(this.classId, editPicture.PictureId, notificationId, "Notifications");
-
-            if (notification == null || picture == null || pictureId != editPicture.PictureId)
             {
                 return this.returnToNotifications();
             }
@@ -91,38 +69,29 @@ namespace Amozegar.Areas.Teacher.Controllers
                 System.IO.File.Delete(picturePath);
             }
 
-            return RedirectToAction("EditNotification", "Notifications", new { area = "Teacher", classId = classId, notificationId = notificationId });
-        }
-
-        [Route("Add-Picture")]
-        public async Task<IActionResult> AddPicture(string classId, int notificationId)
-        {
-            var notification = await this.getNotificationByIdAsync(notificationId);
-
-            if (notification == null)
-            {
-                return this.returnToNotifications();
-            }
-
-            ViewBag.NotificationId = notificationId;
-
-            return View();
+            return this.returnToNotification(notificationId);
         }
 
         [HttpPost("Add-Picture")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddPicture(string classId, int notificationId, AddPictureViewModel addPicture)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(addPicture);
-            }
-
             var notification = await this.getNotificationByIdAsync(notificationId);
 
             if (notification == null)
             {
                 return this.returnToNotifications();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(e => e.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .FirstOrDefault();
+
+                TempData["Error"] = errors;
+                return this.returnToNotification(notificationId);
             }
 
             if (addPicture.Pictures != null)
@@ -130,7 +99,7 @@ namespace Amozegar.Areas.Teacher.Controllers
                 await addPicture.Pictures.SaveImages(this.classId, notification.NotificationId, _context, "Notifications");
             }
 
-            return RedirectToAction("EditNotification", "Notifications", new { area = "Teacher", classId = classId, notificationId = notificationId });
+            return this.returnToNotification(notificationId);
         }
 
 
@@ -164,7 +133,7 @@ namespace Amozegar.Areas.Teacher.Controllers
 
         [HttpPost("")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddNotification(string classId, string notificationId, AddOrEditNotificaionsViewModel add)
+        public async Task<IActionResult> AddNotification(string classId, string notificationId, AddOrEditNotificationsViewModel add)
         {
 
 
@@ -200,8 +169,8 @@ namespace Amozegar.Areas.Teacher.Controllers
             return this.returnToNotifications();
         }
 
-
-        [Route("Delete")]
+        [HttpPost("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteNotification(string classId, int notificationId)
         {
             var notification = await this.getNotificationByIdAsync(notificationId);
@@ -209,41 +178,8 @@ namespace Amozegar.Areas.Teacher.Controllers
             {
                 return this.returnToNotifications();
             }
-            var delete = new DeleteNotificationViewModel()
-            {
-                NotificationId = notification.NotificationId,
-                NotificationTitle = notification.NotificationTitle
-            };
-            return View(delete);
-        }
 
-        [HttpPost("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteNotification(string classId, int notificationId, DeleteNotificationViewModel delete)
-        {
-            var notification = await this.getNotificationByIdAsync(notificationId);
-            if (
-                notificationId != delete.NotificationId ||
-                notification == null ||
-                !ModelState.IsValid
-                )
-            {
-                return this.returnToNotifications();
-            }
-
-
-            await this._context.PictureRepository.DeleteByClassIdentityByTypeAndRecordIdAsync(this.classId, notificationId, "Notifications");
-            var imagesPath = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "wwwroot",
-                "images",
-                "notifications",
-                notification.NotificationId.ToString()
-                );
-            if (Directory.Exists(imagesPath))
-            {
-                Directory.Delete(imagesPath, recursive: true);
-            }
+            await ImageActions.DeleteImages(this.classId, notificationId, "Notifications", this._context);
 
             this._context.NotificationsRepository
                 .Delete(notification);
@@ -270,7 +206,7 @@ namespace Amozegar.Areas.Teacher.Controllers
 
             ViewBag.NotificationId = notificationId;
 
-            var edit = new AddOrEditNotificaionsViewModel()
+            var edit = new AddOrEditNotificationsViewModel()
             {
                 Title = notification.NotificationTitle,
                 Body = notification.NotificationBody,
@@ -281,7 +217,7 @@ namespace Amozegar.Areas.Teacher.Controllers
 
         [HttpPost("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditNotification(string classId, int notificationId, AddOrEditNotificaionsViewModel edit)
+        public async Task<IActionResult> EditNotification(string classId, int notificationId, AddOrEditNotificationsViewModel edit)
         {
             if (!ModelState.IsValid)
             {

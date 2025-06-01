@@ -34,37 +34,6 @@ namespace Amozegar.Areas.Teacher.Controllers
 
         // Utilities
 
-        private void setPaginationViewBags(int pageNumber)
-        {
-            ViewBag.HasNext = false;
-            ViewBag.HasPrev = false;
-            ViewBag.CurrentPage = pageNumber;
-        }
-
-        private void checkNextOrPrevForViewBags(int count, int pageNumber)
-        {
-            var thisPageCount = DefaultPageCount.Count * pageNumber;
-
-            if (count > thisPageCount)
-            {
-                ViewBag.HasNext = true;
-            }
-
-            if (!(thisPageCount - 10 <= 0))
-            {
-                ViewBag.HasPrev = true;
-            }
-        }
-
-        private bool validateUserPageNumber(int pageNumber, int count)
-        {
-            if (pageNumber != 1 && count <= 0)
-            {
-                return true;
-            }
-            return false;
-        }
-
         private IActionResult returnToPaginationView()
         {
             return RedirectToAction(ViewBag.Route, "Home", new { classId = this.classId, pageNumber = 1, area = "Teacher" });

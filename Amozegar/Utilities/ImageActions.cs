@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Amozegar.Utilities
 {
-    public static class ImageSaver
+    public static class ImageActions
     {
         public static async Task SaveImage(this IFormFile file, string fileName, params string[] paths)
         {
@@ -49,6 +49,22 @@ namespace Amozegar.Utilities
                     counter++;
                 }
                 await context.SaveChangesAsync();
+            }
+        }
+
+        public static async Task DeleteImages(string classIdentity,  int recordId, string type, IUnitOfWork context)
+        {
+            await context.PictureRepository.DeleteByClassIdentityByTypeAndRecordIdAsync(classIdentity, recordId, type);
+            var imagesPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                "images",
+                type.ToLowerInvariant(),
+                recordId.ToString()
+                );
+            if (Directory.Exists(imagesPath))
+            {
+                Directory.Delete(imagesPath, recursive: true);
             }
         }
 

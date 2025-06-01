@@ -13,7 +13,7 @@
             <div class="card-body p-4">
 
 
-                <div class="d-flex gap-3 align-items-center mb-4">
+                <div class="d-flex gap-3 align-items-center mb-4 flex-wrap">
 
                     <h3 class="card-title mb-0">لیست درخواست ها</h3>
                     <div>
@@ -65,33 +65,29 @@
                                 </div>
                             </div>
                             <div class="user-actions">
-                                <a asp-action="Accept"
-                                   asp-controller="Students"
-                                   asp-area="Teacher"
-                                   asp-route-classId="@ViewBag.classId"
-                                   asp-route-studentInClassId="@item.StudentInClassId"
+
+                                <a href="javascript:void(0)"
+                                   onclick="openConfirmModal('@Url.Action("Accept", "Students", new { area = "Teacher", classId = ViewBag.ClassId, studentInClassId = item.StudentInClassId })', 'آیا از قبول کردن دانش آموز اطمینان دارید؟')"
                                    class="btn btn-success btn-sm">
                                     <i class="fas fa-check me-1"></i>
                                     قبول کردن
                                 </a>
-                                <a asp-action="Reject"
-                                   asp-controller="Students"
-                                   asp-area="Teacher"
-                                   asp-route-classId="@ViewBag.classId"
-                                   asp-route-studentInClassId="@item.StudentInClassId"
+
+                                <a href="javascript:void(0)"
+                                   onclick="openConfirmModal('@Url.Action("Reject", "Students", new { area = "Teacher", classId = ViewBag.ClassId, studentInClassId = item.StudentInClassId })', 'آیا از رد کردن دانش آموز اطمینان دارید؟')"
                                    class="btn btn-warning btn-sm">
                                     <i class="fa-solid fa-xmark me-1"></i>
                                     رد کردن
                                 </a>
-                                <a asp-action="ban"
-                                   asp-controller="Students"
-                                   asp-area="Teacher"
-                                   asp-route-classId="@ViewBag.classId"
-                                   asp-route-studentInClassId="@item.StudentInClassId"
+
+                                <a href="javascript:void(0)"
+                                   onclick="openConfirmModal('@Url.Action("Ban", "Students", new { area = "Teacher", classId = ViewBag.ClassId, studentInClassId = item.StudentInClassId })', 'آیا از بن کردن دانش آموز اطمینان دارید؟')"
                                    class="btn btn-danger btn-sm">
                                     <i class="fa-solid fa-ban me-1"></i>
                                     بن کردن
                                 </a>
+
+
                             </div>
                         </div>
                     }

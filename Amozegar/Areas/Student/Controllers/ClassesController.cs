@@ -115,31 +115,13 @@ namespace Amozegar.Areas.Student.Controllers
             return this.returnToClassLists();
         }
 
-        [Route("Delete-Class/{classId}")]
-        public async Task<IActionResult> DeleteClass(int classId)
-        {
-
-            var exisitClass = await this._context.ClassesRepository
-                .GetByCheckStudentIsInClassAsync(User.Identity.Name, classId);
-
-            if (exisitClass == null)
-            {
-                return this.returnToClassLists();
-            }
-            var classModel = new DeleteClassViewModel()
-            {
-                ClassName = exisitClass.ClassName,
-                ClassId = exisitClass.ClassId
-            };
-            return View(classModel);
-        }
 
         [HttpPost("Delete-Class/{classId}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteClass(DeleteClassViewModel deleteClass)
+        public async Task<IActionResult> DeleteClass(int classId)
         {
             var exisitClass = await this._context.ClassesRepository
-                .GetByCheckStudentIsInClassAsync(User.Identity.Name, deleteClass.ClassId);
+                .GetByCheckStudentIsInClassAsync(User.Identity.Name, classId);
 
             if (exisitClass == null)
             {

@@ -64,7 +64,11 @@ namespace Amozegar.Data.Repositories.Implementations
             var pictureType = await this.getPictureTypeByType(type);
             var classId = await this.getClassIdByClassIdentity(classIdentity);
             var pictures = await this._context.Pictures
-                .Where(p => p.TableType == pictureType && p.TableTypeRecordId == recordId && p.ClassId == classId)
+                .Where(p =>
+                    p.TableType == pictureType &&
+                    p.TableTypeRecordId == recordId &&
+                    p.ClassId == classId
+                )
                 .Select(p => p.PicturePath)
                 .ToListAsync();
 
@@ -77,7 +81,11 @@ namespace Amozegar.Data.Repositories.Implementations
             var classId = await this.getClassIdByClassIdentity(classIdentity);
 
             var pictures = await this._context.Pictures
-                .Where(p => p.TableType == pictureType && p.TableTypeRecordId == recordId && p.ClassId == classId)
+                .Where(p =>
+                    p.TableType == pictureType &&
+                    p.TableTypeRecordId == recordId &&
+                    p.ClassId == classId
+                )
                 .Select(p => new PictureForEditViewModel()
                 {
                     PicturePath = p.PicturePath,

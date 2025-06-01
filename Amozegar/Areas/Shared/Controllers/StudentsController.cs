@@ -15,7 +15,7 @@ namespace Amozegar.Areas.Shared.Controllers
             this._context = context;
         }
 
-        public async Task<IActionResult> Index(string roleName, string classId, string type, int pageNumber)
+        public async Task<IActionResult> Index(string roleName, string classId, string type, int pageNumber = 1)
         {
             var students = new List<StudentsListViewModel>();
             var studentsCount = 0;
@@ -71,7 +71,6 @@ namespace Amozegar.Areas.Shared.Controllers
 
             this.checkNextOrPrevForViewBags(studentsCount, pageNumber);
 
-            ViewBag.Count = studentsCount;
             return View(students);
         }
     }

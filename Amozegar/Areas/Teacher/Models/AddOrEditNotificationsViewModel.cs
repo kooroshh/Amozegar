@@ -4,7 +4,7 @@ using Amozegar.Models.CustomAnnotations;
 
 namespace Amozegar.Areas.Teacher.Models
 {
-    public class AddOrEditNotificaionsViewModel
+    public class AddOrEditNotificationsViewModel
     {
         [Display(Name = "عنوان")]
         [Required(ErrorMessage = "{0} نمیتواند خالی باشد")]

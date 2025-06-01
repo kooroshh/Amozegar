@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Amozegar.Areas.Panel.Models;
+using Amozegar.Controllers;
 using Amozegar.Data;
 using Amozegar.Data.UnitOfWork;
 using Amozegar.Models;
@@ -15,7 +16,7 @@ namespace Amozegar.Areas.Panel.Controllers
 {
     [Area("Panel")]
     [Authorize]
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
 
         private UserManager<User> _userManager;
@@ -114,10 +115,9 @@ namespace Amozegar.Areas.Panel.Controllers
             }
         }
 
-        [Route("Panel/Classes/{roleName}/{pageNumber}")]
-        public async Task<IActionResult> Classes(string roleName, int pageNumber)
+        [Route("Panel/Classes/{roleName}/{pageNumber?}")]
+        public async Task<IActionResult> Classes(string roleName, int pageNumber = 1)
         {
-
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
             if (!(await _userManager.IsInRoleAsync(user, roleName)) || roleName == "Admin")
             {
@@ -126,6 +126,7 @@ namespace Amozegar.Areas.Panel.Controllers
 
             ViewBag.Role = roleName;
             IEnumerable<ClassesViewModel> classes = new List<ClassesViewModel>();
+            this.setPaginationViewBags(pageNumber);
             var classesCount = 0;
 
             if (roleName == "Teacher")
@@ -144,29 +145,14 @@ namespace Amozegar.Areas.Panel.Controllers
                 classesCount = await this._context.ClassesRepository
                     .GetStudentsClassesCountByPageNumberAsync(user);
             }
-            // Set ViewBags
-            ViewBag.HasNext = false;
-            ViewBag.HasPrev = false;
-            ViewBag.CurrentPage = pageNumber;
-            ViewBag.ClassesCount = classesCount;
 
-            if (pageNumber != 1 && classes.Count() <= 0)
+
+            if (this.validateUserPageNumber(pageNumber, classes.Count()))
             {
                 return RedirectToAction("Classes", "Home", new { area = "Panel", roleName = roleName, pageNumber = 1 });
             }
 
-            // Check Prev And Next Buttons
-            var thisPageCount = DefaultPageCount.Count * pageNumber;
-
-            if (classesCount > thisPageCount)
-            {
-                ViewBag.HasNext = true;
-            }
-
-            if (!(thisPageCount - 10 <= 0))
-            {
-                ViewBag.HasPrev = true;
-            }
+            this.checkNextOrPrevForViewBags(classesCount, pageNumber);
 
             return View(classes);
             

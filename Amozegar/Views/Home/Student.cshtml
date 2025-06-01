@@ -1,0 +1,83 @@
+﻿@{
+	ViewData["Title"] = "دانش آموز باشید";
+}
+
+
+<!-- Hero Section -->
+<section class="hero-section">
+	<div class="container">
+
+		<div class="row justify-content-center">
+			<div class="col-md-10 text-center">
+				<h1 class="mb-4 display-4 fw-bold">دانش آموز باشید و وارد کلاس شوید</h1>
+				<p class="lead mb-5">بهترین پلتفرم برای بررسی کلاس های که توشون هستی</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- Main Content -->
+<section class="py-5">
+	<div class="container">
+		<div class="row justify-content-center">
+			<div class="col-lg-8">
+				<div class="card border-0 shadow-sm">
+					<div class="card-body p-5">
+						<h2 class="mb-4">چرا آموزگار را انتخاب کنید؟</h2>
+						<p class="mb-4">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد.</p>
+
+						<h3 class="mb-3">مزایای یادگیری در آموزگار</h3>
+						<ul class="list-unstyled mb-4">
+							<li class="mb-3">
+								<i class="fas fa-check-circle text-primary me-2"></i>
+								دسترسی به بهترین معلمان و محتوای آموزشی
+							</li>
+							<li class="mb-3">
+								<i class="fas fa-check-circle text-primary me-2"></i>
+								یادگیری در هر زمان و هر مکان
+							</li>
+							<li class="mb-3">
+								<i class="fas fa-check-circle text-primary me-2"></i>
+								پشتیبانی ۲۴ ساعته و رفع اشکال آنلاین
+							</li>
+						</ul>
+
+						<h3 class="mb-3">امکانات ویژه</h3>
+						<p class="mb-4">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است.</p>
+
+						<div class="bg-light p-4 rounded mb-4">
+							<h4 class="mb-3">ویژگی‌های منحصر به فرد</h4>
+							<ul class="list-unstyled mb-0">
+								<li class="mb-2">
+									<i class="fas fa-video text-primary me-2"></i>
+									کلاس‌های آنلاین تعاملی
+								</li>
+								<li class="mb-2">
+									<i class="fas fa-book text-primary me-2"></i>
+									کتابخانه دیجیتال گسترده
+								</li>
+								<li class="mb-2">
+									<i class="fas fa-chart-line text-primary me-2"></i>
+									گزارش پیشرفت تحصیلی
+								</li>
+							</ul>
+						</div>
+
+						<div class="text-center">
+							@if (User.Identity.IsAuthenticated)
+							{
+								<a class="nav-link btn btn-primary text-white px-4 disabled">
+									شما قبلا ثبت نام / ورود کرده اید.
+								</a>
+							}
+							else
+							{
+								<a class="nav-link btn btn-primary text-white px-4" asp-action="Register" asp-controller="Account">ورود / ثبت نام به عنوان دانش آموز</a>
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

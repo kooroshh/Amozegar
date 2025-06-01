@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+
+<html dir="rtl">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - آموزگار</title>
+	<script type="importmap"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/Amozegar.styles.css" asp-append-version="true" />
+</head>
+<body>
+	@await Component.InvokeAsync("Confirm")
+	<!-- Mobile Navigation -->
+	<nav class="mobile-nav d-lg-none">
+		<div class="container-fluid">
+			<div class="d-flex justify-content-between align-items-center py-3">
+				<button class="menu-toggle">
+					<i class="fas fa-bars"></i>
+				</button>
+				<a asp-action="Index" asp-controller="Home" asp-area="" class="mobile-logo">
+					<img src="~/images/home/logo.png" alt="آموزگار">
+				</a>
+			</div>
+		</div>
+	</nav>
+
+	<div class="panel-container">
+		<!-- Sidebar -->
+		<aside class="sidebar">
+			<div class="sidebar-header">
+				<a asp-action="Index" asp-controller="Home" asp-area="" class="sidebar-logo d-flex justify-content-center align-items-center gap-1">
+					<img src="~/images/home/logo.png" alt="آموزگار">
+					آموزگار
+				</a>
+			</div>
+
+			<div class="sidebar-menu">
+				<nav>
+					@await RenderSectionAsync("Sidebar")
+
+				</nav>
+			</div>
+
+			<div class="sidebar-footer">
+				@if (ViewData["RoleName"] != null)
+				{
+					<a href="javascript:void(0)"
+					   onclick="openConfirmModal('@Url.Action("Classes", "Home", new { area = "Panel", roleName = @ViewData["RoleName"] })', 'آیا از خروج از کلاس اطمینان دارید؟')"
+					   class="menu-item text-danger">
+						<i class="fas fa-sign-out-alt"></i>
+						خروج از کلاس
+					</a>
+				}
+				else
+				{
+					<a href="javascript:void(0)"
+					   onclick="openConfirmModal('@Url.Action("Logout", "Account", new { area = "" })', 'آیا از خروج از حساب کاربری خود اطمینان دارید؟')"
+					   class="menu-item text-danger">
+						<i class="fas fa-sign-out-alt"></i>
+						خروج از حساب کاربری
+					</a>
+				}
+
+			</div>
+		</aside>
+
+		<!-- Main Content -->
+		<main class="main-content">
+			<div class="container-fluid py-4">
+
+				@await Component.InvokeAsync("Details")
+
+				@if (ViewData["RoleName"] != null)
+				{
+					@await Component.InvokeAsync("Details", ViewBag.ClassId)
+				}
+
+
+				@RenderBody()
+
+			</div>
+			<partial name="_GoTopButton" />
+		</main>
+	</div>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	@await RenderSectionAsync("MyScripts", required: false)
+</body>
+</html>

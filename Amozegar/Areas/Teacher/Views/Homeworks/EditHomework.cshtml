@@ -3,7 +3,15 @@
     ViewData["Title"] = "ویرایش تکلیف";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+@await Component.InvokeAsync("Confirm")
+@if (TempData["Error"] != null)
+{
+    @await Component.InvokeAsync("ConfirmImages", TempData["Error"])
+}
+else
+{
+    @await Component.InvokeAsync("ConfirmImages")
+}
 
 <div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
     <div class="container py-5">
@@ -44,12 +52,12 @@
                                 <div class="card-body p-4">
                                     <div class="d-flex align-items-center gap-2 mb-4">
                                         <h3 class="card-title">تصاویر</h3>
-                                        <a asp-action="AddPicture"
-                                           asp-controller="Homeworks"
-                                           asp-area="Teacher"
-                                           asp-route-classId="@ViewBag.ClassId"
-                                           asp-route-homeworkId="@ViewBag.HomeworkId"
-                                           class="btn btn-primary">افزودن تصاویر</a>
+
+                                        <a href="javascript:void(0)"
+                                        onclick="openConfirmImagesModal('@Url.Action("AddPicture", "Homeworks", new { area = "Teacher", classId = ViewBag.ClassId, homeworkId = ViewBag.HomeworkId })')"
+                                        class="btn btn-primary">
+                                            افزودن تصاویر
+                                        </a>
                                     </div>
 
                                     @if (Model.PicturesList == null || Model.PicturesList.Count() <= 0)
@@ -68,16 +76,15 @@
                                                         <a href="~/images/homeworks/@(picture.PicturePath)" target="_blank" class="gallery-image">
                                                             <img src="~/images/homeworks/@(picture.PicturePath)" alt="تصویر گالری" class="img-fluid">
                                                         </a>
-                                                        <a asp-action="DeletePicture"
-                                                           asp-controller="Homeworks"
-                                                           asp-area="Teacher"
-                                                           asp-route-classId="@ViewBag.ClassId"
-                                                           asp-route-homeworkId="@ViewBag.HomeworkId"
-                                                           asp-route-pictureId="@picture.PictureId"
-                                                           class="btn btn-outline-danger w-100 mt-2">
+
+
+                                                        <a href="javascript:void(0)"
+                                                        onclick="openConfirmModal('@Url.Action("DeletePicture", "Homeworks", new { classId = ViewBag.ClassId, homeworkId = ViewBag.HomeworkId, pictureId = picture.PictureId, area = "Teacher" })', 'آیا از حذف تصویر اطمینان دارید؟')"
+                                                        class="btn btn-outline-danger w-100 mt-2">
                                                             <i class="fas fa-trash me-1"></i>
                                                             حذف تصویر
                                                         </a>
+
                                                     </div>
                                                 </div>
                                             }
@@ -90,12 +97,12 @@
 
                             <div class="mb-4 d-flex ">
                                 <a asp-action="Index"
-                                   asp-controller="Homeworks"
-                                   asp-area="Shared"
-                                   asp-route-classId="@ViewBag.ClassId"
-                                   asp-route-roleName="Teacher"
-                                   asp-route-pageNumber="1"
-                                   class="btn btn-warning w-50 py-3 d-block rounded-end-0">برگشت به تکالیف</a>
+                                asp-controller="Homeworks"
+                                asp-area="Shared"
+                                asp-route-classId="@ViewBag.ClassId"
+                                asp-route-roleName="Teacher"
+                                asp-route-pageNumber="1"
+                                class="btn btn-warning w-50 py-3 d-block rounded-end-0">برگشت به تکالیف</a>
                                 <button type="submit" class="btn btn-primary w-50 py-3 d-block rounded-start-0">
                                     <i class="fas fa-edit me-2"></i>
                                     ویرایش
@@ -115,5 +122,6 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("_CheckErrorScriptsPartial", Url.Action("AddPicture", "Homeworks", new { area = "Teacher", classId = ViewBag.ClassId, homeworkId = ViewBag.HomeworkId }));
     }
 }

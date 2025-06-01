@@ -1,0 +1,34 @@
+﻿@model Amozegar.Areas.Shared.Models.AddPictureViewModel
+<div class="modal fade" id="actionConfirmImagesModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<form id="confirmImagesActionForm" method="post" enctype="multipart/form-data">
+				@Html.AntiForgeryToken()
+				<div class="modal-header">
+					<h5 class="modal-title">آپلود تصاویر</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+				</div>
+				<div class="modal-body">
+
+					افزودن <label asp-for="@Model.Pictures" class="form-label"></label>
+					<div class="input-group">
+						<span class="input-group-text bg-white">
+							<i class="fa-solid fa-image text-primary"></i>
+						</span>
+						<input asp-for="@Model.Pictures" class="form-control">
+					</div>
+					<span asp-validation-for="@Model.Pictures" class="text-danger"></span>
+					@if (ViewBag.Error != "")
+					{
+						<span class="text-danger d-block">@ViewBag.Error</span>
+					}
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-close="true">لغو</button>
+					<button type="submit" class="btn btn-success">افزودن</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

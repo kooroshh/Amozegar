@@ -59,17 +59,6 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/Home/Error404");
 app.UseHttpsRedirection();
 app.UseRouting();
-app.Use(async (context, next) => {
-
-    var path = context.Request.Path.Value?.ToLower();
-    if (context.User.Identity.IsAuthenticated &&
-        (path.Contains("/account/login") || path.Contains("/account/register")))
-    {
-        context.Response.Redirect("/");
-    }
-
-    await next.Invoke();
-});
 app.UseAuthentication();
 app.UseAuthorization();
 

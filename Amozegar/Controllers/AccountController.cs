@@ -28,7 +28,7 @@ namespace Amozegar.Controllers
             this._signInManager = signInManager;
             this._userManager = userManager;
         }
-
+        // Utilities
         private async Task setRoles(RegisterViewModel register)
         {
             var roles = await _roleManager.Roles
@@ -42,9 +42,20 @@ namespace Amozegar.Controllers
             register.Roles = roles;
         }
 
+        private IActionResult returnToPanel()
+        {
+            return RedirectToAction("Index", "Home", new { area = "Panel" });
+        }
+
+
+        // Main Methods
         [Route("Account/Register")]
         public async Task<IActionResult> Register()
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return returnToPanel();
+            }
             var register = new RegisterViewModel();
             await this.setRoles(register);
             return View(register);
@@ -55,6 +66,10 @@ namespace Amozegar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel register)
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return returnToPanel();
+            }
             if (!ModelState.IsValid)
             {
                 await this.setRoles(register);
@@ -102,6 +117,10 @@ namespace Amozegar.Controllers
         [Route("Account/Login")]
         public IActionResult Login()
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return returnToPanel();
+            }
             return View();
         }
 
@@ -109,6 +128,10 @@ namespace Amozegar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel login)
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return returnToPanel();
+            }
             if (!ModelState.IsValid)
             {
                 return View(login);
@@ -131,13 +154,6 @@ namespace Amozegar.Controllers
                 ModelState.AddModelError("Email", "ورود ناموفق بود. لطفاً اطلاعات را بررسی کنید.");
                 return View(login);
             }
-        }
-
-        [Authorize]
-        [Route("Account/Logout")]
-        public IActionResult LogoutView()
-        {
-            return View("Logout");
         }
 
         [Authorize]

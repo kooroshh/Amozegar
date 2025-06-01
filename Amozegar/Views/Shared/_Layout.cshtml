@@ -34,6 +34,12 @@
 							<a class="nav-link" asp-action="ContactUs" asp-controller="Home">ارتباط با ما</a>
 						</li>
 						<li class="nav-item">
+							<a class="nav-link" asp-action="Teacher" asp-controller="Home">معلم باشید</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" asp-action="Student" asp-controller="Home">دانش آموز باشید</a>
+						</li>
+						<li class="nav-item">
 							@if(User.Identity.IsAuthenticated)
 							{
 								<a class="nav-link btn btn-primary text-white px-4" asp-action="Index" asp-controller="Home" asp-area="Panel">پنل کاربری</a>
@@ -71,6 +77,8 @@
 		</div>
 	</footer>
 
+
+	<partial name="_GoTopButton"/>
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
