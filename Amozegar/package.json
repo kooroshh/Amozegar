@@ -1,0 +1,16 @@
+{
+  "name": "amozegar",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+        "css:watch": "npx tailwindcss -i ./Assets/input.css -o ./wwwroot/css/site.css --watch",
+        "css:build": "npx tailwindcss -i ./Assets/input.css -o ./wwwroot/css/site.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}
