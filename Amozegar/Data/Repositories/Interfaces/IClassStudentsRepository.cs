@@ -13,5 +13,6 @@ namespace Amozegar.Data.Repositories.Interfaces
         Task<int> GetStudentsCountByClassIdentityByStateAsync(string classIdentity, string state);
         Task<int> GetClassStudentsRequestsCountAsync(string classIdentity);
         Task<List<AddStudentViewModel>?> GetClassStudentsRequestsByClassIdentityByPageNumberAsync(string classIdentity, int pageNumber);
+        Task<int> GetClassStudentIdByUserNameByClassIdentity(string classIdentity, string userName);
     }
 }

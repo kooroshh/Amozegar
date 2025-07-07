@@ -48,7 +48,7 @@
                 </div>
 
                 <div class="notification-actions my-2 py-2">
-                    @if(ViewBag.roleName == "Student")
+                    @if (ViewBag.roleName == "Student")
                     {
                         <div class="d-flex flex-column justify-content-center align-items-center">
                             @if (Model.StudentState == "" || Model.StudentState == "Rejected")
@@ -80,3 +80,88 @@
         </div>
     </div>
 </div>
+
+@if (ViewBag.IsTeacher != null && ViewBag.IsTeacher)
+{
+    <!-- Student Assignments Status -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+
+            <div class="d-flex gap-3 align-items-center mb-4 flex-wrap">
+
+                <h3 class="card-title mb-0">وضعیت تکالیف دانش‌آموزان</h3>
+
+                <div>
+                    @if (ViewBag.HasPrev)
+                    {
+                        <a asp-action="Details"
+                           asp-controller="Homeworks"
+                           asp-area="Shared"
+                           asp-route-classId="@ViewBag.ClassId"
+                           asp-route-roleName="@ViewBag.roleName"
+                           asp-route-homeworkId="@Model.HomeworkId"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage - 1)"
+                           class="btn btn-primary ">صفحه ی قبل</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی قبل</a>
+                    }
+                </div>
+                <div>
+                    @if (ViewBag.HasNext)
+                    {
+                        <a asp-action="Details"
+                           asp-controller="Homeworks"
+                           asp-area="Shared"
+                           asp-route-classId="@ViewBag.ClassId"
+                           asp-route-roleName="@ViewBag.roleName"
+                           asp-route-homeworkId="@Model.HomeworkId"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage + 1)"
+                           class="btn btn-primary ">صفحه ی بعد</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی بعد</a>
+                    }
+                </div>
+
+            </div>
+
+
+            <div class="student-assignments-list">
+
+
+                @if(Model.Students?.Count() <= 0)
+                {
+                    <div class="alert alert-danger">
+                        هیچ دانش آموزی وجود ندارد
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-secondary">تعداد کل دانش آموزان : @ViewBag.Count</div>
+                    @foreach(var student in Model.Students)
+                    {
+                        <div class="student-assignment-item">
+                            <div class="student-info">
+                                <div class="student-avatar">
+                                    <img src="~/images/users/@(student.StudentImage)" alt="دانش‌آموز">
+                                </div>
+                                <div class="student-name">@student.StudentName</div>
+                            </div>
+                            <div class="assignment-status">
+                                <span class="badge bg-info">@student.StudentStatus</span>
+                            </div>
+                        </div>
+
+                    }
+                }
+
+
+
+            </div>
+        </div>
+    </div>
+}

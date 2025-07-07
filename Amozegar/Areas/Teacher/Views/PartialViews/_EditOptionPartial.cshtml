@@ -1,0 +1,33 @@
+﻿@model EditOptionViewModel
+<div class="modal fade" id="editOptionModal" tabindex="-1" aria-labelledby="editOptionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="editOptionModalLabel">ویرایش گزینه</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <form novalidate id="optionFormEdit" method="post">
+            <div id="optionList"></div>
+
+            <label asp-for="@Model.Option" class="form-label"></label>
+            <input asp-for="@Model.Option" class="form-control" />
+            <span asp-validation-for="@Model.Option" class="small text-danger"></span>
+            @if (TempData["EditError"] != null)
+            {
+                <span class="small text-danger">@TempData["EditError"]?.ToString()</span>
+            }
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+        <button type="submit" class="btn btn-primary" form="optionFormEdit">ذخیره</button>
+      </div>
+
+    </div>
+  </div>
+</div>

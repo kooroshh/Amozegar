@@ -23,7 +23,6 @@ namespace Amozegar.Areas.Shared.Controllers
         public async Task<IActionResult> Index(string classId, string roleName, int pageNumber)
         {
             ViewBag.Route = "Homeworks";
-            ViewBag.IsTeacher = roleName.ToLowerInvariant() == "teacher" ? true : false;
 
             var student = await this._userManager.FindByNameAsync(User.Identity.Name);
 
@@ -45,27 +44,23 @@ namespace Amozegar.Areas.Shared.Controllers
 
             if (!ViewBag.IsTeacher)
             {
-                var user = await this._userManager.FindByNameAsync(User.Identity.Name);
                 await this._context.UsersViewsRepository
-                    .ReadAllHomeworksAsync(user, classId);
+                    .ReadAllHomeworksAsync(student, classId);
             }
 
-
-            foreach (var classHomework in classHomeworks)
+            if (TempData["Error"] != null)
             {
-                if (TempData.ContainsKey(classHomework.HomeworkId.ToString()))
-                {
-                    ModelState.AddModelError("HomeworkId", TempData[classHomework.HomeworkId.ToString()].ToString());
-                }
+                ModelState.AddModelError("HomeworkId", TempData["Error"].ToString());
             }
+
 
             return View(classHomeworks);
         }
 
 
 
-        [Route("{homeworkId}/Details")]
-        public async Task<IActionResult> Details(string classId, string roleName, int homeworkId)
+        [Route("{homeworkId}/{pageNumber?}")]
+        public async Task<IActionResult> Details(string classId, string roleName, int homeworkId, int pageNumber = 1)
         {
             ViewBag.Route = "Homeworks";
 
@@ -76,6 +71,26 @@ namespace Amozegar.Areas.Shared.Controllers
             if (homeworkDetails == null)
             {
                 return RedirectToAction("Index", "Homeworks", new { area = "Shared", roleName = roleName, classId = this.classId, pageNumber = 1 });
+            }
+
+            if (ViewBag.IsTeacher != null && ViewBag.IsTeacher)
+            {
+                homeworkDetails.Students = await this._context.ClassStudentsToHomeworksRepository
+                    .GetStudentWithStatusByHomeworkIdByClassIdentityByPageNumberAsync(classId, homeworkId, pageNumber);
+
+
+                this.setPaginationViewBags(pageNumber);
+
+
+                if (this.validateUserPageNumber(pageNumber, homeworkDetails.Students.Count))
+                {
+                    return RedirectToAction("Details", "Homeworks", new { area = "Shared", classId = classId, roleName = roleName, homeworkId = homeworkId, pageNumber = 1 });
+                }
+                var studentsCount = await this._context.ClassStudentsRepository
+                    .GetStudentsCountByClassIdentityByStateAsync(classId, "Accepted");
+
+
+                this.checkNextOrPrevForViewBags(studentsCount, pageNumber);
             }
 
 

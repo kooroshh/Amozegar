@@ -1,0 +1,126 @@
+﻿@model AddOrEditExamViewModel
+@{
+    ViewData["Title"] = "افزودن امتحان";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-5">
+                            <h2 class="fw-bold">ایجاد امتحان در کلاس</h2>
+                            <p class="text-muted">با گذاشتن امتحان سطح دانش آموزان خود را بسنجید</p>
+                        </div>
+
+                        <form method="post" novalidate enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+
+                            <div class="mb-4">
+                                <label asp-for="@Model.ExamTitle" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white">
+                                        <i class="fa-solid fa-heading text-primary"></i>
+                                    </span>
+                                    <input asp-for="@Model.ExamTitle" class="form-control">
+                                </div>
+
+                                <span class="small text-danger" asp-validation-for="@Model.ExamTitle"></span>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="@Model.ExamDescription" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white">
+                                        <i class="fa-solid fa-file-lines text-primary"></i>
+                                    </span>
+                                    <textarea asp-for="@Model.ExamDescription" class="form-control"></textarea>
+                                </div>
+                                <span class="small text-danger" asp-validation-for="@Model.ExamDescription"></span>
+                            </div>
+
+
+
+                            <div class="mb-4">
+                                <label asp-for="@Model.StartDate" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white">
+                                        <i class="fa-solid fa-heading text-primary"></i>
+                                    </span>
+                                    <input asp-for="@Model.StartDate" class="form-control">
+                                </div>
+
+                                <span class="small text-danger" asp-validation-for="@Model.StartDate"></span>
+                            </div>
+
+
+                            <div class="mb-4">
+                                <label asp-for="@Model.StartTime" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white">
+                                        <i class="fa-solid fa-heading text-primary"></i>
+                                    </span>
+                                    <input asp-for="@Model.StartTime" class="form-control">
+                                </div>
+
+                                <span class="small text-danger" asp-validation-for="@Model.StartTime"></span>
+                            </div>
+
+
+                            <div class="mb-4">
+                                <label asp-for="@Model.EndDate" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white">
+                                        <i class="fa-solid fa-heading text-primary"></i>
+                                    </span>
+                                    <input asp-for="@Model.EndDate" class="form-control">
+                                </div>
+
+                                <span class="small text-danger" asp-validation-for="@Model.EndDate"></span>
+                            </div>
+
+
+                            <div class="mb-4">
+                                <label asp-for="@Model.EndTime" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white">
+                                        <i class="fa-solid fa-heading text-primary"></i>
+                                    </span>
+                                    <input asp-for="@Model.EndTime" class="form-control">
+                                </div>
+
+                                <span class="small text-danger" asp-validation-for="@Model.EndTime"></span>
+                            </div>
+
+                            <div class="mb-4 d-flex ">
+                                <a asp-action="Index"
+                                   asp-controller="Exams"
+                                   asp-area="Shared"
+                                   asp-route-classId="@ViewBag.ClassId"
+                                   asp-route-roleName="Teacher"
+                                   asp-route-pageNumber="1"
+                                   class="btn btn-warning w-50 py-3 d-block rounded-end-0">برگشت به امتحانات</a>
+                                <button type="submit" class="btn btn-primary w-50 py-3 d-block rounded-start-0">
+                                    <i class="fas fa-edit me-2"></i>
+                                    ثبت امتحان و رفتن مرحله بعدی
+                                </button>
+                            </div>
+
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

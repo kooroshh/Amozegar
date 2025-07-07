@@ -34,6 +34,9 @@ namespace Amozegar.Areas.Shared.Controllers
 
             ViewBag.classId = this.classId;
             ViewBag.roleName = this.roleName;
+
+            ViewBag.IsTeacher = this.roleName?.ToLowerInvariant() == "teacher" ? true : false;
+
         }
 
 

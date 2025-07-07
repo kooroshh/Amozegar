@@ -72,7 +72,7 @@ namespace Amozegar.Areas.Teacher.Controllers
                             break;
                         }
                 }
-                TempData[homeworkId.ToString()] = $"امکان {state} تکلیف {stateTo} نیست.";
+                TempData["Error"] = $"امکان {state} تکلیف {stateTo} نیست.";
                 return returnToHomeworks();
             }
             await this._context.HomeworkRepository.ChangeHomeworkState(homeworkId, to);

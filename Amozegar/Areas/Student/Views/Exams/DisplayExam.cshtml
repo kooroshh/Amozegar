@@ -1,0 +1,48 @@
+﻿@model ExamViewModel
+@{
+    ViewData["Title"] = "جزعیات امتحان";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white text-center">
+            <h2>مشخصات امتحان</h2>
+        </div>
+        <div class="card-body">
+            <p><strong>وضعیت امتحان:</strong> @Model.State.PersianState</p>
+            <p><strong>نام امتحان:</strong> @Model.ExamTitle</p>
+            <p><strong>تاریخ ساخت:</strong> @Model.CreatedAt</p>
+            <p><strong>توضیحات:</strong> @Model.ExamDescription</p>
+
+            <hr>
+
+            <h4>زمان‌بندی امتحان</h4>
+            <p><strong>تاریخ شروع:</strong> @Model.StartDate</p>
+            <p><strong>تاریخ پایان:</strong> @Model.EndDate</p>
+
+            <hr>
+
+            <h4>جزئیات امتحان</h4>
+            <p><strong>تعداد سوالات:</strong> @Model.QuestionCount</p>
+
+            <div class="text-center mt-4">
+                @if (Model.State.State == "Ongoing" && !ViewBag.IsFinish)
+                {
+                    <a href="javascript:void(0)"
+                       onclick="openConfirmModal('@Url.Action("AddStudentToExam", "Exams", new { classId = ViewBag.ClassId, examId = Model.ExamId, area = "Student" })', 'آیا از شرکت در امتحان اطمینان دارید؟')"
+                       class="btn btn-success btn-lg">
+                        شرکت در امتحان
+                    </a>
+                }
+                else if(Model.ExamResult != null)
+                {
+                    <p><strong>تعداد جواب های درست:</strong> @Model.ExamResult.TrueAwnserCount</p>
+                    <p><strong>نمره از 100 درصد:</strong> @Model.ExamResult.Score%</p>
+                    <p><strong>تاریخ شرکت در امتحان:</strong> @Model.ExamResult.JoinAt</p>
+                    <p><strong>تعداد کل سوالات پاسخ داده شده:</strong> @Model.ExamResult.AwnserCount</p>
+                    <p><strong>وضعیت دانش آموز در امتحان:</strong> @(ViewBag.IsFinish ? "تکمیل شده" : "تمکیل نشده")</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

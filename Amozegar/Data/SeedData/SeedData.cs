@@ -186,6 +186,25 @@ namespace Amozegar.Data.SeedData
 
             #endregion
 
+            #region Add Exams States
+
+            string[] examsState = { "Ongoing", "Draft", "Completed", "Scheduled", "Deleted", "Closed" };
+
+            string[] examsPersianState = { "در حال برگزاری", "در حال ساخت", "تکمیل شده", "زمان بندی شده", "حذف شده", "بسته شده" };
+            foreach (var state in examsState)
+            {
+                if (!await context.ExamStatesRepository.AnyAsync(es => es.State == state))
+                {
+                    await context.ExamStatesRepository.AddAsync(new ExamState()
+                    {
+                        State = state,
+                        PersianState = examsPersianState[Array.IndexOf(examsState, state)]
+                    });
+                }
+            }
+
+            #endregion
+
             await context.SaveChangesAsync();
         }
     }

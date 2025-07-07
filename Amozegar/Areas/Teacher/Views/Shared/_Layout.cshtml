@@ -41,6 +41,10 @@
         <i class="fa-solid fa-pen-to-square"></i>
         <span>تکالیف انجام شده @await Component.InvokeAsync("NotRead", new { type = "HomeworksSent", classIdentity = ViewBag.ClassId })</span>
     </a>
+    <a asp-action="Index" asp-controller="Exams" asp-area="Shared" asp-route-classId="@ViewBag.ClassId" asp-route-roleName="Teacher" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "Exams" ? "active" : "")">
+        <i class="fa-solid fa-flask-vial"></i>
+        <span>امتحانات</span>
+    </a>
 }
 
 @RenderBody()

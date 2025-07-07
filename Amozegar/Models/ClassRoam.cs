@@ -42,5 +42,6 @@ namespace Amozegar.Models
         public ICollection<Homework> Homeworks { get; set; }
         public ICollection<UserView> usersViews { get; set; }
         public ICollection<Picture> Picures { get; set; }
+        public ICollection<Exam> Exams { get; set; }
     }
 }

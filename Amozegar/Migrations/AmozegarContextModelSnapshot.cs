@@ -69,7 +69,7 @@ namespace Amozegar.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Classes", (string)null);
+                    b.ToTable("Classes");
                 });
 
             modelBuilder.Entity("Amozegar.Models.ClassStates", b =>
@@ -92,7 +92,7 @@ namespace Amozegar.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("ClassesStates", (string)null);
+                    b.ToTable("ClassesStates");
                 });
 
             modelBuilder.Entity("Amozegar.Models.ClassStudentState", b =>
@@ -115,7 +115,7 @@ namespace Amozegar.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("ClassesStudentsStates", (string)null);
+                    b.ToTable("ClassesStudentsStates");
                 });
 
             modelBuilder.Entity("Amozegar.Models.ClassStudents", b =>
@@ -144,7 +144,81 @@ namespace Amozegar.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("ClassesStudents", (string)null);
+                    b.ToTable("ClassesStudents");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.ClassStudentsToExam", b =>
+                {
+                    b.Property<int>("ClassStudentsToExamId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClassStudentsToExamId"));
+
+                    b.Property<int>("ClassStudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExamId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsFinish")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("JoinAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<int>("LastCompletedQuestion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.HasKey("ClassStudentsToExamId");
+
+                    b.HasIndex("ClassStudentId");
+
+                    b.HasIndex("ExamId");
+
+                    b.ToTable("ClassStudentsToExam");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.ClassStudentsToExamToQuestion", b =>
+                {
+                    b.Property<int>("ClassStudentsToExamQuestionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClassStudentsToExamQuestionId"));
+
+                    b.Property<int>("ClassStudentToExamId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<bool>("IsTrueAwnser")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SelectedOptionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ClassStudentsToExamQuestionId");
+
+                    b.HasIndex("ClassStudentToExamId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("SelectedOptionId");
+
+                    b.ToTable("ClassStudentsToExamsToQuestions");
                 });
 
             modelBuilder.Entity("Amozegar.Models.ClassStudentsToHomework", b =>
@@ -186,7 +260,7 @@ namespace Amozegar.Migrations
 
                     b.HasIndex("HomeworkId");
 
-                    b.ToTable("ClassStudentsToHomeworks", (string)null);
+                    b.ToTable("ClassStudentsToHomeworks");
                 });
 
             modelBuilder.Entity("Amozegar.Models.ClassStudentsToHomeworkState", b =>
@@ -209,7 +283,74 @@ namespace Amozegar.Migrations
 
                     b.HasKey("ClassStudentsToHomeworkStateId");
 
-                    b.ToTable("ClassStudentsToHomeworkStates", (string)null);
+                    b.ToTable("ClassStudentsToHomeworkStates");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.Exam", b =>
+                {
+                    b.Property<int>("ExamId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ExamId"));
+
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ExamDescription")
+                        .IsRequired()
+                        .HasMaxLength(800)
+                        .HasColumnType("nvarchar(800)");
+
+                    b.Property<int>("ExamStateId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ExamTitle")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ExamId");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("ExamStateId");
+
+                    b.ToTable("Exams");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.ExamState", b =>
+                {
+                    b.Property<int>("ExamStateId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ExamStateId"));
+
+                    b.Property<string>("PersianState")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("ExamStateId");
+
+                    b.ToTable("ExamStates");
                 });
 
             modelBuilder.Entity("Amozegar.Models.Homework", b =>
@@ -246,7 +387,7 @@ namespace Amozegar.Migrations
 
                     b.HasIndex("HomeworkStateId");
 
-                    b.ToTable("Homeworks", (string)null);
+                    b.ToTable("Homeworks");
                 });
 
             modelBuilder.Entity("Amozegar.Models.HomeworkState", b =>
@@ -269,7 +410,7 @@ namespace Amozegar.Migrations
 
                     b.HasKey("HomeworkStateId");
 
-                    b.ToTable("HomeworksStates", (string)null);
+                    b.ToTable("HomeworksStates");
                 });
 
             modelBuilder.Entity("Amozegar.Models.Notification", b =>
@@ -301,7 +442,7 @@ namespace Amozegar.Migrations
 
                     b.HasIndex("ClassId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("Amozegar.Models.Picture", b =>
@@ -332,7 +473,63 @@ namespace Amozegar.Migrations
 
                     b.HasIndex("TableTypeId");
 
-                    b.ToTable("Pictures", (string)null);
+                    b.ToTable("Pictures");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.Question", b =>
+                {
+                    b.Property<int>("QuestionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuestionId"));
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<int>("ExamId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("QuestionAsk")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("QuestionId");
+
+                    b.HasIndex("ExamId");
+
+                    b.ToTable("Questions");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.QuestionOption", b =>
+                {
+                    b.Property<int>("QuestionOptionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuestionOptionId"));
+
+                    b.Property<string>("Option")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("QuestionOptionId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("QuestionOptions");
                 });
 
             modelBuilder.Entity("Amozegar.Models.Report", b =>
@@ -374,7 +571,7 @@ namespace Amozegar.Migrations
 
                     b.HasKey("ReportId");
 
-                    b.ToTable("Reports", (string)null);
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("Amozegar.Models.TableType", b =>
@@ -392,7 +589,7 @@ namespace Amozegar.Migrations
 
                     b.HasKey("TypeId");
 
-                    b.ToTable("TableTypes", (string)null);
+                    b.ToTable("TableTypes");
                 });
 
             modelBuilder.Entity("Amozegar.Models.User", b =>
@@ -535,7 +732,7 @@ namespace Amozegar.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UsersViews", (string)null);
+                    b.ToTable("UsersViews");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -688,6 +885,52 @@ namespace Amozegar.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Amozegar.Models.ClassStudentsToExam", b =>
+                {
+                    b.HasOne("Amozegar.Models.ClassStudents", "ClassStudent")
+                        .WithMany("ClassStudentsToExam")
+                        .HasForeignKey("ClassStudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Amozegar.Models.Exam", "Exam")
+                        .WithMany("ClassStudentsToExam")
+                        .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ClassStudent");
+
+                    b.Navigation("Exam");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.ClassStudentsToExamToQuestion", b =>
+                {
+                    b.HasOne("Amozegar.Models.ClassStudentsToExam", "ClassStudentsToExam")
+                        .WithMany("ClassStudentsToExamToQuestions")
+                        .HasForeignKey("ClassStudentToExamId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Amozegar.Models.Question", "Question")
+                        .WithMany("ClassStudentsToExamToQuestions")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Amozegar.Models.QuestionOption", "SelectedOption")
+                        .WithMany("ClassStudentsToExamToQuestions")
+                        .HasForeignKey("SelectedOptionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ClassStudentsToExam");
+
+                    b.Navigation("Question");
+
+                    b.Navigation("SelectedOption");
+                });
+
             modelBuilder.Entity("Amozegar.Models.ClassStudentsToHomework", b =>
                 {
                     b.HasOne("Amozegar.Models.ClassStudentsToHomeworkState", "ClassStudentsToHomeworkState")
@@ -713,6 +956,25 @@ namespace Amozegar.Migrations
                     b.Navigation("ClassStudentsToHomeworkState");
 
                     b.Navigation("Homework");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.Exam", b =>
+                {
+                    b.HasOne("Amozegar.Models.ClassRoam", "ClassRoam")
+                        .WithMany("Exams")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Amozegar.Models.ExamState", "ExamState")
+                        .WithMany("Exams")
+                        .HasForeignKey("ExamStateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ClassRoam");
+
+                    b.Navigation("ExamState");
                 });
 
             modelBuilder.Entity("Amozegar.Models.Homework", b =>
@@ -762,6 +1024,28 @@ namespace Amozegar.Migrations
                     b.Navigation("ClassRoam");
 
                     b.Navigation("TableType");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.Question", b =>
+                {
+                    b.HasOne("Amozegar.Models.Exam", "Exam")
+                        .WithMany("Questions")
+                        .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Exam");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.QuestionOption", b =>
+                {
+                    b.HasOne("Amozegar.Models.Question", "Question")
+                        .WithMany("QuestionOptions")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Question");
                 });
 
             modelBuilder.Entity("Amozegar.Models.UserView", b =>
@@ -844,6 +1128,8 @@ namespace Amozegar.Migrations
 
             modelBuilder.Entity("Amozegar.Models.ClassRoam", b =>
                 {
+                    b.Navigation("Exams");
+
                     b.Navigation("Homeworks");
 
                     b.Navigation("Notifications");
@@ -867,12 +1153,31 @@ namespace Amozegar.Migrations
 
             modelBuilder.Entity("Amozegar.Models.ClassStudents", b =>
                 {
+                    b.Navigation("ClassStudentsToExam");
+
                     b.Navigation("ClassStudentsToHomeworks");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.ClassStudentsToExam", b =>
+                {
+                    b.Navigation("ClassStudentsToExamToQuestions");
                 });
 
             modelBuilder.Entity("Amozegar.Models.ClassStudentsToHomeworkState", b =>
                 {
                     b.Navigation("ClassStudentsToHomeworks");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.Exam", b =>
+                {
+                    b.Navigation("ClassStudentsToExam");
+
+                    b.Navigation("Questions");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.ExamState", b =>
+                {
+                    b.Navigation("Exams");
                 });
 
             modelBuilder.Entity("Amozegar.Models.Homework", b =>
@@ -883,6 +1188,18 @@ namespace Amozegar.Migrations
             modelBuilder.Entity("Amozegar.Models.HomeworkState", b =>
                 {
                     b.Navigation("Homeworks");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.Question", b =>
+                {
+                    b.Navigation("ClassStudentsToExamToQuestions");
+
+                    b.Navigation("QuestionOptions");
+                });
+
+            modelBuilder.Entity("Amozegar.Models.QuestionOption", b =>
+                {
+                    b.Navigation("ClassStudentsToExamToQuestions");
                 });
 
             modelBuilder.Entity("Amozegar.Models.TableType", b =>

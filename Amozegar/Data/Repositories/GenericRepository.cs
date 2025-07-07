@@ -14,27 +14,32 @@ namespace Amozegar.Data.Repositories
             this._dbSet = this._context.Set<TEntity>();
         }
 
-        public async Task AddAsync(TEntity entity)
+        public virtual async Task AddAsync(TEntity entity)
         {
             await this._dbSet.AddAsync(entity);
         }
 
-        public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> where)
+        public virtual async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> where)
         {
             return await this._dbSet.AnyAsync(where);
         }
 
-        public async Task<int> CountAsync(Expression<Func<TEntity, bool>>? where = null)
+        public virtual async Task<int> CountAsync(Expression<Func<TEntity, bool>>? where = null)
         {
             return where == null ? await this._dbSet.CountAsync() : await this._dbSet.CountAsync(where);
         }
 
-        public void Delete(TEntity entity)
+        public virtual void Delete(TEntity entity)
         {
             this._dbSet.Remove(entity);
         }
 
-        public async Task DeleteByIdAsync(object key)
+        public virtual void Delete(IEnumerable<TEntity> entities)
+        {
+            this._dbSet.RemoveRange(entities);
+        }
+
+        public virtual async Task DeleteByIdAsync(object key)
         {
             var entity = await this.GetByIdAsync(key);
             if (entity != null)
@@ -43,7 +48,7 @@ namespace Amozegar.Data.Repositories
             }
         }
 
-        public async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>>? where = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderby = null, Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null)
+        public virtual async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>>? where = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderby = null, Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null)
         {
             IQueryable<TEntity> query = this._dbSet;
 
@@ -66,13 +71,13 @@ namespace Amozegar.Data.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<TEntity?> GetByIdAsync(object key)
+        public virtual async Task<TEntity?> GetByIdAsync(object key)
         {
             var entity = await this._dbSet.FindAsync(key);
             return entity;
         }
 
-        public void Update(TEntity entity)
+        public virtual void Update(TEntity entity)
         {
             this._dbSet.Update(entity);
         }

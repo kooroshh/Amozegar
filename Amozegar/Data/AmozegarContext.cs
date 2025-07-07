@@ -24,6 +24,12 @@ namespace Amozegar.Data
         public DbSet<HomeworkState> HomeworksStates { get; set; }
         public DbSet<ClassStudentsToHomework> ClassStudentsToHomeworks { get; set; }
         public DbSet<ClassStudentsToHomeworkState> ClassStudentsToHomeworkStates { get; set; }
+        public DbSet<Exam> Exams { get; set; }
+        public DbSet<ExamState> ExamStates { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<QuestionOption> QuestionOptions { get; set; }
+        public DbSet<ClassStudentsToExam> ClassStudentsToExam { get; set; }
+        public DbSet<ClassStudentsToExamToQuestion> ClassStudentsToExamsToQuestions { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -57,6 +63,26 @@ namespace Amozegar.Data
                 .HasDefaultValueSql("GETDATE()");
 
 
+            modelBuilder.Entity<Exam>()
+                .Property(c => c.CreatedAt)
+                .HasDefaultValueSql("GETDATE()");
+
+
+            modelBuilder.Entity<ClassStudentsToExam>()
+                .Property(c => c.JoinAt)
+                .HasDefaultValueSql("GETDATE()");
+
+
+            modelBuilder.Entity<ClassStudentsToExamToQuestion>()
+                .Property(c => c.CompletedAt)
+                .HasDefaultValueSql("GETDATE()");
+
+
+            modelBuilder.Entity<Question>()
+                .Property(c => c.CreatedAt)
+                .HasDefaultValueSql("GETDATE()");
+
+
             modelBuilder.Entity<User>()
                 .Property(u => u.PicturePath)
                 .HasDefaultValue("user.webp");
@@ -64,6 +90,19 @@ namespace Amozegar.Data
             modelBuilder.Entity<ClassRoam>()
                 .Property(c => c.ClassImage)
                 .HasDefaultValue("classes.png");
+
+
+
+            modelBuilder.Entity<ClassStudentsToExam>()
+                .Property(c => c.IsFinish)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<ClassStudentsToExam>()
+                .Property(c => c.LastCompletedQuestion)
+                .HasDefaultValue(0);
+
+
+
 
             modelBuilder.Entity<ClassStudents>()
                 .HasOne(stc => stc.User)
@@ -83,7 +122,67 @@ namespace Amozegar.Data
                 .HasForeignKey(c => c.TeacherId)
                 .OnDelete(DeleteBehavior.Restrict); 
 
+
+
+
+            modelBuilder.Entity<ClassStudentsToExamToQuestion>()
+                .HasOne(csteq => csteq.Question)
+                .WithMany(q => q.ClassStudentsToExamToQuestions)
+                .HasForeignKey(csteq => csteq.QuestionId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+            modelBuilder.Entity<ClassStudentsToExamToQuestion>()
+                .HasOne(csteq => csteq.ClassStudentsToExam)
+                .WithMany(cste => cste.ClassStudentsToExamToQuestions)
+                .HasForeignKey(csteq => csteq.ClassStudentToExamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ClassStudentsToExamToQuestion>()
+                .HasOne(csteq => csteq.SelectedOption)
+                .WithMany(qo => qo.ClassStudentsToExamToQuestions)
+                .HasForeignKey(csteq => csteq.SelectedOptionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Exam>()
+                .HasMany(e => e.Questions)
+                .WithOne(q => q.Exam)
+                .HasForeignKey(q => q.ExamId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+            modelBuilder.Entity<Exam>()
+                .HasMany(e => e.ClassStudentsToExam)
+                .WithOne(cste => cste.Exam)
+                .HasForeignKey(cste => cste.ExamId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+            modelBuilder.Entity<QuestionOption>()
+                .HasMany(qo => qo.ClassStudentsToExamToQuestions)
+                .WithOne(cstetq => cstetq.SelectedOption)
+                .HasForeignKey(cstetq => cstetq.SelectedOptionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<QuestionOption>()
+                .HasOne(qo => qo.Question)
+                .WithMany(q => q.QuestionOptions)
+                .HasForeignKey(qo => qo.QuestionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Question>()
+                .HasMany(q => q.QuestionOptions)
+                .WithOne(qo => qo.Question)
+                .HasForeignKey(qo => qo.QuestionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Question>()
+                .HasMany(q => q.ClassStudentsToExamToQuestions)
+                .WithOne(cstetq => cstetq.Question)
+                .HasForeignKey(cstetq => cstetq.QuestionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
         }
+
 
     }
 }

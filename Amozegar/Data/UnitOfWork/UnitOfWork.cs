@@ -24,6 +24,12 @@ namespace Amozegar.Data.UnitOfWork
         private IClassStudentsToHomeworksStatesRepository _classStudentsToHomeworksStatesRepository;
         private IHomeworkRepository _homeworkRepository;
         private IClassStudentsToHomeworksRepository _classStudentsToHomeworksRepository;
+        private IExamStateRepository _examStatesRepository;
+        private IExamRepository _examRepository;
+        private IQuestionsRepository _questionsRepository;
+        private IQuestionOptionsRepository _questionOptionsRepository;
+        private IClassStudentsToExamRepository _classStudentsToExamRepository;
+        private IClassStudentToExamToQuestionRepository _classStudentToExamToQuestionRepository;
 
         public UnitOfWork(AmozegarContext context, UserManager<User> userManager)
         {
@@ -187,14 +193,86 @@ namespace Amozegar.Data.UnitOfWork
             }
         }
 
+        public IExamStateRepository ExamStatesRepository
+        {
+            get
+            {
+                if (this._examStatesRepository == null)
+                {
+                    this._examStatesRepository = new ExamStateRepository(this._context);
+                }
+                return this._examStatesRepository;
+            }
+        }
+
+        public IExamRepository ExamRepository
+        {
+            get
+            {
+                if (this._examRepository == null)
+                {
+                    this._examRepository = new ExamRepository(this._context);
+                }
+                return this._examRepository;
+            }
+        }
+
+        public IQuestionsRepository QuestionsRepository
+        {
+            get
+            {
+                if (this._questionsRepository == null)
+                {
+                    this._questionsRepository = new QuestionsRepository(this._context);
+                }
+                return this._questionsRepository;
+            }
+        }
+
+        public IQuestionOptionsRepository QuestionOptionsRepository
+        {
+            get
+            {
+                if (this._questionOptionsRepository == null)
+                {
+                    this._questionOptionsRepository = new QuestionOptionsRepository(this._context);
+                }
+                return this._questionOptionsRepository;
+            }
+        }
+
+        public IClassStudentsToExamRepository ClassStudentsToExamRepository
+        {
+            get
+            {
+                if (this._classStudentsToExamRepository == null)
+                {
+                    this._classStudentsToExamRepository = new ClassStudentsToExamRepository(this._context);
+                }
+                return this._classStudentsToExamRepository;
+            }
+        }
+
+        public IClassStudentToExamToQuestionRepository ClassStudentToExamToQuestionRepository
+        {
+            get
+            {
+                if (this._classStudentToExamToQuestionRepository == null)
+                {
+                    this._classStudentToExamToQuestionRepository = new ClassStudentToExamToQuestionRepository(this._context);
+                }
+                return this._classStudentToExamToQuestionRepository;
+            }
+        }
+
         public void Dispose()
         {
             this._context.Dispose();
         }
 
-        public async Task SaveChangesAsync()
+        public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            await this._context.SaveChangesAsync();
+            await this._context.SaveChangesAsync(cancellationToken);
         }
     }
 }

@@ -20,6 +20,12 @@ namespace Amozegar.Data.UnitOfWork
         public IClassStudentsToHomeworksStatesRepository ClassStudentsToHomeworksStatesRepository { get; }
         public IHomeworkRepository HomeworkRepository { get; }
         public IClassStudentsToHomeworksRepository ClassStudentsToHomeworksRepository { get; }
-        Task SaveChangesAsync();
+        public IExamStateRepository ExamStatesRepository { get; }
+        public IExamRepository ExamRepository { get; }
+        public IQuestionsRepository QuestionsRepository { get; }
+        public IQuestionOptionsRepository QuestionOptionsRepository { get; }
+        public IClassStudentsToExamRepository ClassStudentsToExamRepository { get; }
+        public IClassStudentToExamToQuestionRepository ClassStudentToExamToQuestionRepository { get; }
+        Task SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

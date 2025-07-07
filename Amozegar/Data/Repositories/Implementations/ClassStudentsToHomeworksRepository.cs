@@ -1,4 +1,5 @@
-﻿using Amozegar.Areas.Teacher.Models;
+﻿using Amozegar.Areas.Shared.Models;
+using Amozegar.Areas.Teacher.Models;
 using Amozegar.Data.Repositories.Interfaces;
 using Amozegar.Models;
 using Amozegar.Utilities;
@@ -221,6 +222,30 @@ namespace Amozegar.Data.Repositories.Implementations
             classStudentsToHomeworks.ClassStudentHomeworkStateId = newState.ClassStudentsToHomeworkStateId;
             this._context.Update(classStudentsToHomeworks);
 
+        }
+
+        public async Task<List<StudentForHomeworksVIewModel>> GetStudentWithStatusByHomeworkIdByClassIdentityByPageNumberAsync(string classIdentity, int homeworkId, int pageNumber)
+        {
+            int page = pageNumber > 0 ? pageNumber : 0;
+            int pageSize = pageNumber > 0 ? DefaultPageCount.Count : 0;
+            var clsId = await this.getClassIdByClassIdentity(classIdentity);
+
+            var result = _context.ClassesStudents
+                .Where(cs => cs.ClassId == clsId && cs.State.State == "Accepted")
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(cs => new StudentForHomeworksVIewModel
+                {
+                    StudentName = cs.User.FullName,
+                    StudentImage = cs.User.PicturePath,
+                    StudentStatus = _context.ClassStudentsToHomeworks
+                        .Where(hw => hw.ClassStudentId == cs.id && hw.HomeworkId == homeworkId)
+                        .Select(hw => hw.ClassStudentsToHomeworkState.PersianState)
+                        .FirstOrDefault() ?? "ارسال نشده"
+                })
+                .ToList();
+
+            return result;
         }
     }
 }

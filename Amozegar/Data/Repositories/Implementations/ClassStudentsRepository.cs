@@ -162,5 +162,22 @@ namespace Amozegar.Data.Repositories.Implementations
             }
             return students;
         }
+
+        public async Task<int> GetClassStudentIdByUserNameByClassIdentity(string classIdentity, string userName)
+        {
+            var cls = await this.getClassByIdentityForRelationshipAsync(classIdentity);
+
+            var userId = await this._context.Users
+                .Where(u => u.NormalizedEmail == userName.ToUpperInvariant())
+                .Select(u => u.Id)
+                .SingleAsync();
+
+            var classStudentId = await this._context.ClassesStudents
+                .Where(cs => cs.ClassId == cls.ClassId && cs.StudentId == userId)
+                .Select(cs => cs.id)
+                .SingleAsync();
+
+            return classStudentId;
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System.IO;
+using Amozegar.Background;
 using Amozegar.Data;
 using Amozegar.Data.SeedData;
 using Amozegar.Data.UnitOfWork;
@@ -10,7 +11,9 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddSession();
+builder.Services.AddControllersWithViews()
+    .AddSessionStateTempDataProvider();
 builder.Services.AddAuthorization();
 
 #region Add Db Context And Identity
@@ -37,6 +40,8 @@ builder.Services.AddScoped<IUserClaimsPrincipalFactory<User>, UserClaims>();
 
 #endregion
 
+builder.Services.AddHostedService<ExamsBackgroundService>();
+
 var app = builder.Build();
 
 #region Set Seed Datas
@@ -56,6 +61,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+app.UseSession();
 app.UseStatusCodePagesWithReExecute("/Home/Error404");
 app.UseHttpsRedirection();
 app.UseRouting();

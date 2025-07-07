@@ -12,6 +12,7 @@
 	<link rel="stylesheet" href="~/Amozegar.styles.css" asp-append-version="true" />
 </head>
 <body>
+	@await Component.InvokeAsync("SimpleConfirm")
 	@await Component.InvokeAsync("Confirm")
 	<!-- Mobile Navigation -->
 	<nav class="mobile-nav d-lg-none">
@@ -20,9 +21,15 @@
 				<button class="menu-toggle">
 					<i class="fas fa-bars"></i>
 				</button>
-				<a asp-action="Index" asp-controller="Home" asp-area="" class="mobile-logo">
+
+				<a href="javascript:void(0)"
+				   data-confirm-href="@Url.Action("Index", "Home", new { area = "" })"
+				   data-confirm-message="آیا از خروج از کلاس اطمینان دارید؟"
+				   class="mobile-logo confirmable-link">
 					<img src="~/images/home/logo.png" alt="آموزگار">
 				</a>
+
+
 			</div>
 		</div>
 	</nav>
@@ -31,10 +38,15 @@
 		<!-- Sidebar -->
 		<aside class="sidebar">
 			<div class="sidebar-header">
-				<a asp-action="Index" asp-controller="Home" asp-area="" class="sidebar-logo d-flex justify-content-center align-items-center gap-1">
+
+				<a href="javascript:void(0)"
+				   data-confirm-href="@Url.Action("Index", "Home", new { area = "" })"
+				   data-confirm-message="آیا از خروج از کلاس اطمینان دارید؟"
+				   class="sidebar-logo d-flex justify-content-center align-items-center gap-1 confirmable-link">
 					<img src="~/images/home/logo.png" alt="آموزگار">
 					آموزگار
 				</a>
+
 			</div>
 
 			<div class="sidebar-menu">
@@ -47,9 +59,11 @@
 			<div class="sidebar-footer">
 				@if (ViewData["RoleName"] != null)
 				{
+
 					<a href="javascript:void(0)"
-					   onclick="openConfirmModal('@Url.Action("Classes", "Home", new { area = "Panel", roleName = @ViewData["RoleName"] })', 'آیا از خروج از کلاس اطمینان دارید؟')"
-					   class="menu-item text-danger">
+					   data-confirm-href="@Url.Action("Classes", "Home", new { area = "Panel", roleName = ViewData["roleName"], pageNumber = 1 }))"
+					   data-confirm-message="آیا از خروج از کلاس اطمینان دارید؟"
+					   class="menu-item text-danger confirmable-link">
 						<i class="fas fa-sign-out-alt"></i>
 						خروج از کلاس
 					</a>

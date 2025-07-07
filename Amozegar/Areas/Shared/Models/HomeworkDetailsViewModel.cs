@@ -9,5 +9,6 @@
         public List<string> PicturePaths { get; set; }
         public string StudentState { get; set; }
         public string PersianStudentState { get; set; }
+        public List<StudentForHomeworksVIewModel>? Students { get; set; }
     }
 }

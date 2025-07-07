@@ -45,8 +45,9 @@ namespace Amozegar.Data.Repositories.Implementations
             var homeworks = await this._context.Homeworks
                 .Include(h => h.HomeworkState)
                 .Where(h => h.ClassRoam == cls && h.HomeworkState.State != "Deleted")
-                .OrderByDescending(h => h.CreatedAt)
-                .Skip((page -1) * pageSize)
+                .OrderByDescending(h => h.HomeworkState.State == "Open")
+                .ThenByDescending(h => h.CreatedAt)
+                .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(h => new HomeworksViewModel()
                 {
@@ -54,6 +55,7 @@ namespace Amozegar.Data.Repositories.Implementations
                     HomewordTitle = h.HomeworkTitle,
                     HomeworkId = h.HomeworkId,
                     State = h.HomeworkState.PersianState,
+                    HomeworkState = h.HomeworkState.State,
                 })
                 .ToListAsync();
 
@@ -69,8 +71,10 @@ namespace Amozegar.Data.Repositories.Implementations
                 foreach (var homework in homeworks)
                 {
                     var stHomework = studentToHomeworks.SingleOrDefault(s => s.HomeworkId == homework.HomeworkId);
-                    homework.StudentState = stHomework?.ClassStudentsToHomeworkState?.State ?? "";
-                    homework.PersianStudentState = stHomework?.ClassStudentsToHomeworkState?.PersianState ?? "ارسال نشده";
+                    homework.StudentState = stHomework?.ClassStudentsToHomeworkState.State ?? "";
+                    homework.PersianStudentState = stHomework?.ClassStudentsToHomeworkState.PersianState ?? "ارسال نشده";
+
+
                 }
             }
 
@@ -89,6 +93,7 @@ namespace Amozegar.Data.Repositories.Implementations
 
             var homeworks = await (
                 from h in _context.Homeworks
+                where h.HomeworkState.State == "Open"
                 join csth in _context.ClassStudentsToHomeworks
                     .Include(x => x.ClassStudentsToHomeworkState)
                     on new { h.HomeworkId, StudentId = classStudent.id }
@@ -135,6 +140,8 @@ namespace Amozegar.Data.Repositories.Implementations
 
             var count = await (
                 from h in _context.Homeworks
+                where h.HomeworkState.State == "Open"
+
                 join csth in _context.ClassStudentsToHomeworks
                     .Include(x => x.ClassStudentsToHomeworkState)
                     on new { h.HomeworkId, StudentId = classStudent.id }

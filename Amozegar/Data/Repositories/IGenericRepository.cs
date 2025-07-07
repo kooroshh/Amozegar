@@ -12,6 +12,7 @@ namespace Amozegar.Data.Repositories
         Task<TEntity?> GetByIdAsync(object key);
         Task AddAsync(TEntity entity);
         void Delete(TEntity entity);
+        void Delete(IEnumerable<TEntity> entities);
         Task DeleteByIdAsync(object key);
         void Update(TEntity entity);
         Task<bool> AnyAsync(Expression<Func<TEntity, bool>> where);

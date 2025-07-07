@@ -28,5 +28,6 @@ namespace Amozegar.Models
         public ClassStudentState State { get; set; }
 
         public ICollection<ClassStudentsToHomework> ClassStudentsToHomeworks { get; set; }
+        public ICollection<ClassStudentsToExam> ClassStudentsToExam { get; set; }
     }
 }

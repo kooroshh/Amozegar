@@ -1,0 +1,224 @@
+﻿@using Newtonsoft.Json
+@model QuestionEditViewModel
+@{
+    ViewData["Title"] = "ویرایش سوال";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@await Component.InvokeAsync("Confirm")
+
+@* Modals *@
+<div class="modal fade" id="optionModal" tabindex="-1" aria-labelledby="optionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="optionModalLabel">افزودن گزینه‌ها</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+            </div>
+            <div class="modal-body">
+                @await Html.PartialAsync("~/Areas/Teacher/Views/PartialViews/_AddOptionPartial.cshtml", new AddOptionViewModel() { QuestionId = Model.QuestionId })
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                <button type="submit" form="optionForm" class="btn btn-success">ذخیره</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("~/Areas/Teacher/Views/PartialViews/_EditOptionPartial.cshtml", new EditOptionViewModel())
+
+
+<!-- Question Edit Section -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="card-title mb-0">ویرایش سوال</h3>
+            <a asp-action="EditExam"
+               asp-controller="Exams"
+               asp-area="Teacher"
+               asp-route-classId="@ViewBag.ClassId"
+               asp-route-examId="@ViewBag.ExamId"
+               asp-route-pageNumber="1"
+               class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-right me-2"></i>
+                بازگشت به امتحان
+            </a>
+        </div>
+
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <div class="mb-4">
+                <label asp-for="@Model.QuestionAsk" class="form-label"></label>
+                <textarea asp-for="@Model.QuestionAsk" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="@Model.QuestionAsk" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex gap-2 mb-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>
+                    ذخیره سوال
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Options Section -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+
+            <div class="d-flex gap-3 align-items-center mb-4 flex-wrap">
+
+                <h3 class="card-title mb-0">گزینه‌های سوال</h3>
+
+                <div>
+                    @if (ViewBag.HasPrev)
+                    {
+                        <a asp-action="EditQuestion"
+                           asp-controller="Exams"
+                           asp-area="Teacher"
+                           asp-route-classId="@ViewBag.ClassId"
+                           asp-route-examId="@ViewBag.ExamId"
+                           asp-route-questionId="@Model.QuestionId"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage - 1)"
+                           class="btn btn-primary ">صفحه ی قبل</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی قبل</a>
+                    }
+                </div>
+                <div>
+                    @if (ViewBag.HasNext)
+                    {
+                        <a asp-action="EditQuestion"
+                           asp-controller="Exams"
+                           asp-area="Teacher"
+                           asp-route-classId="@ViewBag.ClassId"
+                           asp-route-examId="@ViewBag.ExamId"
+                           asp-route-questionId="@Model.QuestionId"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage + 1)"
+                           class="btn btn-primary ">صفحه ی بعد</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی بعد</a>
+                    }
+                </div>
+
+            </div>
+
+            <button class="btn btn-success" data-bs-target="#optionModal" data-bs-toggle="modal">
+                <i class="fas fa-plus me-2"></i>
+                افزودن گزینه
+            </button>
+        </div>
+
+        <div class="options-list" id="optionsList">
+
+            @if (Model.Options.Count() <= 0)
+            {
+                <div class="alert alert-warning">توجه هیچ گزینه ای وجود ندارد</div>
+            }
+            else
+            {
+                <div class="alert alert-light">
+                    تعداد کل گزینه ها : @ViewBag.Count
+                </div>
+                @if (TempData["SimpleError"] != null)
+                {
+                    <div class="alert alert-danger">
+                        @TempData["SimpleError"]?.ToString()
+                    </div>
+                }
+                @foreach (var option in Model.Options)
+                {
+                    <div class="option-item">
+                        <div class="option-content">
+                            <div class="option-label">
+                                <span class="option-text">@option.QuestionOption</span>
+                            </div>
+                            @if (option.IsCorrect)
+                            {
+                                <div class="option-status">
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>
+                                        جواب صحیح
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                        <div class="option-actions">
+
+                            <a href="javascript:void(0)"
+                               onclick="openConfirmModal('@Url.Action("SetAsAwnser", "Exams", new { classId = ViewBag.ClassId, examId = ViewBag.ExamId, questionId = Model.QuestionId, optionId = option.QuestionOptionId, area = "Teacher" })', 'آیا از انتخاب گزینه به عنوان جواب اطمینان دارید؟')"
+                               class="btn btn-outline-warning btn-sm set-correct-btn">
+                                <i class="fas fa-star me-1"></i>
+                                انتخاب به عنوان جواب
+                            </a>
+                            <button type="button" class="btn btn-outline-primary btn-sm edit-option-btn"
+                                    data-bs-toggle="modal" data-bs-target="#editOptionModal"
+                                    onclick="openEditModal(this, '@Url.Action("EditOption", "Exams", new { area = "Teacher", classId = ViewBag.ClassId, examId = ViewBag.ExamId, questionId = Model.QuestionId, optionId = option.QuestionOptionId })')">
+                                <i class="fas fa-edit me-1"></i>
+                                ویرایش
+                            </button>
+                            <a href="javascript:void(0)"
+                               onclick="openConfirmModal('@Url.Action("DeleteOption", "Exams", new { classId = ViewBag.ClassId, examId = ViewBag.ExamId, questionId = Model.QuestionId, optionId = option.QuestionOptionId, area = "Teacher" })', 'آیا از حذف گزینه اطمینان دارید؟')"
+                               class="btn btn-outline-danger btn-sm delete-option-btntn-sm delete-question-btn">
+                                <i class="fas fa-trash me-1"></i>
+                                حذف
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        var optionsJson = TempData["Options"]?.ToString();
+        var options = optionsJson != null
+
+            ? JsonConvert.DeserializeObject<List<string>>(optionsJson)
+            : new List<string>();
+        @if (TempData["Error"]?.ToString() != null)
+        {
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    window.openAddOption();
+                });
+            </script>
+
+            @if (options != null || options?.Count() > 0)
+            {
+
+                foreach (var item in options)
+                {
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            addOptionForEditQuestion("@item");
+                        });
+                    </script>
+                }
+            }
+        }
+
+        @if (TempData["EditError"]?.ToString() != null)
+        {
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    window.openEditOption();
+                });
+            </script>
+        }
+
+    }
+}

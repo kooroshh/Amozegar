@@ -1,0 +1,249 @@
+﻿@using Newtonsoft.Json
+@model ExamForEditViewModel
+@{
+    ViewData["Title"] = "ویرایش امتحان";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@await Component.InvokeAsync("Confirm")
+@* Modals *@
+
+<div class="modal fade"
+     id="questionModal"
+     tabindex="-1"
+     aria-labelledby="questionModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        @await Html.PartialAsync("~/Areas/Teacher/Views/PartialViews/_AddQuestionPartial.cshtml", new AddQuestionViewModel() { ExamId = ViewBag.ExamId, QuestionAsk = TempData?["Question"]?.ToString() ?? "" })
+    </div>
+</div>
+
+
+<!-- Exam Info Section -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="card-title mb-0">اطلاعات امتحان</h3>
+            <a asp-action="Index" asp-controller="Exams" asp-area="Shared" asp-route-roleName="Teacher" asp-route-classId="@ViewBag.ClassId" asp-route-pageNumber="1" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-right me-2"></i>
+                بازگشت به لیست امتحانات
+            </a>
+        </div>
+
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="@Model.ExamTitle" class="form-label"></label>
+                    <input asp-for="@Model.ExamTitle" class="form-control">
+                    <span asp-validation-for="@Model.ExamTitle" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="State" class="form-label">وضعیت امتحان</label>
+                    <select name="State" id="State" asp-items="Model.States" class="form-select"></select>
+                    <span asp-validation-for="@Model.States" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="@Model.ExamDescription" class="form-label"></label>
+                <textarea class="form-control" asp-for="@Model.ExamDescription" rows="3"></textarea>
+                <span asp-validation-for="@Model.ExamDescription" class="text-danger small"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="@Model.StartDate" class="form-label"></label>
+                    <input asp-for="@Model.StartDate" class="form-control">
+                    <span asp-validation-for="@Model.StartDate" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="@Model.StartTime" class="form-label"></label>
+                    <input asp-for="@Model.StartTime" class="form-control">
+                    <span asp-validation-for="@Model.StartTime" class="text-danger small"></span>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="@Model.EndDate" class="form-label"></label>
+                    <input asp-for="@Model.EndDate" class="form-control">
+                    <span asp-validation-for="@Model.EndDate" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="@Model.EndTime" class="form-label"></label>
+                    <input asp-for="@Model.EndTime" class="form-control">
+                    <span asp-validation-for="@Model.EndTime" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>
+                    ذخیره تغییرات
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Questions Section -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+
+            <div class="d-flex gap-3 align-items-center mb-4 flex-wrap">
+
+                <h3 class="card-title mb-0">سوالات امتحان</h3>
+
+                <div>
+                    @if (ViewBag.HasPrev)
+                    {
+                        <a asp-action="EditExam"
+                           asp-controller="Exams"
+                           asp-area="Teacher"
+                           asp-route-classId="@ViewBag.ClassId"
+                           asp-route-examId="@ViewBag.ExamId"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage - 1)"
+                           class="btn btn-primary ">صفحه ی قبل</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی قبل</a>
+                    }
+                </div>
+                <div>
+                    @if (ViewBag.HasNext)
+                    {
+                        <a asp-action="EditExam"
+                           asp-controller="Exams"
+                           asp-area="Teacher"
+                           asp-route-classId="@ViewBag.ClassId"
+                           asp-route-examId="@ViewBag.ExamId"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage + 1)"
+                           class="btn btn-primary ">صفحه ی بعد</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی بعد</a>
+                    }
+                </div>
+
+            </div>
+
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#questionModal">
+                <i class="fas fa-plus me-2"></i>
+                افزودن سوال جدید
+            </button>
+        </div>
+
+        @if (Model.Questions.Count() <= 0)
+        {
+            <div class="alert alert-warning">توجه هیچ سوالی وجود ندارد</div>
+        }
+        else
+        {
+            @if(TempData?["QuestionError"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData?["QuestionError"]?.ToString()
+                </div>
+            }
+            <div class="alert alert-light">
+                تعداد کل سوالات : @ViewBag.Count
+
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" style="width: 50px">#</th>
+                            <th scope="col" style="width: 50%">سوال</th>
+                            <th scope="col" style="width: 20%">تعداد گزینه</th>
+                            <th scope="col" style="width: 30%">عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="questionsTableBody">
+
+                        @foreach (var question in Model.Questions)
+                        {
+                            <tr>
+                                <td>@question.Counter</td>
+                                <td>
+                                    <span class="question-text" title="@question.Question">
+                                        @question.Question
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">@question.Count گزینه</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+
+                                        <a href="javascript:void(0)"
+                                           onclick="openConfirmModal('@Url.Action("DeleteQuestion", "Exams", new { classId = ViewBag.ClassId, examId = ViewBag.ExamId, questionId = question.QuestionId, area = "Teacher" })', 'آیا از حذف سوال اطمینان دارید؟')"
+                                           class="btn btn-outline-danger btn-sm delete-question-btn">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+
+                                        <a asp-action="EditQuestion"
+                                            asp-controller="Exams"
+                                            asp-area="Teacher"
+                                            asp-route-classId="@ViewBag.ClassId"
+                                            asp-route-examId="@ViewBag.ExamId"
+                                            asp-route-questionId="@question.QuestionId"
+                                            asp-route-pageNumber="1"
+                                            class="btn btn-outline-primary btn-sm edit-question-btn">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        }
+
+
+
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        var optionsJson = TempData["Options"]?.ToString();
+        var options = optionsJson != null
+            ? JsonConvert.DeserializeObject<List<string>>(optionsJson)
+            : new List<string>();
+        @if (TempData["Error"]?.ToString() != null)
+        {
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    window.openAddQuestionConfirm();
+                });
+            </script>
+
+            @if (options != null || options.Count() > 0)
+            {
+
+                foreach (var item in options)
+                {
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const option = createOptionElement("@item");
+                            document.getElementById("optionsList").appendChild(option);
+                        });
+                    </script>
+                }
+            }
+
+        }
+
+    }
+}

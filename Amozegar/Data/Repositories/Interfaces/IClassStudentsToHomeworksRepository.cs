@@ -1,4 +1,5 @@
-﻿using Amozegar.Areas.Teacher.Models;
+﻿using Amozegar.Areas.Shared.Models;
+using Amozegar.Areas.Teacher.Models;
 using Amozegar.Models;
 
 namespace Amozegar.Data.Repositories.Interfaces
@@ -11,5 +12,6 @@ namespace Amozegar.Data.Repositories.Interfaces
         Task<HomeworkSentCheckViewModel?> GetByClassIdByIdForCheckSentAsync(string classIdentity, int studentToHomeworkId);
         Task<bool> GetByClassIdentityByIdForChangeStateAsync(string classIdentity, int studentToHomeworkId);
         Task ChangeStateByClassIdentityByIdByStateAsync(string classIdentity, int studentToHomeworkId, string state);
+        Task<List<StudentForHomeworksVIewModel>> GetStudentWithStatusByHomeworkIdByClassIdentityByPageNumberAsync(string classIdentity, int homeworkId, int pageNumber);
     }
 }
