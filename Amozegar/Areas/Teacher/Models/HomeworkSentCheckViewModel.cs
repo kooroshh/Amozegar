@@ -2,6 +2,8 @@
 {
     public class HomeworkSentCheckViewModel
     {
+        public int? HomeworkId { get; set; }
+        public bool? IsActionable { get; set; }
         public int StudentToHomeworkId { get; set; }
         public string StudentImage { get; set; }
         public string StudentName { get; set; }

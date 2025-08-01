@@ -1,0 +1,137 @@
+﻿@model IEnumerable<HomeworksViewModel>
+@{
+    ViewData["Title"] = "تکالیف";
+}
+
+<!-- Tickets Management Section -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <h3 class="card-title mb-0">مدیریت تکلیف ها</h3>
+
+            <div class="d-flex gap-2">
+                <div>
+                    @if (ViewBag.HasPrev)
+                    {
+                        <a asp-action="Index"
+                           asp-controller="Homeworks"
+                           asp-area="Admin"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage - 1)"
+                           class="btn btn-primary ">صفحه ی قبل</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی قبل</a>
+                    }
+                </div>
+                <div>
+                    @if (ViewBag.HasNext)
+                    {
+                        <a asp-action="Index"
+                           asp-controller="Homeworks"
+                           asp-area="Admin"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage + 1)"
+                           class="btn btn-primary ">صفحه ی بعد</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی بعد</a>
+                    }
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="mb-4 admin-search-filters">
+            <div class="alert alert-light">
+                تعداد کل تکالیف: @ViewBag.Count
+            </div>
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@Html.Raw(TempData["Error"]?.ToString())</div>
+            }
+        </div>
+
+
+        @if (Model.Count() <= 0)
+        {
+            <div class="alert alert-warning">هیچ تکلیفی وجود ندارد</div>
+        }
+        else
+        {
+            <!-- Tickets Table -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">عنوان تکلیف</th>
+                            <th scope="col" style="width: 150px">آیدی کلاس</th>
+                            <th scope="col" style="width: 120px">وضعیت</th>
+                            <th scope="col" style="width: 150px">تاریخ ساخت</th>
+                            <th scope="col" style="width: 150px">عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ticketsTableBody">
+
+
+                        @foreach (var homework in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong>@homework.HomeworkTitle</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <code class="bg-light px-2 py-1 rounded">#@homework.ClassIdentity</code>
+                                </td>
+                                <td>
+                                    <span class="badge bg-@(homework.State == "Closed" ? "danger" : "success")">@homework.PersianState</span>
+                                </td>
+                                <td class="d-lg-table-cell">
+                                    <small class="text-muted">@homework.CreatedAt</small>
+                                </td>
+                                <td data-label="عملیات">
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="ShowHomework" asp-controller="Homeworks" asp-area="Admin" asp-route-homeworkId="@homework.HomeworkId" asp-route-pageNumber="1" class="btn btn-outline-info btn-sm" title="مشاهده جزئیات">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="javascript:void(0)" title="حذف تکلیف"
+                                           onclick="openConfirmModal('@Url.Action("DeleteHomework", "Homeworks", new { homeworkId = homework.HomeworkId, area = "Admin" })', 'آیا از حذف کردن تکلیف اطمینان دارید؟')"
+                                           class="btn btn-outline-danger btn-sm delete-ticket-btn">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                        @if (homework.State == "Open")
+                                        {
+                                            <a href="javascript:void(0)" title="بستن تکلیف"
+                                               onclick="openConfirmModal('@Url.Action("CloseHomework", "Homeworks", new { homeworkId = homework.HomeworkId, area = "Admin" })', 'آیا از بستن تکلیف اطمینان دارید؟')"
+                                               class="btn btn-outline-warning btn-sm delete-ticket-btn">
+                                                <i class="fa-solid fa-lock"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:void(0)" title="باز کردن تکلیف"
+                                               onclick="openConfirmModal('@Url.Action("OpenHomework", "Homeworks", new { homeworkId = homework.HomeworkId, area = "Admin" })', 'آیا از باز کردن تکلیف اطمینان دارید؟')"
+                                               class="btn btn-outline-info btn-sm delete-ticket-btn">
+                                                <i class="fa-solid fa-lock-open"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        }
+
+    </div>
+</div>
+

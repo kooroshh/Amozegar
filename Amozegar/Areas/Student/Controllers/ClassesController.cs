@@ -105,6 +105,7 @@ namespace Amozegar.Areas.Student.Controllers
 
                 isNew.ClassStudentStateId = pendingState.id;
                 isNew.State = pendingState;
+                isNew.JoinAt = DateTime.Now;
 
                 this._context.ClassStudentsRepository.Update(isNew);
             }

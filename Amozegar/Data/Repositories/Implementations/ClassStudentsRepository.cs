@@ -60,7 +60,7 @@ namespace Amozegar.Data.Repositories.Implementations
                     ClassId = cs.ClassId,
                     State = cs.State.State,
                     StudentId = cs.StudentId,
-                    ClassStudentId = cs.id
+                    ClassStudentId = cs.Id
                 })
                 .Where(cs => cs.ClassId == cls.ClassId && cs.State == state)
                 .Skip((page - 1) * pageSize)
@@ -70,7 +70,7 @@ namespace Amozegar.Data.Repositories.Implementations
         }
 
 
-        // Working Now
+
         public async Task<IEnumerable<StudentsListViewModel>> GetStudentsByClassIdentityByStateByPageNumberAsync(string classIdentity, string state, int pageNumber)
         {
 
@@ -109,7 +109,7 @@ namespace Amozegar.Data.Repositories.Implementations
 
             var studentInClass = await _context.ClassesStudents
                 .Include(cs => cs.State)
-                .SingleOrDefaultAsync(cs => cs.id == studentInClassId && cs.ClassId == cls.ClassId);
+                .SingleOrDefaultAsync(cs => cs.Id == studentInClassId && cs.ClassId == cls.ClassId);
 
             return studentInClass;
         }
@@ -156,7 +156,7 @@ namespace Amozegar.Data.Repositories.Implementations
                 {
                     StudentEmail = user.Email,
                     StudentImage = user.PicturePath,
-                    StudentInClassId = item.id,
+                    StudentInClassId = item.Id,
                     StudentName = user.FullName
                 });
             }
@@ -174,10 +174,33 @@ namespace Amozegar.Data.Repositories.Implementations
 
             var classStudentId = await this._context.ClassesStudents
                 .Where(cs => cs.ClassId == cls.ClassId && cs.StudentId == userId)
-                .Select(cs => cs.id)
+                .Select(cs => cs.Id)
                 .SingleAsync();
 
             return classStudentId;
+        }
+
+        public async Task<int> ClassStudentsByClassIdCount(int classId, params string[] states)
+        {
+            var query = this._context.ClassesStudents.AsQueryable();
+
+            if (states.Any() && states.Count() > 0)
+            {
+                query = query.Where(cs => states.Contains(cs.State.State));
+            }
+
+            var count = await query.CountAsync(cs => cs.ClassId == classId);
+
+            return count;
+        }
+
+        public async Task<ClassStudents?> GetStudentInClassByClassIdAndClassStudentIdAsync(int studentInClassId, int classId)
+        {
+            var studentInClass = await _context.ClassesStudents
+                .Include(cs => cs.State)
+                .SingleOrDefaultAsync(cs => cs.Id == studentInClassId && cs.ClassId == classId);
+
+            return studentInClass;
         }
     }
 }

@@ -53,7 +53,6 @@ namespace Amozegar.Data.SeedData
             }
 
 
-
             // Add Teacher
 
             var teacherUser = new User()
@@ -135,7 +134,7 @@ namespace Amozegar.Data.SeedData
 
             #region Add Table Types
 
-            string[] tableTypes = { "Notifications", "Homeworks", "ClassStudentsToHomeworks" };
+            string[] tableTypes = { "Notifications", "Homeworks", "ClassStudentsToHomeworks", "Reports" };
             foreach (var type in tableTypes)
             {
                 if (!await context.TableTypesRepository.AnyAsync(cs => cs.Type == type))

@@ -1,4 +1,5 @@
-﻿using Amozegar.Areas.Teacher.Models;
+﻿using Amozegar.Areas.Admin.Models;
+using Amozegar.Areas.Teacher.Models;
 using Amozegar.Data.Repositories.Interfaces;
 using Amozegar.Models;
 using Amozegar.Utilities;
@@ -54,6 +55,45 @@ namespace Amozegar.Data.Repositories.Implementations
             var questionsAsksCount = await this._context.Questions
                 .CountAsync(q => q.ExamId == examId);
             return questionsAsksCount;
+        }
+
+        public async Task<QuestionViewModel?> GetQuestionByIdByPageNumberForAdminAsync(int questionId, int pageNumber)
+        {
+            int page = pageNumber > 0 ? pageNumber : 0;
+            int pageSize = pageNumber > 0 ? DefaultPageCount.Count : 0;
+
+            var question = await this._context.Questions
+                .Where(q =>
+                    q.QuestionId == questionId &&
+                    q.Exam.ExamState.State != "Deleted"
+                )
+                .Select(q => new QuestionViewModel()
+                {
+                    ClassIdentity = q.Exam.ClassRoam.ClassIdentity,
+                    CreatedAt = q.CreatedAt.ToShamsi(),
+                    ExamId = q.ExamId,
+                    ExamTitle = q.Exam.ExamTitle,
+                    Question = q.QuestionAsk,
+                    QuestionId = questionId,
+                    OptionsCount = q.QuestionOptions.Count(),
+                })
+                .SingleOrDefaultAsync();
+
+            if (question == null)
+                return null;
+
+            question.Options = await this._context.QuestionOptions
+                .Where(qo => qo.QuestionId == questionId)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(qo => new OptionViewModel()
+                {
+                    Option = qo.Option,
+                    IsAwnser = qo.Question.Answer == qo.Option
+                })
+                .ToListAsync();
+
+            return question;
         }
     }
 }

@@ -1,0 +1,215 @@
+﻿@model HomeworkViewModel
+@{
+    ViewData["Title"] = $"تکلیف {Model.HomeworlTitle}";
+}
+
+<!-- Assignment Details Section -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="card-title mb-0">جزئیات تکلیف</h3>
+            <a asp-action="Index" asp-controller="Homeworks" asp-area="Admin" asp-route-pageNumber="1" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-right me-2"></i>
+                بازگشت به لیست تکالیف
+            </a>
+        </div>
+
+        <!-- Assignment Information -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="info-item mb-3">
+                    <i class="fas fa-tasks text-primary me-2"></i>
+                    <span class="label">عنوان تکلیف:</span>
+                    <span class="value">@Model.HomeworlTitle</span>
+                </div>
+                <div class="info-item mb-3">
+                    <i class="fas fa-calendar text-primary me-2"></i>
+                    <span class="label">تاریخ ساخت:</span>
+                    <span class="value">@Model.CreatedAt</span>
+                </div>
+                <div class="info-item mb-3">
+                    <i class="fas fa-calendar text-primary me-2"></i>
+                    <span class="label">ایدی کلاس</span>
+                    <code class="bg-light px-2 py-1 rounded">#@Model.ClassIdentity</code>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-item mb-3">
+                    <i class="fas fa-info-circle text-primary me-2"></i>
+                    <span class="label">وضعیت تکلیف:</span>
+                    <span class="badge bg-@(Model.State == "Open" ? "success" : "danger") ms-2">@Model.HomeworkState</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assignment Body -->
+        <div class="card bg-light mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-file-alt text-primary me-2"></i>
+                    بدنه تکلیف
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    @Model.HomeworkBody
+                </p>
+            </div>
+        </div>
+
+        <!-- Assignment Images -->
+        <div class="mb-4">
+            <h5 class="mb-3">
+                <i class="fas fa-images text-primary me-2"></i>
+                تصاویر تکلیف
+            </h5>
+            <div class="row g-3">
+                @foreach(var picturePath in Model.PicturesPath)
+                {
+                    <div class="col-md-4">
+                        <a href="~/images/homeworks/@(picturePath)" target="_blank" class="gallery-image">
+                            <img src="~/images/homeworks/@(picturePath)" alt="تصویر تکلیف" class="img-fluid rounded" style="height: 200px; width: 100%; object-fit: cover;">
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <h3 class="card-title mb-0">مدیریت تکلیف ها</h3>
+
+            <div class="d-flex gap-2">
+                <div>
+                    @if (ViewBag.HasPrev)
+                    {
+                        <a asp-action="ShowHomework"
+                           asp-controller="Homeworks"
+                           asp-area="Admin"
+                           asp-route-homeworkId="@Model.HomeworkId"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage - 1)"
+                           class="btn btn-primary ">صفحه ی قبل</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی قبل</a>
+                    }
+                </div>
+                <div>
+                    @if (ViewBag.HasNext)
+                    {
+                        <a asp-action="ShowHomework"
+                           asp-controller="Homeworks"
+                           asp-area="Admin"
+                           asp-route-homeworkId="@Model.HomeworkId"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage + 1)"
+                           class="btn btn-primary ">صفحه ی بعد</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی بعد</a>
+                    }
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="mb-4 admin-search-filters">
+            <div class="alert alert-light">
+                تعداد کل دانش آموزان: @ViewBag.Count
+            </div>
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@Html.Raw(TempData["Error"]?.ToString())</div>
+            }
+        </div>
+
+
+        <!-- Students List -->
+        @if (Model.Students.Count() <= 0)
+        {
+            <div class="alert alert-warning">هیچ دانش آموزی وجود ندارد</div>
+        }
+        else
+        {
+            <div class="mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-users text-primary me-2"></i>
+                    وضعیت دانش‌آموزان
+                </h5>
+                <div class="student-assignments-list">
+
+
+                    @foreach (var student in Model.Students)
+                    {
+                        @if(student.IsSent)
+                        {
+                            <a asp-action="CheckStudent" asp-controller="Homeworks" asp-route-studentToHomeworkId="@student.StudentToHomeworkId" class="student-assignment-item">
+                                <div class="student-info">
+                                    <div class="student-avatar">
+                                        <img src="~/images/users/@(student.PicturePath)" alt="دانش‌آموز">
+                                    </div>
+                                    <div class="student-name">@student.StudentName</div>
+                                </div>
+                                <div class="assignment-status">
+                                    <span class="badge bg-info">@student.StudentStatus</span>
+                                </div>
+                            </a>
+                        }
+                        else
+                        {
+                            <div class="student-assignment-item">
+                                <div class="student-info">
+                                    <div class="student-avatar">
+                                        <img src="~/images/users/@(student.PicturePath)" alt="دانش‌آموز">
+                                    </div>
+                                    <div class="student-name">@student.StudentName</div>
+                                </div>
+                                <div class="assignment-status">
+                                    <span class="badge bg-info">@student.StudentStatus</span>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="d-flex gap-2 p-4">
+        @if (Model.State == "Open")
+        {
+            <a href="javascript:void(0)" title="بستن تکلیف"
+               onclick="openConfirmModal('@Url.Action("CloseHomework", "Homeworks", new { homeworkId = Model.HomeworkId, area = "Admin" })', 'آیا از بستن تکلیف اطمینان دارید؟')"
+               class="btn btn-warning">
+                <i class="fa-solid fa-lock me-2"></i>
+                بستن تکلیف
+            </a>
+        }
+        else
+        {
+            <a href="javascript:void(0)" title="باز کردن تکلیف"
+               onclick="openConfirmModal('@Url.Action("OpenHomework", "Homeworks", new { homeworkId = Model.HomeworkId, area = "Admin" })', 'آیا از باز کردن تکلیف اطمینان دارید؟')"
+               class="btn btn-info">
+                <i class="fa-solid fa-lock-open me-2"></i>
+                باز کردن تکلیف
+            </a>
+        }
+        <a href="javascript:void(0)" title="حذف تکلیف"
+           onclick="openConfirmModal('@Url.Action("DeleteHomework", "Homeworks", new { homeworkId = Model.HomeworkId, area = "Admin" })', 'آیا از حذف کردن تکلیف اطمینان دارید؟')"
+           class="btn btn-danger">
+            <i class="fas fa-trash me-2"></i>
+            حذف تکلیف
+        </a>
+    </div>
+</div>
+

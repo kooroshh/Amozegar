@@ -1,10 +1,11 @@
-using System.IO;
 using Amozegar.Background;
 using Amozegar.Data;
 using Amozegar.Data.SeedData;
 using Amozegar.Data.UnitOfWork;
 using Amozegar.Factory;
+using Amozegar.Middlewere;
 using Amozegar.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +16,8 @@ builder.Services.AddSession();
 builder.Services.AddControllersWithViews()
     .AddSessionStateTempDataProvider();
 builder.Services.AddAuthorization();
+builder.Services.AddScoped<IClaimsTransformation, MyClaimsTransformer>();
+
 
 #region Add Db Context And Identity
 builder.Services.AddDbContext<AmozegarContext>(option =>
@@ -67,9 +70,9 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<CheckUserLockoutMiddleware>();
 
 app.MapStaticAssets();
-
 
 app.MapControllerRoute(
   name: "areas",

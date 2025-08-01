@@ -1,4 +1,5 @@
-﻿using Amozegar.Areas.Teacher.Models;
+﻿using Amozegar.Areas.Admin.Models;
+using Amozegar.Areas.Teacher.Models;
 using Amozegar.Models;
 
 namespace Amozegar.Data.Repositories.Interfaces
@@ -9,5 +10,6 @@ namespace Amozegar.Data.Repositories.Interfaces
         Task<int> GetQuestionsCountByExamIdForShowAsync(int examId);
         Task<Question?> GetQuestionByExamIdByQuestionIdWithOptionsAsync(int examId, int questionId);
         Task<Question> GetQuestionByExamIdByQuestionIndexAsync(int examId, int questionIndex);
+        Task<QuestionViewModel?> GetQuestionByIdByPageNumberForAdminAsync(int questionId, int pageNumber);
     }
 }

@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using Amozegar.Data;
 using Amozegar.Data.UnitOfWork;
 using Amozegar.Models;
 using Microsoft.AspNetCore.Mvc;

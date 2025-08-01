@@ -26,6 +26,10 @@ namespace Amozegar.Data.UnitOfWork
         public IQuestionOptionsRepository QuestionOptionsRepository { get; }
         public IClassStudentsToExamRepository ClassStudentsToExamRepository { get; }
         public IClassStudentToExamToQuestionRepository ClassStudentToExamToQuestionRepository { get; }
+        public IUserRepository UsersRepository { get; }
+        public IRolesRepository RolesRepository { get; }
+        public ITicketsRepository TicketsRepository { get; }
+        public IDashboardRepository DashboardRepository { get; }
         Task SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -1,8 +1,11 @@
 ﻿using Amozegar.Data.UnitOfWork;
+using Amozegar.Models;
 using Amozegar.Models.CustomAnnotations;
 using Amozegar.Utilities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Amozegar.Areas.Student.Controllers
 {
@@ -10,19 +13,26 @@ namespace Amozegar.Areas.Student.Controllers
     public class HomeController : BaseController
     {
         private IUnitOfWork _context;
+        private UserManager<User> _userManager;
 
-        public HomeController(IUnitOfWork context)
+        public HomeController(IUnitOfWork context, UserManager<User> userManager)
         {
             this._context = context;
+            this._userManager = userManager;
         }
 
         // Main Methods
 
 
-        public IActionResult Index(string classId)
+        public async Task<IActionResult> Index(string classId)
         {
             ViewBag.Route = "Dashboard";
-            return View();
+            var user = await this._userManager.FindByNameAsync(User.Identity.Name);
+
+            var dashboardViewModel = await this._context.DashboardRepository
+                .GetStudentDashboardDatasByClassIdentityAsync(classId, user.Id);
+
+            return View(dashboardViewModel);
         }
 
 

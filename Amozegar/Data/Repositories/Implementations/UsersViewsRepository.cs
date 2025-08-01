@@ -32,7 +32,7 @@ namespace Amozegar.Data.Repositories.Implementations
             return tableType;
         }
 
-        private async Task<List<int>> getReadRecordsByUserIdByClassIdByTypeAsync(TableType type, string userId, int classId)
+        private async Task<List<int>> getReadRecordsByUserIdByClassIdByTypeAsync(TableType type, string userId, int? classId = null)
         {
             var readRecords = await this._context.UsersViews
                 .Where(uv => uv.TableType == type && uv.UserId == userId && uv.ClassId == classId)
@@ -42,7 +42,7 @@ namespace Amozegar.Data.Repositories.Implementations
             return readRecords;
         }
 
-        private async Task<List<int>> getReadRecordsByUserIdByClassIdByTypeAsync(string type, string userId, int classId)
+        private async Task<List<int>> getReadRecordsByUserIdByClassIdByTypeAsync(string type, string userId, int? classId = null)
         {
             var tableType = await this.getTableTypeByTypeAsync(type);
             var readRecords = await this._context.UsersViews
@@ -126,5 +126,41 @@ namespace Amozegar.Data.Repositories.Implementations
 
             await this._context.SaveChangesAsync();
         }
+
+
+        public async Task<int> GetUnreadTicketsCountByUserIdAsync(string userId)
+        {
+            var readReports = await this.getReadRecordsByUserIdByClassIdByTypeAsync("Reports", userId);
+
+            var reportsCount = await this._context.Reports
+                .CountAsync(n => !readReports.Contains(n.ReportId));
+
+            return reportsCount;
+        }
+
+        public async Task ReadAllTicketsAsync(User user)
+        {
+            var type = await this.getTableTypeByTypeAsync("Reports");
+            var readReports = await this.getReadRecordsByUserIdByClassIdByTypeAsync(type, user.Id);
+
+            var unreadReports = await this._context.Reports
+                .Where(n => !readReports.Contains(n.ReportId))
+                .Select(n => new UserView()
+                {
+                    User = user,
+                    UserId = user.Id,
+                    TableType = type,
+                    TableTypeId = type.TypeId,
+                    TableTypeRecordId = n.ReportId,
+                })
+                .ToListAsync();
+
+            await this._context.UsersViews
+                .AddRangeAsync(unreadReports);
+
+            await this._context.SaveChangesAsync();
+        }
+
+
     }
 }

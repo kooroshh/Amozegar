@@ -75,7 +75,7 @@ namespace Amozegar.Areas.Teacher.Controllers
                 TempData["Error"] = $"امکان {state} تکلیف {stateTo} نیست.";
                 return returnToHomeworks();
             }
-            await this._context.HomeworkRepository.ChangeHomeworkState(homeworkId, to);
+            await this._context.HomeworkRepository.ChangeHomeworkStateAsync(homeworkId, to);
             await this._context.SaveChangesAsync();
 
             return this.returnToHomeworks();

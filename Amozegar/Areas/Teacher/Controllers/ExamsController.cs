@@ -63,14 +63,14 @@ namespace Amozegar.Areas.Teacher.Controllers
 
             int counter = 1;
 
-            foreach(var item in examQuestions)
+            foreach (var item in examQuestions)
             {
                 questions.Add(new QuestionForEditViewModel()
                 {
                     Count = item.OptionsCount,
                     QuestionId = item.QuestionId,
                     Question = item.QuestionAsk,
-                    Counter = counter, 
+                    Counter = counter,
                 });
                 counter++;
             }
@@ -294,7 +294,7 @@ namespace Amozegar.Areas.Teacher.Controllers
                 ModelState.AddModelError("States", "برای تغییر وضعیت به زمان بندی شده امتحان حدقل نیازمند یک سوال میباشد");
                 return true;
             }
-            
+
 
 
             return false;
@@ -679,7 +679,7 @@ namespace Amozegar.Areas.Teacher.Controllers
 
             var questionOptions = await this._context.QuestionOptionsRepository
                 .GetOptionsByQuestionIdAsync(questionId);
-            foreach(var option in questionOptions)
+            foreach (var option in questionOptions)
             {
                 this._context.QuestionOptionsRepository
                     .Delete(option);
@@ -831,7 +831,7 @@ namespace Amozegar.Areas.Teacher.Controllers
             }
 
 
-            foreach(var option in add.Options)
+            foreach (var option in add.Options)
             {
                 await this._context.QuestionOptionsRepository
                     .AddAsync(new QuestionOption()
@@ -870,7 +870,7 @@ namespace Amozegar.Areas.Teacher.Controllers
             {
                 return this.returnToEditExam(examId);
             }
-            
+
             var option = await this._context.QuestionOptionsRepository
                 .GetByQuestionIdByOptionIdAsync(questionId, optionId);
 
@@ -1008,9 +1008,11 @@ namespace Amozegar.Areas.Teacher.Controllers
         public async Task<IActionResult> ExamResult(string classId, int examId, int pageNumber)
         {
             ViewBag.Route = "Exams";
-            var exam = await this.getExamByExamId(examId);
 
-            if (exam == null || exam.ExamState.State != "Completed")
+            var examResult = await this._context.ExamRepository
+                .GetExamResultsByIdByClassIdentityAsync(pageNumber, classId, examId);
+
+            if (examResult == null)
             {
                 return this.returnToExams();
             }
@@ -1018,41 +1020,15 @@ namespace Amozegar.Areas.Teacher.Controllers
             var studentResultCount = await this._context.ClassStudentsToExamRepository
                 .CountByExamIdForShowAsync(examId);
 
-            var questionCount = await this._context.QuestionsRepository
-                .GetQuestionsCountByExamIdForShowAsync(examId);
-
-            var joiner = await this._context.ClassStudentsToExamRepository
-                .ClassStudentsToExamByExamIdCountAsync(examId);
-
-            var studentResult = await this._context.ClassStudentsToExamRepository
-                .GetByExamIdForShowAsync(examId, pageNumber);
-
-
             this.setPaginationViewBags(pageNumber);
 
-            if (this.validateUserPageNumber(pageNumber, studentResult.Count()))
+            if (this.validateUserPageNumber(pageNumber, examResult.StudentsResults.Count()))
             {
                 return RedirectToAction("ExamResult", "Exams", new { area = "Teacher", classId = classId, examId = examId, pageNumber = 1 });
             }
 
             this.checkNextOrPrevForViewBags(studentResultCount, pageNumber);
 
-
-            var examResult = new ExamRsultsViewModel()
-            {
-                ExamId = examId,
-                CreatedAt = exam.CreatedAt.ToShamsi(),
-                EndDate = exam.EndDate.ToShamsi(),
-                ExamTitle = exam.ExamTitle,
-                ExamDescription = exam.ExamDescription,
-                StartDate = exam.StartDate.ToShamsi(),
-                State = exam.ExamState.PersianState,
-                QuestionCount = questionCount,
-                StudentsResults = studentResult,
-                Joiner = joiner,
-                Accepted = studentResult.Count(sr => sr.Score >= 50),
-                ScoreAvarage = studentResult.Any() ? (int)studentResult.Average(sr => sr.Score) : 0,
-            };
             return View(examResult);
         }
 

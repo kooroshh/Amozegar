@@ -17,5 +17,15 @@ namespace Amozegar.Data.Repositories.Implementations
 
             return classStudentsToHomeworkState;
         }
+
+        public async Task<string> GetStateOfStateByStudentToHomeworkIdAsync(int classStudentsToHomworkId)
+        {
+            var state = await this._context.ClassStudentsToHomeworks
+                .Where(csth => csth.ClassStudentsToHomeworkId == classStudentsToHomworkId)
+                .Select(csth => csth.ClassStudentsToHomeworkState.State)
+                .SingleAsync();
+
+            return state;
+        }
     }
 }

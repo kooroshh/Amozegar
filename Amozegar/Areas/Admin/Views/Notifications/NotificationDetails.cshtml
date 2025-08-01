@@ -1,0 +1,88 @@
+﻿@model NotificationViewModel
+@{
+    ViewData["Title"] = $"اعلان {Model.NotificationTitle}";
+}
+
+<!-- Announcement Details -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="card-title mb-0">جزئیات اعلان</h3>
+            <a asp-action="Index" asp-controller="Notifications" asp-area="Admin" asp-route-pageNumber="1" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-right me-2"></i>
+                بازگشت به لیست اعلانات
+            </a>
+        </div>
+
+        <!-- Announcement Information -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="info-item mb-3">
+                    <i class="fas fa-bullhorn text-primary me-2"></i>
+                    <span class="label">موضوع اعلان:</span>
+                    <span class="value">@Model.NotificationTitle</span>
+                </div>
+                <div class="info-item mb-3">
+                    <i class="fas fa-calendar text-primary me-2"></i>
+                    <span class="label">تاریخ ساخت:</span>
+                    <span class="value">@Model.CreatedAt</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-item mb-3">
+                    <i class="fas fa-id-card text-primary me-2"></i>
+                    <span class="label">آیدی کلاس:</span>
+                    <code class="bg-light px-2 py-1 rounded ms-2">#@Model.ClassIdentity</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Announcement Body -->
+        <div class="card bg-light mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-comment-alt text-primary me-2"></i>
+                    بدنه اعلان
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    @Model.NotificationBody
+                </p>
+            </div>
+        </div>
+
+        <!-- Gallery -->
+        <div class="mb-4">
+            <h5 class="mb-3">
+                <i class="fas fa-images text-primary me-2"></i>
+                گالری تصاویر
+            </h5>
+            <div class="row g-3">
+
+                @foreach(var picturePath in Model.PicturePaths)
+                {
+                    <div class="col-md-4">
+                        <a href="~/images/notifications/@(picturePath)" target="_blank" class="gallery-image">
+                            <img src="~/images/notifications/@(picturePath)" alt="تصویر گالری" class="img-fluid rounded" style="height: 200px; width: 100%; object-fit: cover;">
+                        </a>
+                    </div>
+                }
+
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="d-flex gap-2">
+            <a href="javascript:void(0)" title="حذف اعلان"
+               onclick="openConfirmModal('@Url.Action("DeleteNotification", "Notifications", new { notificationId = Model.NotificationId, area = "Admin" })', 'آیا از حذف اعلان اطمینان دارید؟')"
+               class="btn btn-danger">
+                <i class="fas fa-trash me-2"></i>
+                حذف اعلان
+            </a>
+        </div>
+    </div>
+</div>
+
+
+

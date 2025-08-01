@@ -65,7 +65,7 @@ namespace Amozegar.Data.Repositories.Implementations
 
                 var studentToHomeworks = await _context.ClassStudentsToHomeworks
                     .Include(csth => csth.ClassStudentsToHomeworkState)
-                    .Where(csth => csth.ClassStudentId == classStudent.id && homeworkIds.Contains(csth.HomeworkId))
+                    .Where(csth => csth.ClassStudentId == classStudent.Id && homeworkIds.Contains(csth.HomeworkId))
                     .ToListAsync();
 
                 foreach (var homework in homeworks)
@@ -82,7 +82,7 @@ namespace Amozegar.Data.Repositories.Implementations
         }
 
 
-        public async Task<IEnumerable<HomeworksViewModel>> GetNotSentHomeworksByClassIdentityByStudentIdByPageNumber(string classIdentity, string studentId, int pageNumber)
+        public async Task<IEnumerable<HomeworksViewModel>> GetNotSentHomeworksByClassIdentityByStudentIdByPageNumberAsync(string classIdentity, string studentId, int pageNumber)
         {
             var cls = await this.getClassByClassIdentityAsync(classIdentity);
             int page = pageNumber > 0 ? pageNumber : 0;
@@ -96,7 +96,7 @@ namespace Amozegar.Data.Repositories.Implementations
                 where h.HomeworkState.State == "Open"
                 join csth in _context.ClassStudentsToHomeworks
                     .Include(x => x.ClassStudentsToHomeworkState)
-                    on new { h.HomeworkId, StudentId = classStudent.id }
+                    on new { h.HomeworkId, StudentId = classStudent.Id }
                     equals new { csth.HomeworkId, StudentId = csth.ClassStudentId }
                     into gj
                 from csth in gj.DefaultIfEmpty()
@@ -144,7 +144,7 @@ namespace Amozegar.Data.Repositories.Implementations
 
                 join csth in _context.ClassStudentsToHomeworks
                     .Include(x => x.ClassStudentsToHomeworkState)
-                    on new { h.HomeworkId, StudentId = classStudent.id }
+                    on new { h.HomeworkId, StudentId = classStudent.Id }
                     equals new { csth.HomeworkId, StudentId = csth.ClassStudentId }
                     into gj
                 from csth in gj.DefaultIfEmpty()
@@ -181,7 +181,7 @@ namespace Amozegar.Data.Repositories.Implementations
 
         }
 
-        public async Task ChangeHomeworkState(int homeworkId, string state)
+        public async Task ChangeHomeworkStateAsync(int homeworkId, string state)
         {
             var homeworkState = await this.getStateByStateAsync(state);
 
@@ -245,7 +245,7 @@ namespace Amozegar.Data.Repositories.Implementations
 
             var studentToHomeworks = await this._context.ClassStudentsToHomeworks
                 .Include(csth => csth.ClassStudentsToHomeworkState)
-                .SingleOrDefaultAsync(csth => csth.HomeworkId == homework.HomeworkId && csth.ClassStudentId == classStudent.id);
+                .SingleOrDefaultAsync(csth => csth.HomeworkId == homework.HomeworkId && csth.ClassStudentId == classStudent.Id);
 
             var detaildHomework = new HomeworkDetailsViewModel()
             {
@@ -285,6 +285,118 @@ namespace Amozegar.Data.Repositories.Implementations
             return homework;
         }
 
+        public async Task<IEnumerable<Areas.Admin.Models.HomeworksViewModel>> GetHomeworksByPageNumberAsync(int pageNumber)
+        {
+            int page = pageNumber > 0 ? pageNumber : 0;
+            int pageSize = pageNumber > 0 ? DefaultPageCount.Count : 0;
 
+            var homewokrs = await this._context.Homeworks
+                .Where(h => h.HomeworkState.State != "Deleted")
+                .OrderByDescending(h => h.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(h => new Areas.Admin.Models.HomeworksViewModel()
+                {
+                    HomeworkId = h.HomeworkId,
+                    State = h.HomeworkState.State,
+                    ClassIdentity = h.ClassRoam.ClassIdentity,
+                    CreatedAt = h.CreatedAt.ToShamsi(),
+                    HomeworkTitle = h.HomeworkTitle,
+                    PersianState = h.HomeworkState.PersianState
+                })
+                .ToListAsync();
+
+            return homewokrs;
+        }
+
+        public async Task<int> GetHomeworksCountAsync()
+        {
+            var count = await this._context.Homeworks
+                .CountAsync(h => h.HomeworkState.State != "Deleted");
+
+            return count;
+        }
+
+        public async Task<Homework?> GetHomeworkByIdByNotThisStatesAsync(int homeworkId, params string[] states)
+        {
+            var homework = await this._context.Homeworks
+                .SingleOrDefaultAsync(h => h.HomeworkId == homeworkId && !states.Contains(h.HomeworkState.State));
+
+            return homework;
+        }
+
+        public async Task<Homework?> GetHomeworkByIdByThisStatesAsync(int homeworkId, params string[] states)
+        {
+            var homework = await this._context.Homeworks
+                .SingleOrDefaultAsync(h => h.HomeworkId == homeworkId && states.Contains(h.HomeworkState.State));
+
+            return homework;
+        }
+
+        public async Task<Areas.Admin.Models.HomeworkViewModel?> GetHomeworkWithStudentsByIdByPageNumberAsync(int homeworkId, int pageNumber)
+        {
+            int page = pageNumber > 0 ? pageNumber : 0;
+            int pageSize = pageNumber > 0 ? DefaultPageCount.Count : 0;
+
+
+            var homework = await this._context.Homeworks
+                .Where(h => h.HomeworkId == homeworkId && h.HomeworkState.State != "Deleted")
+                .Select(h => new Areas.Admin.Models.HomeworkViewModel()
+                {
+                    HomeworkId = h.HomeworkId,
+                    HomeworlTitle = h.HomeworkTitle,
+                    HomeworkBody = h.HomeworkDescription,
+                    CreatedAt = h.CreatedAt.ToShamsi(),
+                    HomeworkState = h.HomeworkState.PersianState,
+                    State = h.HomeworkState.State,
+                    ClassIdentity = h.ClassRoam.ClassIdentity,
+                    ClassId = h.ClassId,
+                })
+                .SingleOrDefaultAsync();
+
+
+            if (homework == null)
+            {
+                return null;
+            }
+
+
+            var pictureType = await this._context.TableTypes
+                .SingleAsync(pt => pt.Type == "Homeworks");
+
+            homework.PicturesPath = await this._context.Pictures
+            .Where(p => p.TableType == pictureType && p.TableTypeRecordId == homework.HomeworkId)
+            .Select(p => p.PicturePath)
+            .ToListAsync();
+
+
+
+            var students = this._context.ClassesStudents
+                .Where(cs => cs.ClassId == homework.ClassId && cs.State.State == "Accepted")
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(cs => new Areas.Admin.Models.UserViewModelForHomework
+                {
+                    StudentName = cs.User.FullName,
+                    PicturePath = cs.User.PicturePath,
+                    StudentStatus = this._context.ClassStudentsToHomeworks
+                        .Where(hw => hw.ClassStudentId == cs.Id && hw.HomeworkId == homeworkId)
+                        .Select(hw => hw.ClassStudentsToHomeworkState.PersianState)
+                        .FirstOrDefault() ?? "ارسال نشده",
+                    IsSent = this._context.ClassStudentsToHomeworks
+                        .Any(hw => hw.ClassStudentId == cs.Id && hw.HomeworkId == homeworkId && hw.ClassStudentsToHomeworkState.State != "Rejected"),
+                    StudentToHomeworkId = this._context.ClassStudentsToHomeworks
+                        .SingleOrDefault(hw => hw.ClassStudentId == cs.Id && hw.HomeworkId == homeworkId)
+                        .ClassStudentsToHomeworkId
+                })
+                .ToList();
+
+            homework.Students = students;
+
+
+
+            return homework;
+
+        }
     }
 }

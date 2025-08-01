@@ -1,14 +1,6 @@
-﻿using System.Linq;
-using Amozegar.Areas.Teacher.Models;
-using Amozegar.Data;
-using Amozegar.Data.UnitOfWork;
-using Amozegar.Models;
-using Amozegar.Models.CustomAnnotations;
-using Amozegar.Utilities;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Amozegar.Data.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Amozegar.Areas.Teacher.Controllers
 {
@@ -26,10 +18,14 @@ namespace Amozegar.Areas.Teacher.Controllers
         }
 
 
-        public IActionResult Index(string classId)
+        public async Task<IActionResult> Index(string classId)
         {
             ViewBag.Route = "Dashboard";
-            return View();
+
+            var dashBoardViewModel = await this._context.DashboardRepository
+                .GetTeacherDashboardDatasByClassIdentityAsync(classId);
+
+            return View(dashBoardViewModel);
         }
 
         // Utilities

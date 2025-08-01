@@ -1,0 +1,152 @@
+﻿@model IEnumerable<ExamsViewModel>
+@{
+    ViewData["Title"] = "امتحانات";
+}
+
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <h3 class="card-title mb-0">مدیریت امتحانات</h3>
+
+            <div class="d-flex gap-2">
+                <div>
+                    @if (ViewBag.HasPrev)
+                    {
+                        <a asp-action="Index"
+                           asp-controller="Exams"
+                           asp-area="Admin"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage - 1)"
+                           class="btn btn-primary ">صفحه ی قبل</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی قبل</a>
+                    }
+                </div>
+                <div>
+                    @if (ViewBag.HasNext)
+                    {
+                        <a asp-action="Index"
+                           asp-controller="Exams"
+                           asp-area="Admin"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage + 1)"
+                           class="btn btn-primary ">صفحه ی بعد</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی بعد</a>
+                    }
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="mb-4 admin-search-filters">
+            <div class="alert alert-light">
+                تعداد کل امتحانات: @ViewBag.Count
+            </div>
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@Html.Raw(TempData["Error"]?.ToString())</div>
+            }
+        </div>
+
+
+        @if (Model.Count() <= 0)
+        {
+            <div class="alert alert-warning">هیچ امتحانی وجود ندارد</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">عنوان امتحان</th>
+                            <th scope="col" style="width: 150px">آیدی کلاس</th>
+                            <th scope="col" style="width: 150px">تاریخ ساخت</th>
+                            <th scope="col" style="width: 120px">وضعیت</th>
+                            <th scope="col" style="width: 120px">تعداد سوالات</th>
+                            <th scope="col" style="width: 150px">عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ticketsTableBody">
+
+
+                        @foreach (var exam in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong>@exam.Title</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <code class="bg-light px-2 py-1 rounded">#@exam.ClassIdentity</code>
+                                </td>
+                                <td class="d-lg-table-cell">
+                                    <small class="text-muted">@exam.CreatedAt</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">@exam.PersianState</span>
+                                </td>
+                                <td class="d-lg-table-cell">
+                                    <small class="text-muted">@exam.QuestionCount</small>
+                                </td>
+
+                                <td data-label="عملیات">
+                                    <div class="btn-group d-flex justify-content-center align-items-center" role="group">
+                                        <a asp-action="ShowExam" asp-controller="Exams" asp-area="Admin" asp-route-examId="@exam.ExamId" asp-route-questionPageNumber="1" asp-route-studentResultPageNumber="1" class="btn btn-outline-info btn-sm" title="مشاهده جزئیات">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if (exam.State != "Completed" && exam.State != "Ongoing")
+                                        {
+                                            <a href="javascript:void(0)" title="حذف تکلیف"
+                                               onclick="openConfirmModal('@Url.Action("DeleteExam", "Exams", new { examId = exam.ExamId, area = "Admin" })', 'آیا از حذف کردن امتحان اطمینان دارید؟')"
+                                               class="btn btn-outline-danger btn-sm delete-ticket-btn">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        }
+                                        @if (exam.State == "Ongoing")
+                                        {
+                                            <a href="javascript:void(0)" title="بستن تکلیف"
+                                               onclick="openConfirmModal('@Url.Action("CloseExam", "Exams", new { examId = exam.ExamId, area = "Admin" })', 'آیا از بستن امتحان اطمینان دارید؟')"
+                                               class="btn btn-outline-warning btn-sm delete-ticket-btn">
+                                                <i class="fa-solid fa-lock"></i>
+                                            </a>
+                                        }
+                                        else if (exam.State == "Draft")
+                                        {
+                                            <a href="javascript:void(0)" title="زمان بندی کردن"
+                                               onclick="openConfirmModal('@Url.Action("ScheduledExam", "Exams", new { examId = exam.ExamId, area = "Admin" })', 'آیا از زمان بندی کردن امتحان اطمینان دارید؟')"
+                                               class="btn btn-outline-info btn-sm delete-ticket-btn">
+                                                <i class="fa-solid fa-lock-open"></i>
+                                            </a>
+                                        }
+                                        else if (exam.State == "Scheduled")
+                                        {
+                                            <a href="javascript:void(0)" title="بردن به حالت در حال ساخت"
+                                               onclick="openConfirmModal('@Url.Action("DraftExam", "Exams", new { examId = exam.ExamId, area = "Admin" })', 'آیا از بردن به حالت در حال ساخت امتحان اطمینان دارید؟')"
+                                               class="btn btn-outline-info btn-sm delete-ticket-btn">
+                                                <i class="fa-solid fa-lock-open"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        }
+
+    </div>
+</div>
+

@@ -6,7 +6,7 @@ namespace Amozegar.Models
     public class ClassStudents
     {
         [Key]
-        public int id { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public string StudentId { get; set; }
@@ -16,6 +16,8 @@ namespace Amozegar.Models
 
         [Required]
         public int ClassStudentStateId { get; set; }
+
+        public DateTime? JoinAt { get; set; }
 
 
         [ForeignKey("StudentId")]

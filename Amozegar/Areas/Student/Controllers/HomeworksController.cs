@@ -38,7 +38,7 @@ namespace Amozegar.Areas.Student.Controllers
             var student = await this._userManager.FindByNameAsync(User.Identity.Name);
 
             var classHomeworks = await this._context.HomeworkRepository
-                .GetNotSentHomeworksByClassIdentityByStudentIdByPageNumber(classId, student.Id, pageNumber);
+                .GetNotSentHomeworksByClassIdentityByStudentIdByPageNumberAsync(classId, student.Id, pageNumber);
 
             this.setPaginationViewBags(pageNumber);
 
@@ -53,9 +53,6 @@ namespace Amozegar.Areas.Student.Controllers
             this.checkNextOrPrevForViewBags(homeworksCount, pageNumber);
 
 
-            //var user = await this._userManager.FindByNameAsync(User.Identity.Name);
-            //await this._context.UsersViewsRepository
-            //    .ReadAllHomeworksAsync(user, classId);
 
             return View(classHomeworks);
         }
@@ -81,7 +78,7 @@ namespace Amozegar.Areas.Student.Controllers
                 .GetByCheckStudentIsInClassAsync(user, cls.ClassId);
 
             var lastClassStudentsToHomeworks = await this._context.ClassStudentsToHomeworksRepository
-                .GetByHomeworkIdByClassStudentIdAsync(homeworkId, classStudent.id);
+                .GetByHomeworkIdByClassStudentIdAsync(homeworkId, classStudent.Id);
 
             if (lastClassStudentsToHomeworks != null && lastClassStudentsToHomeworks.ClassStudentsToHomeworkState.State != "Rejected")
             {
@@ -128,7 +125,7 @@ namespace Amozegar.Areas.Student.Controllers
             var classStudentsToHomeworks = new ClassStudentsToHomework();
 
             var lastClassStudentsToHomeworks = await this._context.ClassStudentsToHomeworksRepository
-                .GetByHomeworkIdByClassStudentIdAsync(homeworkId, classStudent.id);
+                .GetByHomeworkIdByClassStudentIdAsync(homeworkId, classStudent.Id);
 
             if (lastClassStudentsToHomeworks == null)
             {
@@ -141,7 +138,7 @@ namespace Amozegar.Areas.Student.Controllers
                 classStudentsToHomeworks.ClassStudentsToHomeworkState = state;
                 classStudentsToHomeworks.ClassStudentHomeworkStateId = state.ClassStudentsToHomeworkStateId;
                 classStudentsToHomeworks.ClassStudent = classStudent;
-                classStudentsToHomeworks.ClassStudentId = classStudent.id;
+                classStudentsToHomeworks.ClassStudentId = classStudent.Id;
 
                 await this._context.ClassStudentsToHomeworksRepository
                     .AddAsync(classStudentsToHomeworks);

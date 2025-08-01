@@ -30,7 +30,7 @@
         {
             if (role.Name == "Admin")
             {
-                <a asp-action="Classes" asp-controller="Home" asp-area="Panel" asp-route-roleName="@role.Name" class="menu-item">
+                <a asp-action="Index" asp-controller="Home" asp-area="Admin" class="menu-item">
                     <i class="fas fa-user-cog"></i>
                     <span>پنل @role.PersianName</span>
                 </a>

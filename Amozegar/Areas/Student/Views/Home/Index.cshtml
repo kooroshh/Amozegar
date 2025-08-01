@@ -1,12 +1,50 @@
-﻿@{
+﻿@model DashboardViewModel
+@{
     ViewData["Title"] = "کلاس";
 
 }
 
 <h1>داشبورد</h1>
-<div class="alert alert-success">
-    خوش آمدید @(User.FindFirstValue("FullName"))
+<div class="container py-5">
+    <div class="row g-4">
+
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد کل دانش آموزان</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.StudentsCount</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد اعلانات دیده نشده</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.NotReadNotificationsCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-danger mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد تکالیف ارسال نشده</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.NotSentHomeworksCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-secondary mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد امتحانات در حال برگزاری</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.OngoingExamsCount</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
-
-
-

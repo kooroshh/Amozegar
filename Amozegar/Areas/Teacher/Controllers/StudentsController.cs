@@ -18,13 +18,7 @@ namespace Amozegar.Areas.Teacher.Controllers
             this._userManager = userManager;
         }
 
-        private async Task setNewStateForStudentInClass(ClassStudents studentInClass, string state)
-        {
-            var newStudentState = await this._context.ClassStudentsStatesRepository.GetStateByNameAsync(state);
-            studentInClass.State = newStudentState;
-            studentInClass.ClassStudentStateId = newStudentState.id;
-            await this._context.SaveChangesAsync();
-        }
+
 
         // Utilities
 
@@ -33,15 +27,27 @@ namespace Amozegar.Areas.Teacher.Controllers
             return RedirectToAction("Index", "Students", new { area = "Shared", roleName = "Teacher", classId = this.classId, type = "Class-Students-List", pageNumber = 1 });
         }
 
-        // Main Methods
-        private async Task<IActionResult> doPostActions(int studentInClassId, string newState)
+        private async Task setNewStateForStudentInClass(ClassStudents studentInClass, string state)
+        {
+            var newStudentState = await this._context.ClassStudentsStatesRepository.GetStateByNameAsync(state);
+            studentInClass.State = newStudentState;
+            studentInClass.ClassStudentStateId = newStudentState.id;
+            await this._context.SaveChangesAsync();
+        }
+
+        private async Task<IActionResult> doPostActions(int studentInClassId, string newState, params string[] shouldBe)
         {
             var studentInClass = await _context.ClassStudentsRepository
                 .GetStudentInClassByClassIdentityAndClassStudentIdAsync(studentInClassId, this.classId);
 
             if (studentInClass == null)
             {
-                return returnToStudents();
+                return this.returnToStudents();
+            }
+
+            if (!shouldBe.Contains(studentInClass.State.State))
+            {
+                return this.returnToStudents();
             }
 
             await this.setNewStateForStudentInClass(studentInClass, newState);
@@ -50,38 +56,45 @@ namespace Amozegar.Areas.Teacher.Controllers
             return returnToStudents();
         }
 
+        // Main Methods
+
+
 
 
         [HttpPost("Accept")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Accept(string classId, int studentInClassId)
         {
-            return await this.doPostActions(studentInClassId, "Accepted");
+            return await this.doPostActions(studentInClassId, "Accepted", "Pending");
         }
 
 
         [HttpPost("Reject")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Reject(string classId, int studentInClassId)
         {
-            return await this.doPostActions(studentInClassId, "Rejected");
+            return await this.doPostActions(studentInClassId, "Rejected", "Pending");
         }
 
         [HttpPost("Ban")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Ban(string classId, int studentInClassId)
         {
-            return await this.doPostActions(studentInClassId, "Banned");
+            return await this.doPostActions(studentInClassId, "Banned", "Accepted");
         }
 
         [HttpPost("Remove")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Remove(string classId, int studentInClassId)
         {
-            return await this.doPostActions(studentInClassId, "Removed");
+            return await this.doPostActions(studentInClassId, "Removed", "Accepted");
         }
 
         [HttpPost("UnBan")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UnBan(string classId, int studentInClassId)
         {
-            return await this.doPostActions(studentInClassId, "Removed");
+            return await this.doPostActions(studentInClassId, "Removed", "Banned");
         }
     }
 }

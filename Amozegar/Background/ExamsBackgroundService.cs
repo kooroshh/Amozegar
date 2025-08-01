@@ -27,7 +27,7 @@ namespace Amozegar.Background
                 {
                     var context = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-                    // مثال: دریافت رکوردهای پردازش نشده
+
                     var exams = await context.ExamRepository
                         .GetForBackgroundAsync(stoppingToken);
 

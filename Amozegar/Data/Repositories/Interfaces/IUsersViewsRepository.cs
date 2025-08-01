@@ -8,5 +8,7 @@ namespace Amozegar.Data.Repositories.Interfaces
         Task ReadAllNotificationsAsync(User user, string classIdentity);
         Task<int> GetUnreadHomeworksCountByUserIdAsync(string userId, string classIdentity);
         Task ReadAllHomeworksAsync(User user, string classIdentity);
+        Task ReadAllTicketsAsync(User user);
+        Task<int> GetUnreadTicketsCountByUserIdAsync(string userId);
     }
 }

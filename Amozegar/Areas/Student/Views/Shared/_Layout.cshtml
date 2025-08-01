@@ -31,7 +31,7 @@
 	</a>
 	<a asp-action="Index" asp-controller="Exams" asp-area="Shared" asp-route-classId="@ViewBag.ClassId" asp-route-roleName="Student" asp-route-pageNumber="1" asp-route-type="Ongoing" class="menu-item @(ViewBag.Route == "Exams" ? "active" : "")">
 		<i class="fa-solid fa-flask-vial"></i>
-		<span>امتحانات در حال برگزاری</span>
+		<span>امتحانات در حال برگزاری  @await Component.InvokeAsync("NotRead", new { type = "OngoingExams", classIdentity = ViewBag.ClassId })</span>
 	</a>
 	<a asp-action="Index" asp-controller="Exams" asp-area="Shared" asp-route-classId="@ViewBag.ClassId" asp-route-roleName="Student" asp-route-pageNumber="1" asp-route-type="Completed" class="menu-item @(ViewBag.Route == "CompletedExams" ? "active" : "")">
 		<i class="fa-solid fa-flask-vial"></i>

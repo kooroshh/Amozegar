@@ -1,0 +1,32 @@
+﻿@using Amozegar.Areas.Admin.Models
+@model IEnumerable<EditUserRolesModalViewModel>
+
+<div class="modal fade" id="editUserRolesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="editUserRolesForm" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">ویرایش نقش‌های کاربر</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div id="roleCheckboxContainer">
+                        @foreach (var role in Model)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="NewRoles" value="@role.RoleId" id="role-@role.RoleId" data-role-name="@role.PersianName" />
+                                <label class="form-check-label" for="role-@role.RoleId">@role.PersianName</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <button type="submit" class="btn btn-primary">ذخیره</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

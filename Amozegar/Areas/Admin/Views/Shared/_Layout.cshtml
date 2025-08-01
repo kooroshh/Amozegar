@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+
+<html dir="rtl">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - آموزگار</title>
+	<script type="importmap"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/Amozegar.styles.css" asp-append-version="true" />
+</head>
+<body>
+	@await Component.InvokeAsync("SimpleConfirm")
+	@await Component.InvokeAsync("Confirm")
+	<!-- Mobile Navigation -->
+	<nav class="mobile-nav d-lg-none">
+		<div class="container-fluid">
+			<div class="d-flex justify-content-between align-items-center py-3">
+				<button class="menu-toggle">
+					<i class="fas fa-bars"></i>
+				</button>
+				<a asp-action="Index" asp-controller="Home" asp-area=""
+				   class="mobile-logo">
+					<img src="~/images/home/logo.png" alt="آموزگار">
+				</a>
+			</div>
+		</div>
+	</nav>
+
+	<div class="panel-container">
+		<!-- Sidebar -->
+		<aside class="sidebar">
+			<div class="sidebar-header">
+
+				<a asp-action="Index" asp-controller="Home" asp-area=""
+				   class="sidebar-logo d-flex justify-content-center align-items-center gap-1">
+					<img src="~/images/home/logo.png" alt="آموزگار">
+					آموزگار
+				</a>
+
+			</div>
+
+			<div class="sidebar-menu">
+				<nav>
+
+					<a class="menu-item" asp-action="Index" asp-controller="Home" asp-area="">
+						<i class="fas fa-home"></i>
+						<span>برگشت به خانه</span>
+					</a>
+					<a asp-action="Index" asp-controller="Home" asp-area="Admin" class="menu-item @(ViewBag.Route == "Dashboard" ? "active" : "")">
+						<i class="fas fa-tachometer-alt"></i>
+						<span>داشبورد</span>
+					</a>
+					<a asp-action="Index" asp-controller="Users" asp-area="Admin" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "Users" ? "active" : "")">
+						<i class="fa-solid fa-users"></i>
+						<span>کاربران</span>
+					</a>
+					<a asp-action="Index" asp-controller="Tickets" asp-area="Admin" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "Tickets" ? "active" : "")">
+						<i class="fa-solid fa-ticket"></i>
+						<span>تیکت ها @await Component.InvokeAsync("NotRead", new { type = "Tickets" })</span>
+					</a>
+					<a asp-action="Index" asp-controller="Classes" asp-area="Admin" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "Classes" ? "active" : "")">
+						<i class="fa-solid fa-landmark"></i>
+						<span>کلاس ها</span>
+					</a>
+					<a asp-action="Index" asp-controller="Notifications" asp-area="Admin" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "Notifications" ? "active" : "")">
+						<i class="fa-solid fa-bell"></i>
+						<span>اعلان ها</span>
+					</a>
+					<a asp-action="Index" asp-controller="Homeworks" asp-area="Admin" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "Homeworks" ? "active" : "")">
+						<i class="fa-solid fa-user-pen"></i>
+						<span>تکالیف ها</span>
+					</a>
+					<a asp-action="Index" asp-controller="Exams" asp-area="Admin" asp-route-pageNumber="1" class="menu-item @(ViewBag.Route == "Exams" ? "active" : "")">
+						<i class="fa-solid fa-flask-vial"></i>
+						<span>امتحانات</span>
+					</a>
+
+				</nav>
+			</div>
+
+			<div class="sidebar-footer">
+
+				<a href="javascript:void(0)"
+				   data-confirm-href="@Url.Action("Index", "Home", new { area = "Panel" })"
+				   data-confirm-message="آیا از خروج از پنل مدیریت اطمینان دارید؟"
+				   class="menu-item text-danger confirmable-link">
+					<i class="fas fa-sign-out-alt"></i>
+					بازگشت به پنل
+				</a>
+
+
+			</div>
+		</aside>
+
+		<!-- Main Content -->
+		<main class="main-content">
+			<div class="container-fluid py-4">
+
+				@await Component.InvokeAsync("Details")
+
+				<div class="container">
+					@RenderBody()
+				</div>
+			</div>
+			<partial name="_GoTopButton" />
+		</main>
+	</div>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

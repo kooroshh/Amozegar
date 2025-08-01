@@ -1,0 +1,214 @@
+﻿@model DashboardViewModel
+@{
+    ViewData["Title"] = "پنل ادمین";
+}
+
+<h1>داشبورد</h1>
+<div class="container py-5">
+    <div class="row g-4">
+
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد کل کابران</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.UsersCount</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد کل دانش آموزان</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.StudentsCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد کل معلمان</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.TeachersCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد کل ادمین ها</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.AdminsCount</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد کابران مسدود شده</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.BannedUsersCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-primary mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد کابران مسدود نشده</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.NotBannedUsersCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-secondary mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد کل تیکت ها</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.TicketsCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-success mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد کل کلاس ها</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.ClassesCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-success mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد کلاس های بن شده</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.BannedClassesCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-success mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد کلاس های بن نشده</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.NotBannedClassesCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-danger mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد کل اعلانات</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.NotificationsCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-warning mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد کل تکالیف</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.HomewroksCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-warning mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد تکالیف بسته شده</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.ClosedHomeworksCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-warning mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد تکالیف باز</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.OpenHomeworksCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-info mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد کل امتحانات</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.ExamsCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-info mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد امتحانات در حال برگزاری</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.OngoingExamsCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-info mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد امتحانات در حال ساخت</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.DraftExamsCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-info mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد امتحانات تکمیل شده</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.CompletedExamsCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-info mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد امتحانات برنامه ریزی شده</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.ScheduledExamsCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-info mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد امتحانات بسته شده</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.ClosedExamsCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-light mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد سوالات ثبت شده</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.QuestionsCount</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-bg-dark mb-3" style="max-width: 18rem;">
+                <div class="card-header">تعداد گزینه های ثبت شده</div>
+                <div class="card-body">
+                    <p class="card-text">@Model.OptionsCount</p>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+</div>

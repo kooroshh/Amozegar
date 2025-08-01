@@ -1,0 +1,74 @@
+﻿@model TicketViewModel
+@{
+    ViewData["Title"] = "نمایش تیکت";
+}
+
+<!-- Ticket Details Section -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="card-title mb-0">جزئیات تیکت</h3>
+            <a asp-action="Index" asp-asp-controller="Tickets" asp-area="Admin" asp-route-pageNumber="1" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-right me-2"></i>
+                بازگشت به لیست تیکت‌ها
+            </a>
+        </div>
+
+        <!-- User Information -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="info-item mb-3">
+                    <i class="fas fa-user text-primary me-2"></i>
+                    <span class="label">نام کاربر:</span>
+                    <span class="value">@Model.UserFullName</span>
+                </div>
+                <div class="info-item mb-3">
+                    <i class="fas fa-envelope text-primary me-2"></i>
+                    <span class="label">ایمیل:</span>
+                    <span class="value">@Model.UserEmail</span>
+                </div>
+                <div class="info-item mb-3">
+                    <i class="fas fa-phone text-primary me-2"></i>
+                    <span class="label">شماره تماس:</span>
+                    <span class="value">@Model.UserPhoneNumber</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-item mb-3">
+                    <i class="fas fa-tag text-primary me-2"></i>
+                    <span class="label">موضوع تیکت:</span>
+                    <span class="value">@Model.TicketSubject</span>
+                </div>
+                <div class="info-item mb-3">
+                    <i class="fas fa-calendar text-primary me-2"></i>
+                    <span class="label">تاریخ ساخت:</span>
+                    <span class="value">@Model.CreatedAt</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ticket Body -->
+        <div class="card bg-light">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-comment-alt text-primary me-2"></i>
+                    متن تیکت
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">@Model?.Body</p>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-flex gap-2 mt-4">
+            <a href="javascript:void(0)" title="حذف تیکت"
+               onclick="openConfirmModal('@Url.Action("DeleteTicket", "Tickets", new { ticketId = Model?.TicketId, area = "Admin" })', 'آیا از حذف کردن تیکت اطمینان دارید؟')"
+               class="btn btn-danger">
+                <i class="fas fa-trash me-2"></i>
+                حذف تیکت
+            </a>
+        </div>
+    </div>
+</div>
+

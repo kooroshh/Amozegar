@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Amozegar.Areas.Admin.Models;
 using Amozegar.Areas.Panel.Models;
 using Amozegar.Areas.Teacher.Models;
 using Amozegar.Data.Repositories.Interfaces;
@@ -48,6 +49,46 @@ namespace Amozegar.Data.Repositories.Implementations
             return await this._context.Classes.SingleOrDefaultAsync(c => c.ClassIdentity == classIdentity);
         }
 
+        public async Task<ClassViewModel?> GetClassByClassIdByPageNumberAsync(int classId, int pageNumber)
+        {
+
+            int page = pageNumber > 0 ? pageNumber : 0;
+            int pageSize = pageNumber > 0 ? DefaultPageCount.Count : 0;
+
+            var cls = await this._context.Classes
+                .Where(cls => cls.ClassId == classId && cls.ClassState.State != "Deleted")
+                .Select(c => new Amozegar.Areas.Admin.Models.ClassViewModel()
+                {
+                    ClassId = c.ClassId,
+                    ClassIdentity = c.ClassIdentity,
+                    ClassImage = c.ClassImage,
+                    ClassName = c.ClassName,
+                    CreatedAt = c.Date.ToShamsi(),
+                    ExamsCount = c.Exams.Count(),
+                    HomeworksCount = c.Homeworks.Count(),
+                    NotificationsCount = c.Notifications.Count(),
+                    PersianState = c.ClassState.PersianState,
+                    StudentsCount = c.StudentToClasses.Count(stc => stc.State.State == "Accepted"),
+                    TeacherName = c.Teacher.FullName,
+                    State = c.ClassState.State,
+                    Students = c.StudentToClasses
+                                .Skip((page - 1) * pageSize)
+                                .Take(pageSize)
+                                .Select(stc => new UserViewModelForClass()
+                                {
+                                    ClassStudentId = stc.Id,
+                                    Email = stc.User.Email,
+                                    JoinAt = stc.JoinAt.ToShamsi(),
+                                    PicturePath = stc.User.PicturePath,
+                                    UserName = stc.User.FullName,
+                                    UserStatus = stc.State.PersianState,
+                                    State = stc.State.State,
+                                }).ToList()
+                })
+                .SingleOrDefaultAsync();
+            return cls;
+        }
+
         public async Task<ClassRoam?> GetClassByIdAndStateAsync(int classId, string teacherName, string state)
         {
             var user = await _userManager.FindByNameAsync(teacherName);
@@ -55,6 +96,80 @@ namespace Amozegar.Data.Repositories.Implementations
                 .Include(c => c.ClassState)
                 .SingleOrDefaultAsync(c => c.TeacherId == user.Id && c.ClassId == classId && c.ClassState.State == state);
             return exisitClass;
+        }
+
+        public async Task<ClassRoam?> GetClassByIdByNotTheseStatesAsync(int classId, params string[] states)
+        {
+            var cls = await this._context.Classes
+                .SingleOrDefaultAsync(c => c.ClassId == classId && !states.Contains(c.ClassState.State));
+
+            return cls;
+        }
+
+        public async Task<ClassRoam?> GetClassByIdByTheseStatesAsync(int classId, params string[] states)
+        {
+            var cls = await this._context.Classes
+                .SingleOrDefaultAsync(c => c.ClassId == classId && states.Contains(c.ClassState.State));
+
+            return cls;
+        }
+
+        public async Task<string> GetClassIdentityByStudentToHomeworkId(int studentToHomeworkId)
+        {
+            var classIdentity = await this._context.ClassStudentsToHomeworks
+                .Where(csth => csth.ClassStudentsToHomeworkId == studentToHomeworkId)
+                .Select(csth => csth.Homework.ClassRoam.ClassIdentity)
+                .SingleOrDefaultAsync();
+
+            return classIdentity;
+        }
+
+        public async Task<IEnumerable<Amozegar.Areas.Admin.Models.ClassViewModel>> GetClassesByPageNumberAsync(int pageNumber)
+        {
+            int page = pageNumber > 0 ? pageNumber : 0;
+            int pageSize = pageNumber > 0 ? DefaultPageCount.Count : 0;
+
+            var classes = await this._context.Classes
+                .Where(cls =>
+                    cls.ClassState.State != "Deleted"
+                )
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(c => new Amozegar.Areas.Admin.Models.ClassViewModel()
+                {
+                    ClassId = c.ClassId,
+                    ClassIdentity = c.ClassIdentity,
+                    ClassImage = c.ClassImage,
+                    ClassName = c.ClassName,
+                    CreatedAt = c.Date.ToShamsi(),
+                    ExamsCount = c.Exams.Count(),
+                    HomeworksCount = c.Homeworks.Count(),
+                    NotificationsCount = c.Notifications.Count(),
+                    PersianState = c.ClassState.PersianState,
+                    StudentsCount = c.StudentToClasses.Count(stc => stc.State.State == "Accepted"),
+                    TeacherName = c.Teacher.FullName,
+                    State = c.ClassState.State
+                })
+                .ToListAsync();
+            return classes;
+        }
+
+        public async Task<int> GetClassesCountAsync()
+        {
+            var classes = await this._context.Classes
+                .CountAsync(cls => cls.ClassState.State != "Deleted");
+
+            return classes;
+        }
+
+        public async Task<string> GetClassIdentityByIdAsync(int classId)
+        {
+            var classIdentity = await this._context.Classes
+                .Where(c => c.ClassId == classId)
+                .Select(c => c.ClassIdentity)
+                .SingleAsync();
+
+            return classIdentity;
         }
 
         public async Task<IEnumerable<ClassesViewModel>> GetStudentsClassesByUserByPageNumberAsync(User user, int pageNumber)

@@ -1,0 +1,234 @@
+﻿@model ClassViewModel
+@{
+    ViewData["Title"] = $"کلاس {Model.ClassName}";
+}
+
+<!-- Class Information Section -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="card-title mb-0">اطلاعات کلاس</h3>
+            <a asp-action="Index" asp-controller="Classes" asp-area="Admin" asp-route-pageNumber="1" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-right me-2"></i>
+                بازگشت به لیست کلاس‌ها
+            </a>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="class-basic-info">
+                    <h2 class="class-title mb-3">@Model.ClassName</h2>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-item mb-3">
+                                <i class="fas fa-id-card text-primary me-2"></i>
+                                <span class="label">آیدی کلاس:</span>
+                                <code class="bg-light px-2 py-1 rounded ms-2">#@Model.ClassIdentity</code>
+                            </div>
+                            <div class="info-item mb-3">
+                                <i class="fas fa-chalkboard-teacher text-success me-2"></i>
+                                <span class="label">نام معلم:</span>
+                                <span class="value">@Model.TeacherName</span>
+                            </div>
+                            <div class="info-item mb-3">
+                                <i class="fas fa-calendar-plus text-info me-2"></i>
+                                <span class="label">تاریخ ساخت:</span>
+                                <span class="value">@Model.CreatedAt</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item mb-3">
+                                <i class="fas fa-info-circle text-warning me-2"></i>
+                                <span class="label">وضعیت کلاس:</span>
+                                <span class="badge bg-success ms-2">@Model.PersianState</span>
+                            </div>
+                            <div class="info-item mb-3">
+                                <i class="fas fa-image text-secondary me-2"></i>
+                                <span class="label">تصویر کلاس:</span>
+                                <img src="~/images/classes/@(Model.ClassImage)"
+                                     alt="تصویر کلاس"
+                                     class="rounded ms-2"
+                                     width="80"
+                                     height="60"
+                                     style="object-fit: cover;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="class-stats-card">
+                    <h4 class="mb-3">آمار کلاس</h4>
+                    <div class="stat-item">
+                        <div class="stat-number">@Model.NotificationsCount</div>
+                        <div class="stat-label">اعلانات</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">@Model.HomeworksCount</div>
+                        <div class="stat-label">تکالیف</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">@Model.ExamsCount</div>
+                        <div class="stat-label">امتحانات</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">@Model.StudentsCount</div>
+                        <div class="stat-label">دانش آموزان فعال</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Students List Section -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <h3 class="card-title mb-0">لیست دانش‌آموزان کلاس</h3>
+
+            <div class="d-flex gap-2">
+                <div>
+                    @if (ViewBag.HasPrev)
+                    {
+                        <a asp-action="ShowClass"
+                           asp-controller="Classes"
+                           asp-area="Admin"
+                           asp-route-classId="@Model.ClassId"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage - 1)"
+                           class="btn btn-primary ">صفحه ی قبل</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی قبل</a>
+                    }
+                </div>
+                <div>
+                    @if (ViewBag.HasNext)
+                    {
+                        <a asp-action="ShowClass"
+                           asp-controller="Classes"
+                           asp-area="Admin"
+                           asp-route-classId="@Model.ClassId"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage + 1)"
+                           class="btn btn-primary ">صفحه ی بعد</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی بعد</a>
+                    }
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="row mb-4 admin-search-filters">
+            <div class="alert alert-light">
+                تعداد کل دانش آموز ها: @ViewBag.Count
+            </div>
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@Html.Raw(TempData["Error"]?.ToString())</div>
+            }
+        </div>
+
+        @if (Model.Students.Count() <= 0)
+        {
+            <div class="alert alert-warning">هیچ دانش آموزی وجود ندارد</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" style="width: 80px">تصویر</th>
+                            <th scope="col">نام دانش‌آموز</th>
+                            <th scope="col">ایمیل</th>
+                            <th scope="col" style="width: 150px">تاریخ آخرین عضویت</th>
+                            <th scope="col" style="width: 120px">وضعیت</th>
+                            <th scope="col" style="width: 200px">عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach(var student in Model.Students)
+                        {
+                            <tr>
+                                <td>
+                                    <img src="~/images/users/@(student.PicturePath)"
+                                         alt="دانش‌آموز"
+                                         class="rounded-circle"
+                                         width="50"
+                                         height="50"
+                                         style="object-fit: cover;">
+                                </td>
+                                <td>
+                                    <div class="student-name">@student.UserName</div>
+                                </td>
+                                <td>@student.Email</td>
+                                <td>
+                                    <small class="text-muted">@student.JoinAt</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">@student.UserStatus</span>
+                                </td>
+                                <td data-label="عملیات">
+
+                                    <div class="btn-group w-100" role="group">
+                                        @if (student.State != "Banned")
+                                        {
+                                            <a href="javascript:void(0)"
+                                               onclick="openConfirmModal('@Url.Action("BanStudent", "Classes", new { classId = Model.ClassId, studentInClassId = student.ClassStudentId, area = "Admin" })', 'آیا از بن کردن دانش آموز اطمینان دارید؟')"
+                                               class="btn btn-outline-warning btn-sm ban-class-btn" title="مسدود کردن">
+                                                <i class="fas fa-ban"></i>
+                                            </a>
+                                        }
+                                        else if (student.State == "Banned")
+                                        {
+                                            <a href="javascript:void(0)" title="رفع مسدودیت"
+                                               onclick="openConfirmModal('@Url.Action("UnBanStudent", "Classes", new { classId = Model.ClassId, studentInClassId = student.ClassStudentId, area = "Admin" })', 'آیا از رفع مسدودیت دانش آموز اطمینان دارید؟')"
+                                               class="btn btn-outline-primary btn-sm ban-user-btn">
+                                                <i class="fa-solid fa-unlock"></i>
+                                            </a>
+                                        }
+                                        @if (student.State == "Accepted")
+                                        {
+                                            <a href="javascript:void(0)"
+                                               onclick="openConfirmModal('@Url.Action("RemoveStudent", "Classes", new { classId = Model.ClassId, studentInClassId = student.ClassStudentId, area = "Admin" })', 'آیا از اخراج کردن کلاس اطمینان دارید؟')"
+                                               class="btn btn-outline-danger btn-sm delete-class-btn" title="اخراج دانش آموز">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        }
+                                        else if (student.State == "Pending")
+                                        {
+                                            <a href="javascript:void(0)"
+                                               onclick="openConfirmModal('@Url.Action("AcceptStudent", "Classes", new { classId = Model.ClassId, studentInClassId = student.ClassStudentId, area = "Admin" })', 'آیا از اخراج کردن کلاس اطمینان دارید؟')"
+                                               class="btn btn-outline-success btn-sm delete-class-btn" title="قبول کردن درخواست ورود دانش آموز">
+                                                <i class="fa-solid fa-check"></i>
+                                            </a>
+                                            <a href="javascript:void(0)"
+                                               onclick="openConfirmModal('@Url.Action("RejectedStudent", "Classes", new { classId = Model.ClassId, studentInClassId = student.ClassStudentId, area = "Admin" })', 'آیا از اخراج کردن کلاس اطمینان دارید؟')"
+                                               class="btn btn-outline-secondary btn-sm delete-class-btn" title="رد کردن درخواست ورود دانش آموز">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        }
+
+    </div>
+</div>

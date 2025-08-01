@@ -1,9 +1,10 @@
-﻿using Amozegar.Areas.Teacher.Models;
+﻿using Amozegar.Areas.Shared.Models;
+using Amozegar.Areas.Teacher.Models;
 using Amozegar.Data.Repositories.Interfaces;
 using Amozegar.Models;
-using Microsoft.EntityFrameworkCore;
 using Amozegar.Utilities;
-using Amozegar.Areas.Shared.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Amozegar.Data.Repositories.Implementations
 {
@@ -126,6 +127,63 @@ namespace Amozegar.Data.Repositories.Implementations
                 .CountAsync(n => n.ClassId == classId);
 
             return notificationsCount;
+        }
+
+        public async Task<IEnumerable<Amozegar.Areas.Admin.Models.NotificationsViewModel>> GetNotificationsByPageNumberAsync(int pageNumber)
+        {
+            int page = pageNumber > 0 ? pageNumber : 0;
+            int pageSize = pageNumber > 0 ? DefaultPageCount.Count : 0;
+
+            var notifications = await this._context.Notifications
+                .OrderByDescending(n => n.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(n => new Amozegar.Areas.Admin.Models.NotificationsViewModel()
+                {
+                    ClassIdentity = n.ClassRoam.ClassIdentity,
+                    CreatedAt = n.CreatedAt.ToShamsi(),
+                    NotificationId = n.NotificationId,
+                    NotificationTitle = n.NotificationTitle,
+                })
+                .ToListAsync();
+            return notifications;
+        }
+
+        public async Task<int> GetNotificationsCountAsync()
+        {
+            var count = await this._context.Notifications
+                .CountAsync();
+
+            return count;
+        }
+
+        public async Task<Areas.Admin.Models.NotificationViewModel?> GetNotificationByIdAsync(int notificationId)
+        {
+            var notification = await this._context.Notifications
+                .Where(n => n.NotificationId == notificationId)
+                .Select(n => new Areas.Admin.Models.NotificationViewModel()
+                {
+                    NotificationId = n.NotificationId,
+                    ClassIdentity = n.ClassRoam.ClassIdentity,
+                    CreatedAt = n.CreatedAt.ToShamsi(),
+                    NotificationBody = n.NotificationBody,
+                    NotificationTitle = n.NotificationTitle,
+                }).SingleOrDefaultAsync();
+
+            if (notification != null)
+            {
+
+                var pictureType = await this._context.TableTypes
+                    .SingleAsync(pt => pt.Type == "Notifications");
+
+                notification.PicturePaths = await this._context.Pictures
+                .Where(p => p.TableType == pictureType && p.TableTypeRecordId == notification.NotificationId)
+                .Select(p => p.PicturePath)
+                .ToListAsync();
+            }
+
+
+            return notification;
         }
     }
 }

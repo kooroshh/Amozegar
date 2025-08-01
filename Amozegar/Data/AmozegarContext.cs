@@ -83,6 +83,12 @@ namespace Amozegar.Data
                 .HasDefaultValueSql("GETDATE()");
 
 
+            modelBuilder.Entity<ClassStudents>()
+                .Property(c => c.JoinAt)
+                .HasDefaultValueSql("GETDATE()");
+
+
+
             modelBuilder.Entity<User>()
                 .Property(u => u.PicturePath)
                 .HasDefaultValue("user.webp");

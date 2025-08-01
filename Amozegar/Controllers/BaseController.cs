@@ -11,6 +11,12 @@ namespace Amozegar.Controllers
             ViewBag.HasPrev = false;
             ViewBag.CurrentPage = pageNumber;
         }
+        protected void setPaginationViewDatas(int pageNumber, string key = "")
+        {
+            ViewData[$"HasNext{key}"] = false;
+            ViewData[$"HasPrev{key}"] = false;
+            ViewData[$"CurrentPage{key}"] = pageNumber;
+        }
 
         protected bool validateUserPageNumber(int pageNumber, int count)
         {
@@ -35,6 +41,22 @@ namespace Amozegar.Controllers
                 ViewBag.HasPrev = true;
             }
             ViewBag.Count = count;
+        }
+
+        protected void checkNextOrPrevForViewDatas(int count, int pageNumber, string key = "")
+        {
+            var thisPageCount = DefaultPageCount.Count * pageNumber;
+
+            if (count > thisPageCount)
+            {
+                ViewData[$"HasNext{key}"] = true;
+            }
+
+            if (!(thisPageCount - 10 <= 0))
+            {
+                ViewData[$"HasPrev{key}"] = true;
+            }
+            ViewData[$"Count{key}"] = count;
         }
     }
 }

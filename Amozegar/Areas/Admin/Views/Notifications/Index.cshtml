@@ -1,0 +1,119 @@
+﻿@model IEnumerable<NotificationsViewModel>
+@{
+    ViewData["Title"] = "اعلانات";
+}
+
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <h3 class="card-title mb-0">مدیریت اعلان ها</h3>
+
+            <div class="d-flex gap-2">
+                <div>
+                    @if (ViewBag.HasPrev)
+                    {
+                        <a asp-action="Index"
+                           asp-controller="Notifications"
+                           asp-area="Admin"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage - 1)"
+                           class="btn btn-primary ">صفحه ی قبل</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی قبل</a>
+                    }
+                </div>
+                <div>
+                    @if (ViewBag.HasNext)
+                    {
+                        <a asp-action="Index"
+                           asp-controller="Notifications"
+                           asp-area="Admin"
+                           asp-route-pageNumber="@(ViewBag.CurrentPage + 1)"
+                           class="btn btn-primary ">صفحه ی بعد</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی بعد</a>
+                    }
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="row mb-4 admin-search-filters">
+            <div class="alert alert-light">
+                تعداد کل اعلان ها : @ViewBag.Count
+            </div>
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@Html.Raw(TempData["Error"]?.ToString())</div>
+            }
+        </div>
+
+        @if (Model.Count() <= 0)
+        {
+            <div class="alert alert-warning">هیچ اعلانی وجود ندارد</div>
+        }
+        else
+        {
+            <!-- Announcements Table -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">عنوان اعلان</th>
+                            <th scope="col" style="width: 150px">آیدی کلاس</th>
+                            <th scope="col" style="width: 150px">تاریخ ساخت</th>
+                            <th scope="col" style="width: 150px">عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach(var notification in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong>@notification.NotificationTitle</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <code class="bg-light px-2 py-1 rounded">#@notification.ClassIdentity</code>
+                                </td>
+                                <td>
+                                    <small class="text-muted">@notification.CreatedAt</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="NotificationDetails" asp-controller="Notifications" asp-area="Admin" asp-route-notificationId="@notification.NotificationId" class="btn btn-outline-info btn-sm" title="مشاهده اعلان">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="javascript:void(0)" title="حذف اعلان"
+                                           onclick="openConfirmModal('@Url.Action("DeleteNotification", "Notifications", new { notificationId = notification.NotificationId, area = "Admin" })', 'آیا از حذف اعلان اطمینان دارید؟')"
+                                           class="btn btn-outline-danger btn-sm delete-announcement-btn">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        }
+
+
+
+
+    </div>
+</div>
+

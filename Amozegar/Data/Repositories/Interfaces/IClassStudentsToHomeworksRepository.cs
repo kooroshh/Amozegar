@@ -13,5 +13,7 @@ namespace Amozegar.Data.Repositories.Interfaces
         Task<bool> GetByClassIdentityByIdForChangeStateAsync(string classIdentity, int studentToHomeworkId);
         Task ChangeStateByClassIdentityByIdByStateAsync(string classIdentity, int studentToHomeworkId, string state);
         Task<List<StudentForHomeworksVIewModel>> GetStudentWithStatusByHomeworkIdByClassIdentityByPageNumberAsync(string classIdentity, int homeworkId, int pageNumber);
+        Task<HomeworkSentCheckViewModel?> GetByIdForCheckAsync(int studentToHomeworkId);
+        Task ChangeStateByIdByStateAsync(ClassStudentsToHomework classStudentsToHomework, string state);
     }
 }

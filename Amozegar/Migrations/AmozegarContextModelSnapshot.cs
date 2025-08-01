@@ -120,11 +120,11 @@ namespace Amozegar.Migrations
 
             modelBuilder.Entity("Amozegar.Models.ClassStudents", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ClassId")
                         .HasColumnType("int");
@@ -132,11 +132,16 @@ namespace Amozegar.Migrations
                     b.Property<int>("ClassStudentStateId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("JoinAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
                     b.Property<string>("StudentId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("ClassId");
 
@@ -711,7 +716,7 @@ namespace Amozegar.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserViewId"));
 
-                    b.Property<int>("ClassId")
+                    b.Property<int?>("ClassId")
                         .HasColumnType("int");
 
                     b.Property<int>("TableTypeId")
@@ -1052,9 +1057,7 @@ namespace Amozegar.Migrations
                 {
                     b.HasOne("Amozegar.Models.ClassRoam", "ClassRoam")
                         .WithMany("usersViews")
-                        .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ClassId");
 
                     b.HasOne("Amozegar.Models.TableType", "TableType")
                         .WithMany("UserViews")

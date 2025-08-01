@@ -8,8 +8,7 @@ namespace Amozegar.Models
         [Key]
         public int UserViewId { get; set; }
 
-        [Required]
-        public int ClassId { get; set; }
+        public int? ClassId { get; set; }
 
         [Required]
         public string UserId { get; set; }
@@ -28,6 +27,6 @@ namespace Amozegar.Models
         public User User { get; set; }
 
         [ForeignKey("ClassId")]
-        public ClassRoam ClassRoam { get; set; }
+        public ClassRoam? ClassRoam { get; set; }
     }
 }

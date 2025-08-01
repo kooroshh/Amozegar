@@ -1,0 +1,193 @@
+﻿@model ExamViewModel
+@{
+    ViewData["Title"] = "نمایش امتحان";
+}
+
+<a asp-action="Index" asp-controller="Exams" asp-area="Admin" asp-route-pageNumber="1" class="btn btn-lg btn-outline-secondary m-3">برگشت به لیست امتحانات</a>
+
+<!-- اطلاعات امتحان -->
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">اطلاعات امتحان</div>
+    <div class="card-body row g-3">
+        <div class="col-md-12"><strong>عنوان امتحان:</strong> @Model.ExamTitle</div>
+        <div class="col-md-4"><strong>ایدی کلاس:</strong> <code class="bg-light px-2 py-1 rounded">#@Model.ClassIdentity</code></div>
+        <div class="col-md-4"><strong>تاریخ ساخت:</strong> @Model.CreatedAt</div>
+        <div class="col-md-4"><strong>وضعیت:</strong> @Model.PersianState</div>
+        <div class="col-md-4"><strong>تاریخ شروع:</strong> @Model.StartAt</div>
+        <div class="col-md-4"><strong>تاریخ پایان:</strong> @Model.EndAt</div>
+        <div class="col-md-4"><strong>تعداد سوالات:</strong> @Model.QuestionCount</div>
+        <div class="col-md-12"><strong>توضیحات:</strong><br />@Model.ExamDescription</div>
+    </div>
+</div>
+
+<!-- آمار کلی -->
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">آمار کلی</div>
+    <div class="card-body row text-center">
+        <div class="col-md-4"><h5>تعداد شرکت‌کنندگان</h5><p>@Model.JoinerCount نفر</p></div>
+        <div class="col-md-4"><h5>میانگین نمرات</h5><p>@Model.ScoreAvarage%</p></div>
+        <div class="col-md-4"><h5>تعداد قبول شدگان</h5><p>@Model.AcceptedCount نفر</p></div>
+    </div>
+</div>
+
+<!-- لیست سوالات -->
+@if(Model.Questions.Count() <= 0)
+{
+    <div class="alert alert-warning">هیچ سوالی وجود ندارد</div>
+}
+else
+{
+    <div class="alert alert-light">
+        تعداد کل سوالات: @ViewBag.CountQuestions
+    </div>
+    <div class="card mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 p-3">
+
+            <h3 class="card-title mb-0">سوالات امتحان</h3>
+
+            <div class="d-flex gap-2">
+                <div>
+                    @if (ViewBag.HasPrevQuestions)
+                    {
+                        <a asp-action="ShowExam"
+                           asp-controller="Exams"
+                           asp-area="Admin"
+                           asp-route-questionPageNumber="@(ViewBag.CurrentPageQuestions - 1)"
+                           asp-route-studentResultPageNumber="@ViewBag.CurrentPageStudents"
+                           class="btn btn-primary ">صفحه ی قبل</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی قبل</a>
+                    }
+                </div>
+                <div>
+                    @if (ViewBag.HasNextQuestions)
+                    {
+                        <a asp-action="ShowExam"
+                           asp-controller="Exams"
+                           asp-area="Admin"
+                           asp-route-questionPageNumber="@(ViewBag.CurrentPageQuestions + 1)"
+                           asp-route-studentResultPageNumber="@ViewBag.CurrentPageStudents"
+                           class="btn btn-primary ">صفحه ی بعد</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی بعد</a>
+                    }
+                </div>
+            </div>
+
+
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered text-center align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>سوال</th>
+                        <th>تعداد گزینه‌ها</th>
+                        <th>جواب صحیح</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var question in Model.Questions)
+                    {
+                        <tr>
+                            <td>@question.Question</td>
+                            <td>@question.OptionsCount</td>
+                            <td class="text-truncate">@question.Awnser</td>
+                            <td><a asp-action="ShowQuestion" asp-controller="Exams" asp-area="Admin" asp-route-pageNumber="1" asp-route-questionId="@question.QuestionId" class="btn btn-outline-primary btn-sm">مشاهده</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+
+@if (Model.Students.Count() <= 0)
+{
+    <div class="alert alert-warning">هیچ نتیجه ای وجود ندارد</div>
+}
+else
+{
+    <div class="alert alert-light">
+        تعداد کل دانش آموزان امتحان داده: @ViewBag.CountStudents
+    </div>
+    <!-- لیست نتایج دانش‌آموزان -->
+    <div class="card mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 p-3">
+
+            <h3 class="card-title mb-0">نتایج دانش‌آموزان</h3>
+
+            <div class="d-flex gap-2">
+                <div>
+                    @if (ViewBag.HasPrevStudents)
+                    {
+                        <a asp-action="ShowExam"
+                           asp-controller="Exams"
+                           asp-area="Admin"
+                           asp-route-questionPageNumber="@ViewBag.CurrentPageQuestions"
+                           asp-route-studentResultPageNumber="@(ViewBag.CurrentPageStudents - 1)"
+                           class="btn btn-primary ">صفحه ی قبل</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی قبل</a>
+                    }
+                </div>
+                <div>
+                    @if (ViewBag.HasNextStudents)
+                    {
+                        <a asp-action="ShowExam"
+                           asp-controller="Exams"
+                           asp-area="Admin"
+                           asp-route-questionPageNumber="@ViewBag.CurrentPageQuestions"
+                           asp-route-studentResultPageNumber="@(ViewBag.CurrentPageStudents + 1)"
+                           class="btn btn-primary ">صفحه ی بعد</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary disabled">صفحه ی بعد</a>
+                    }
+                </div>
+            </div>
+
+
+        </div>
+        <div class="card-body">
+            <table class="table table-striped text-center align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>تصویر</th>
+                        <th>نام</th>
+                        <th>وضعیت امتحان</th>
+                        <th>تعداد پاسخ صحیح</th>
+                        <th>تعداد پاسخ نادرست</th>
+                        <th>تعداد کل پاسخ</th>
+                        <th>نمره</th>
+                        <th>تاریخ شرکت</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var student in Model.Students)
+                    {
+                        <tr>
+                            <td><img src="~/images/users/@(student.StudentPicturePath)" class="rounded-circle" width="50" height="50"></td>
+                            <td>@student.StudentName</td>
+                            <td><span class="badge bg-secondary text-light">@student.ExamStatus</span></td>
+                            <td>@student.CorrectAwnser</td>
+                            <td>@student.IncorrectAwnser</td>
+                            <td>@student.AwnserCount</td>
+                            <td>@student.Score%</td>
+                            <td>@student.JoindAt</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+}

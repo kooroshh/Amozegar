@@ -11,5 +11,8 @@ namespace Amozegar.Data.Repositories.Interfaces
         Task<NotificationsDetailsViewModel?> GetNotificationWithPicturesByIdAndClassIdentityAsync(string classIdentity, int notificationId);
         Task<IEnumerable<NotificationsDetailsViewModel>> GetNotificationsWithPicturesByClassIdentityByPageNumberAsync(string classIdentity, int pageNumber);
         Task<int> GetNotificationsCountByClassIdentityAsync(string classIdentity);
+        Task<IEnumerable<Amozegar.Areas.Admin.Models.NotificationsViewModel>> GetNotificationsByPageNumberAsync(int pageNumber);
+        Task<int> GetNotificationsCountAsync();
+        Task<Amozegar.Areas.Admin.Models.NotificationViewModel?> GetNotificationByIdAsync(int notificationId);
     }
 }

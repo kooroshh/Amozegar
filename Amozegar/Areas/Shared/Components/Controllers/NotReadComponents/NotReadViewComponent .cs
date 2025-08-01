@@ -18,7 +18,7 @@ namespace Amozegar.Areas.Shared.Components.Controllers
             this._userManager = userManager;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string type, string classIdentity)
+        public async Task<IViewComponentResult> InvokeAsync(string type, string classIdentity = "")
         {
             var count = 0;
             var user = await this._userManager.FindByNameAsync(User.Identity.Name);
@@ -28,6 +28,13 @@ namespace Amozegar.Areas.Shared.Components.Controllers
                     {
                         count = await this._context.UsersViewsRepository
                             .GetUnreadNotificationsCountByUserIdAsync(user.Id, classIdentity);
+                        break;
+                    }
+
+                case "Tickets":
+                    {
+                        count = await this._context.UsersViewsRepository
+                            .GetUnreadTicketsCountByUserIdAsync(user.Id);
                         break;
                     }
 
@@ -56,6 +63,13 @@ namespace Amozegar.Areas.Shared.Components.Controllers
                     {
                         count = await _context.HomeworkRepository
                             .GetNotSentHomeworksCountByClassIdentityByStudentIdAsync(classIdentity, user.Id);
+                        break;
+                    }
+
+                case "OngoingExams":
+                    {
+                        count = await _context.ExamRepository
+                            .GetCountByClassIdentityByStatesAsync(classIdentity, "Ongoing");
                         break;
                     }
 

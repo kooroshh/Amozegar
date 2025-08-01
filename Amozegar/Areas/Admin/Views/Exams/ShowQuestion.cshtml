@@ -1,0 +1,132 @@
+﻿@model QuestionViewModel
+@{
+    ViewData["Title"] = "نمایش سوال";
+}
+
+<!-- Assignment Details Section -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="card-title mb-0">جزئیات سوال</h3>
+            <a asp-action="ShowExam" asp-controller="Exams" asp-area="Admin" asp-route-examId="@Model.ExamId" asp-route-questionPageNumber="1" asp-route-studentResultPageNumber="1" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-right me-2"></i>
+                بازگشت به امتحان
+            </a>
+        </div>
+
+        <!-- Assignment Information -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="info-item mb-3">
+                    <i class="fas fa-tasks text-primary me-2"></i>
+                    <span class="label">عنوان امتحان:</span>
+                    <span class="value">@Model.ExamTitle</span>
+                </div>
+                <div class="info-item mb-3">
+                    <i class="fas fa-calendar text-primary me-2"></i>
+                    <span class="label">آیدی کلاس:</span>
+                    <code class="bg-light px-2 py-1 rounded">#@Model.ClassIdentity</code>
+                </div>
+                <div class="info-item mb-3">
+                    <i class="fas fa-info-circle text-primary me-2"></i>
+                    <span class="label">سوال :</span>
+                    <span class="value">@Model.Question</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+
+                <div class="info-item mb-3">
+                    <i class="fas fa-calendar text-primary me-2"></i>
+                    <span class="label">تاریخ ساخت:</span>
+                    <span class="value">@Model.CreatedAt</span>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Options Section -->
+        <div class="card border-0 shadow-sm bg-light">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+
+
+                    <div class="d-flex gap-3 align-items-center mb-4 flex-wrap">
+
+                        <h3 class="card-title mb-0">گزینه‌های سوال</h3>
+
+                        <div>
+                            @if (ViewBag.HasPrev)
+                            {
+                                <a asp-action="ShowQuestion"
+                                   asp-controller="Exams"
+                                   asp-area="Admin"
+                                   asp-route-questionId="@Model.QuestionId"
+                                   asp-route-pageNumber="@(ViewBag.CurrentPage - 1)"
+                                   class="btn btn-primary ">صفحه ی قبل</a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-primary disabled">صفحه ی قبل</a>
+                            }
+                        </div>
+                        <div>
+                            @if (ViewBag.HasNext)
+                            {
+                                <a asp-action="ShowQuestion"
+                                   asp-controller="Exams"
+                                   asp-area="Admin"
+                                   asp-route-questionId="@Model.QuestionId"
+                                   asp-route-pageNumber="@(ViewBag.CurrentPage + 1)"
+                                   class="btn btn-primary ">صفحه ی بعد</a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-primary disabled">صفحه ی بعد</a>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="options-list" id="optionsList">
+
+                    @if (Model.Options.Count() <= 0)
+                    {
+                        <div class="alert alert-warning">توجه هیچ گزینه ای وجود ندارد</div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-light">
+                            تعداد کل گزینه ها : @ViewBag.Count
+                        </div>
+                        @foreach (var option in Model.Options)
+                        {
+                            <div class="option-item">
+                                <div class="option-content">
+                                    <div class="option-label">
+                                        <span class="option-text">@option.Option</span>
+                                    </div>
+                                    @if (option.IsAwnser)
+                                    {
+                                        <div class="option-status">
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>
+                                                جواب صحیح
+                                            </span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+

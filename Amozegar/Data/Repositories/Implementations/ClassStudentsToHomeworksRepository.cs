@@ -5,6 +5,8 @@ using Amozegar.Models;
 using Amozegar.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Mono.TextTemplating;
+using System.Security.Claims;
 
 namespace Amozegar.Data.Repositories.Implementations
 {
@@ -239,13 +241,70 @@ namespace Amozegar.Data.Repositories.Implementations
                     StudentName = cs.User.FullName,
                     StudentImage = cs.User.PicturePath,
                     StudentStatus = _context.ClassStudentsToHomeworks
-                        .Where(hw => hw.ClassStudentId == cs.id && hw.HomeworkId == homeworkId)
+                        .Where(hw => hw.ClassStudentId == cs.Id && hw.HomeworkId == homeworkId)
                         .Select(hw => hw.ClassStudentsToHomeworkState.PersianState)
                         .FirstOrDefault() ?? "ارسال نشده"
                 })
                 .ToList();
 
             return result;
+        }
+
+        public async Task<HomeworkSentCheckViewModel?> GetByIdForCheckAsync(int studentToHomeworkId)
+        {
+
+            var classStudentsToHomeworks = await this._context.ClassStudentsToHomeworks
+                .Where(csth =>
+                    csth.ClassStudentsToHomeworkId == studentToHomeworkId &&
+                    csth.ClassStudentsToHomeworkState.State != "Rejected" &&
+                    csth.Homework.HomeworkState.State != "Deleted" &&
+                    csth.ClassStudent.State.State == "Accepted"
+                )
+                .Select(csth => new HomeworkSentCheckViewModel
+                {
+                    StudentToHomeworkId = csth.ClassStudentsToHomeworkId,
+                    StudentEmail = csth.ClassStudent.User.Email,
+                    HomeworkTitle = csth.Homework.HomeworkTitle,
+                    Title = csth.Title,
+                    Description = csth.Description,
+                    SendAt = csth.SendAt.ToShamsi(),
+                    StudentImage = csth.ClassStudent.User.PicturePath,
+                    StudentName = csth.ClassStudent.User.FullName,
+                    HomeworkId = csth.HomeworkId,
+                    IsActionable = (csth.ClassStudentsToHomeworkState.State == "Pending" || csth.ClassStudentsToHomeworkState.State == "Resubmitted")
+                }).SingleOrDefaultAsync();
+
+            if (classStudentsToHomeworks == null)
+            {
+                return null;
+            }
+
+            var pictureType = await this._context.TableTypes
+                .SingleAsync(pt => pt.Type == "ClassStudentsToHomeworks");
+
+
+            var pictures = await this._context.Pictures
+                .Where(p =>
+                    p.TableType == pictureType &&
+                    p.TableTypeRecordId == classStudentsToHomeworks.StudentToHomeworkId
+                )
+                .Select(p => p.PicturePath)
+                .ToListAsync();
+
+            classStudentsToHomeworks.Pictures = pictures;
+
+            return classStudentsToHomeworks;
+        }
+
+        public async Task ChangeStateByIdByStateAsync(ClassStudentsToHomework classStudentsToHomework, string state)
+        {
+            var newState = await this._context.ClassStudentsToHomeworkStates
+                .SingleAsync(csths => csths.State == state);
+
+
+            classStudentsToHomework.ClassStudentsToHomeworkState = newState;
+            classStudentsToHomework.ClassStudentHomeworkStateId = newState.ClassStudentsToHomeworkStateId;
+            this._context.Update(classStudentsToHomework);
         }
     }
 }

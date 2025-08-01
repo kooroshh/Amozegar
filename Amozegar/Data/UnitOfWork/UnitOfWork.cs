@@ -30,6 +30,10 @@ namespace Amozegar.Data.UnitOfWork
         private IQuestionOptionsRepository _questionOptionsRepository;
         private IClassStudentsToExamRepository _classStudentsToExamRepository;
         private IClassStudentToExamToQuestionRepository _classStudentToExamToQuestionRepository;
+        private IUserRepository _userRepository;
+        private IRolesRepository _rolesRepository;
+        private ITicketsRepository _ticketsRepository;
+        private IDashboardRepository _dashboardRepository;
 
         public UnitOfWork(AmozegarContext context, UserManager<User> userManager)
         {
@@ -262,6 +266,54 @@ namespace Amozegar.Data.UnitOfWork
                     this._classStudentToExamToQuestionRepository = new ClassStudentToExamToQuestionRepository(this._context);
                 }
                 return this._classStudentToExamToQuestionRepository;
+            }
+        }
+
+        public IUserRepository UsersRepository
+        {
+            get
+            {
+                if (this._userRepository == null)
+                {
+                    this._userRepository = new UserRepository(this._context, _userManager);
+                }
+                return this._userRepository;
+            }
+        }
+
+        public IRolesRepository RolesRepository
+        {
+            get
+            {
+                if (this._rolesRepository == null)
+                {
+                    this._rolesRepository = new RolesRepository(this._context);
+                }
+                return this._rolesRepository;
+            }
+        }
+
+        public ITicketsRepository TicketsRepository
+        {
+            get
+            {
+                if (this._ticketsRepository == null)
+                {
+                    this._ticketsRepository = new TicketsRepository(this._context);
+                }
+                return this._ticketsRepository;
+            }
+        }
+
+        public IDashboardRepository DashboardRepository
+        {
+            get
+            {
+                if (this._dashboardRepository == null)
+                {
+                    this._dashboardRepository = new DashboardRepository(this._context);
+                }
+                return this._dashboardRepository;
             }
         }
 
